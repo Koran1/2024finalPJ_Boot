@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ict.finalpj.common.util.JwtUtil;
-import com.ict.finalpj.domain.auth.service.MyUserDetailService;
+import com.ict.finalpj.domain.user.service.MyUserDetailService;
 import com.ict.finalpj.jwt.JwtRequestFilter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,11 +52,12 @@ public class SecurityConfig {
                     // 특정 URL 에 인증없이 허용
                     .requestMatchers("/upload/**").permitAll()
                     .requestMatchers("/oauth2/**").permitAll()
-                    .requestMatchers("/api/todayhouse/**", "/api/weather/**"
-                    , "/api/camp/**", "/api/comms/**").permitAll()
-                    .requestMatchers("/api/members/join", "/api/members/login",
-                            "/api/guestbook/list", "/api/guestbook/detail/**", "/api/guestbook/download/**")
-                    .permitAll()
+                    .requestMatchers("/api/**").permitAll()
+                    
+                    // .requestMatchers("/api/user/join", "/api/user/login",
+                    //         "/api/camp/**", "/api/administrator/**", "/api/guestbook/download/**")
+                    // .permitAll()
+
                     // 나머지는 인증 필요-
                     .anyRequest().authenticated())
 

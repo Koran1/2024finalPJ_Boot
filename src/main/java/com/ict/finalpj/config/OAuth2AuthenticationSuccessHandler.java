@@ -5,12 +5,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import com.ict.finalpj.common.util.JwtUtil;
-import com.ict.finalpj.domain.auth.service.MyUserDetailService;
+import com.ict.finalpj.domain.user.service.MyUserDetailService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
