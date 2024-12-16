@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ict.finalpj.common.util.JwtUtil;
-import com.ict.finalpj.domain.auth.service.MyUserDetailService;
+import com.ict.finalpj.domain.user.service.MyUserDetailService;
 import com.ict.finalpj.jwt.JwtRequestFilter;
 
 import lombok.extern.slf4j.Slf4j;
