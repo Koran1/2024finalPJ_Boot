@@ -49,8 +49,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 log.info("provider : " + provider);
 
                 // 성공 후 토큰을 만들어서 client에게 redirect 한다
-                // UserDetails userDetails = userDetailService.loadUserByOAuth2User(oAuth2User, provider);
-
                 String token = jwtUtil.generateToken(oAuth2User.getAttribute("id").toString());
                 
                 String redirectUrl = String.format(
