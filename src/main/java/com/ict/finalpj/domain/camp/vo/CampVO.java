@@ -25,6 +25,7 @@ public class CampVO {
     induty, // 업종
     lctCl, // 입지구분
     doNm, // 도
+    doNm2, // 도 2
     regionCode, // 지역코드
     sigunguNm, // 시군구구
     addr1, // 주소

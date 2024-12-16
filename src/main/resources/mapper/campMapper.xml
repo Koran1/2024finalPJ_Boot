@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.finalpj.domain.camp.mapper.CampMapper">
+	<select id="getCampingList" resultType="CampVO">
+		select * from pjcamp
+	</select>
+
+	<select id="getDoNmList" resultType="String">
+		select doNm, regionCode from pjcamp order by regionCode asc
+	</select>
+
+	<select id="getSigunguList" parameterType="String" resultType="String">
+		select distinct sigunguNm from pjcamp where doNm2=#{doNm2}
+	</select>
+
+</mapper>
