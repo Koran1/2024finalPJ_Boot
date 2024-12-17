@@ -1,6 +1,6 @@
 spring :
     application :
-        name: edu3
+        name: finalpj
 
     # DB 설정
     datasource:

@@ -53,10 +53,6 @@ public class SecurityConfig {
                     .requestMatchers("/upload/**").permitAll()
                     .requestMatchers("/oauth2/**").permitAll()
                     .requestMatchers("/api/**").permitAll()
-                    
-                    // .requestMatchers("/api/user/join", "/api/user/login",
-                    //         "/api/camp/**", "/api/administrator/**", "/api/guestbook/download/**")
-                    // .permitAll()
 
                     // 나머지는 인증 필요-
                     .anyRequest().authenticated())
