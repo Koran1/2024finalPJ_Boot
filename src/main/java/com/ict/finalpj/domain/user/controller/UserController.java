@@ -1,8 +1,11 @@
 package com.ict.finalpj.domain.user.controller;
 
+import java.util.Map;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +19,11 @@ import com.ict.finalpj.common.util.JwtUtil;
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.user.service.EmailService;
 import com.ict.finalpj.domain.user.service.UserService;
+import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -105,7 +111,8 @@ public class UserController {
         DataVO dvo = new DataVO();
         try {  
             UserVO uvo_true = userService.findUserPw(uvo);
-
+            log.info("uvo " + uvo);
+            log.info("uvo_pw " + uvo_true);
             if(uvo_true == null){
                 dvo.setSuccess(false);
                 dvo.setMessage("일치하는 정보가 존재하지 않습니다");
@@ -207,7 +214,7 @@ public class UserController {
         return dvo;
     }
     
-    // 아이디, 닉네임, 전화번호 중복검사
+    // 아이디, 닉네임, 전화번호, 이메일 중복검사
     @GetMapping("/join/chkDupl")
     public DataVO chkDuplicates(@RequestParam("field") String field,
     @RequestParam("value") String value) {
@@ -249,6 +256,17 @@ public class UserController {
                 }
                 return dvo;
             }
+            if(field.equals("userMail")){
+                uvo = userService.getUserInfoByMail(value);
+                if(uvo == null) {
+                    dvo.setSuccess(true);
+                    dvo.setMessage("사용 가능한 이메일 입니다");
+                } else{
+                    dvo.setSuccess(false);
+                    dvo.setMessage("중복된 이메일입니다");
+                }
+                return dvo;
+            }
 
         } catch (Exception e) {
             dvo.setSuccess(false);
@@ -258,7 +276,32 @@ public class UserController {
         return dvo;
     }
     
+    @GetMapping("/getSocials")
+    public DataVO getSocialData(@RequestParam String socialIdx) {
+        DataVO dvo = new DataVO();
+        try {
+            log.info("socialIdx : " + socialIdx);
 
+            SocialVO sovo = userService.getSocialData(socialIdx);
+            log.info("sovo : " + sovo);
+
+            if(sovo != null){
+                dvo.setData(sovo);
+                dvo.setSuccess(true);
+                dvo.setMessage("getSocials Success");
+            }else{
+                dvo.setSuccess(false);
+                dvo.setMessage("getSocials Failed");
+            }
+
+        } catch (Exception e) {
+            dvo.setSuccess(false);
+            dvo.setMessage("getSocials Error");
+            e.printStackTrace();
+        }
+        return dvo;
+    }
+    
     
     
 }

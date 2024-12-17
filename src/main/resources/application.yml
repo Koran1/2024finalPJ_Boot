@@ -73,6 +73,9 @@ server:
     port: 8080
     servlet:
         context-path: /
+        session:
+            timeout: 1800
+        
 
 # mapper 연결
 mybatis:

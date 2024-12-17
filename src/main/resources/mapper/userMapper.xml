@@ -24,6 +24,10 @@
         select * from pjuser where userNickname = #{userNickname}
     </select>
 
+    <select id="getUserInfoByMail" parameterType="String" resultType="UserVO" >
+        select * from pjuser where userMail = #{userMail}
+    </select>
+
     <select id="findUserId" parameterType="UserVO" resultType="UserVO" >
         select * from pjuser where userId = #{userId} and userMail = #{userMail}
     </select>
@@ -38,43 +42,25 @@
         where userIdx = #{userIdx}
     </update>
 
-
-
-
-
-    <select id="findUserByProvider" parameterType="UserVO" resultType="UserVO" >
-        select * from members 
-        where 
-        (
-            (sns_provider = 'kakao' and sns_email_kakao = #{sns_email_kakao})
-            or
-            (sns_provider = 'naver' and sns_email_kakao = #{sns_email_naver})
-        )
+    <select id="getUserInfoByKakaoId" parameterType="String" resultType="UserVO" >
+        select * from pjuser where k_userId = #{k_userId}
     </select>
 
-    <insert id="insertUser" parameterType="UserVO" >
-        insert into members (
-            m_id, 
-            <if test="m_pw != null">
-            m_pw, 
-            </if>
-            m_name, 
-            m_age, 
-            m_reg, 
-            sns_email_kakao, 
-            sns_email_naver, 
-            sns_provider)
-        values (
-            #{m_id}, 
-            <if test="m_pw != null">
-            #{m_pw}, 
-            </if>
-            #{m_name}, 
-            #{m_age}, 
-            DATE(NOW()), 
-            #{sns_email_kakao}, 
-            #{sns_email_naver}, 
-            #{sns_provider})
+    <select id="getUserInfoByNaverId" parameterType="String" resultType="UserVO" >
+        select * from pjuser where n_userId = #{n_userId}
+    </select>
+
+
+
+    <insert id="insertSocialData" parameterType="SocialVO">
+        insert into pjsocial (socialIdx, socialId, socialName, socialEmail, socialPhone)
+        values (#{socialIdx}, #{socialId}, #{socialName}, #{socialEmail}, #{socialPhone})
     </insert>
+
+    <select id="getSocialData" parameterType="String" resultType="SocialVO" >
+        select * from pjsocial where socialIdx = #{socialIdx}
+    </select>
+
+    
     
 </mapper>

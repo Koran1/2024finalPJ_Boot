@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.domain.user.mapper.UserMapper;
+import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 @Service
@@ -40,12 +41,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserVO findUserPw(UserVO uvo) {
-        return userMapper.findUserId(uvo);
+        return userMapper.findUserPw(uvo);
     }
 
     @Override
     public int changeUserPw(UserVO uvo) {
         return userMapper.changeUserPw(uvo);
     }
+
+    @Override
+    public UserVO getUserInfoByKakaoId(String k_userId) {
+        return userMapper.getUserInfoByKakaoId(k_userId);
+    }
+
+    @Override
+    public UserVO getUserInfoByNaverId(String n_userId) {
+        return userMapper.getUserInfoByNaverId(n_userId);
+    }
+
+    @Override
+    public int insertSocialData(SocialVO sovo) {
+        return userMapper.insertSocialData(sovo);
+    }
+
+    @Override
+    public SocialVO getSocialData(String socialIdx) {
+        return userMapper.getSocialData(socialIdx);
+    }
+
+    @Override
+    public UserVO getUserInfoByMail(String userMail) {
+        return userMapper.getUserInfoByMail(userMail);
+    }
+
+
 
 }
