@@ -90,10 +90,4 @@ public class UserServiceImpl implements UserService {
         return userMapper.updateConnRegByIdx(userIdx);
     }
 
-
-
-  @Override
-  public UserVO getUserInfo(String name) {
-    return userMapper.getUserInfo(name);
-  }
 }
