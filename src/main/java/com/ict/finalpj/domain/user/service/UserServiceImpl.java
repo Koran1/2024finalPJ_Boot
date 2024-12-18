@@ -74,6 +74,21 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserInfoByMail(userMail);
     }
 
+    @Override
+    public int updateUserNaverId(UserVO uvo) {
+        return userMapper.updateUserNaverId(uvo);
+    }
+
+    @Override
+    public int updateUserKakaoId(UserVO uvo) {
+        return userMapper.updateUserKakaoId(uvo);
+    }
+
+    @Override
+    public int updateConnRegByIdx(String userIdx) {
+        return userMapper.updateConnRegByIdx(userIdx);
+    }
+
 
 
 }

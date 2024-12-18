@@ -21,4 +21,9 @@ public interface UserMapper {
 
     int insertSocialData(SocialVO sovo);
     SocialVO getSocialData(String socialIdx);
+
+    int updateUserNaverId(UserVO uvo);
+    int updateUserKakaoId(UserVO uvo);
+
+    int updateConnRegByIdx(String userIdx);
 }

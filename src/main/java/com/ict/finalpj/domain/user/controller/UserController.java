@@ -1,11 +1,10 @@
 package com.ict.finalpj.domain.user.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +21,6 @@ import com.ict.finalpj.domain.user.service.UserService;
 import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -66,12 +63,21 @@ public class UserController {
                 return dvo;
             }
 
-            // 로그인 성공 시 JWT 생성
-            String jwtToken = jwtUtil.generateToken(uvo.getUserId());
-            dvo.setData(uvo_true);
+            // 로그인 성공 시 JWT 생성 및 authStore 저장
+            String userIdx = uvo_true.getUserIdx();
+            String jwtToken = jwtUtil.generateToken(userIdx);
+
+            Map<String, String> map = new HashMap<>();
+            map.put("userIdx", userIdx);
+            map.put("userNickname", uvo_true.getUserNickname());
+            dvo.setData(map);
+
             dvo.setSuccess(true);
             dvo.setMessage("로그인 성공!");
             dvo.setJwtToken(jwtToken);
+
+            // 로그인 기록 
+            userService.updateConnRegByIdx(userIdx);
 
         } catch (Exception e) {
             dvo.setSuccess(false);
@@ -158,7 +164,7 @@ public class UserController {
     }
     
 
-    // 회원가입
+    // 회원가입 - 일반
     @PostMapping("/join")
     public DataVO userJoin(@RequestBody UserVO uvo) {
         DataVO dvo = new DataVO();
@@ -173,6 +179,54 @@ public class UserController {
             }else{
                 dvo.setSuccess(false);
                 dvo.setMessage("회원가입 실패!");
+            }
+        } catch (Exception e) {
+            dvo.setSuccess(false);
+            dvo.setMessage("Join Failed");
+            e.printStackTrace();
+        }
+        return dvo;
+    }
+
+    @PostMapping("/join/chkKakao")
+    public DataVO checkKakao(@RequestBody UserVO uvo) {
+        DataVO dvo = new DataVO();
+        try {
+            log.info("chkKakao uvo : "+ uvo);
+
+            // 전화번호와 정보 확인 절차
+            UserVO uvo_true = userService.getUserInfoByPhone(uvo.getUserPhone());
+            String name_true = uvo_true.getUserName();
+            String mail_true = uvo_true.getUserMail();
+            if(uvo.getUserName().equals(name_true)){
+                dvo = sendMail(uvo.getUserMail());
+                dvo.setSuccess(true);
+                dvo.setMessage("Kakao 로그인에 사용하신 email로 인증 코드를 보냈습니다");
+            } else{
+                dvo.setSuccess(false);
+                dvo.setMessage("일치하는 정보가 없습니다");
+            }
+
+        } catch (Exception e) {
+            dvo.setSuccess(false);
+            dvo.setMessage("Join Failed");
+            e.printStackTrace();
+        }
+        return dvo;
+    }
+
+    @PostMapping("/join/updateKakao")
+    public DataVO updateKakao(@RequestBody UserVO uvo) {
+        DataVO dvo = new DataVO();
+        try {
+            int result = userService.updateUserKakaoId(uvo);
+            
+            if(result > 0 ){
+                dvo.setSuccess(true);
+                dvo.setMessage("정보 연동 성공");
+            }else{
+                dvo.setSuccess(false);
+                dvo.setMessage("정보 연동 실패!");
             }
         } catch (Exception e) {
             dvo.setSuccess(false);

@@ -36,7 +36,7 @@ public class MyUserDetailService implements UserDetailsService{
 
     // DB에서 정보 있는지 확인
     public String loadUserByOAuth2User(OAuth2User oAuth2User, String provider){
-        String id = oAuth2User.getAttribute("id");
+        String id = oAuth2User.getAttribute("id").toString();
         String name = oAuth2User.getAttribute("name");
         String email = oAuth2User.getAttribute("email");
         
@@ -76,31 +76,56 @@ public class MyUserDetailService implements UserDetailsService{
         return null;
     }
 
+    // DB에서 정보 있는지 확인
+    public boolean chkJoinedByPhone(OAuth2User oAuth2User){
+        String phone = oAuth2User.getAttribute("phone").toString();
+
+        UserVO uvo_true = userMapper.getUserInfoByPhone(phone);
+        if(uvo_true == null){
+            return false;
+        }else{
+            UserVO uvo = new UserVO();
+            uvo.setN_userId(oAuth2User.getAttribute("id"));
+            uvo.setUserPhone(phone);
+            userMapper.updateUserNaverId(uvo);
+
+            return true;
+        }
+    }
+    
+    // DB에서 정보 있는지 확인
+    public UserVO getUserInfoByOAuth2User(OAuth2User oAuth2User, String provider){
+        String id = oAuth2User.getAttribute("id").toString();
+        UserVO uvo_true = new UserVO();
+
+        if(provider.equals("kakao")){
+            uvo_true = userMapper.getUserInfoByKakaoId(id);
+        }
+        
+        if(provider.equals("naver")){
+            uvo_true = userMapper.getUserInfoByNaverId(id);
+        }
+        return uvo_true;
+    }
+
     // // DB에서 정보 있는지 확인
-    // public boolean loadUserByOAuth2User(OAuth2User oAuth2User, String provider){
-    //     String id = oAuth2User.getAttribute("id").toString();
-    //     UserVO uvo_true = new UserVO();
+    // public boolean chkJoinedByPhone(OAuth2User oAuth2User){
+    //     String phone = oAuth2User.getAttribute("phone").toString();
 
-    //     // kakao 로 로그인 한 적 있는지 확인
-    //     if(provider.equals("kakao")){
-    //         uvo_true = userMapper.getUserInfoByKakaoId(id);
-    //         if(uvo_true == null){
-    //             return false;
-    //         }
+    //     UserVO uvo_true = userMapper.getUserInfoByPhone(phone);
+    //     if(uvo_true == null){
+    //         return false;
+    //     }else{
+    //         UserVO uvo = new UserVO();
+    //         uvo.setN_userId(oAuth2User.getAttribute("id"));
+    //         uvo.setUserPhone(phone);
+    //         userMapper.updateUserNaverId(uvo);
+
+    //         return true;
     //     }
-
-    //     // naver 로 로그인 한적 있는지 확인
-    //     if(provider.equals("naver")){
-    //         uvo_true = userMapper.getUserInfoByNaverId(id);
-    //         if(uvo_true == null){
-    //             return false;
-    //         }
-    //     }
-
-    //     // 로그인 경력 있으면 반환
-    //     return true;
-
     // }
+
+
     
     
 }

@@ -18,4 +18,9 @@ public interface UserService {
 
     public int insertSocialData(SocialVO sovo);
     public SocialVO getSocialData(String socialIdx);
+
+    public int updateUserNaverId(UserVO uvo);
+    public int updateUserKakaoId(UserVO uvo);
+
+    public int updateConnRegByIdx(String userIdx);
 }

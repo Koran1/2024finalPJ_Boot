@@ -10,10 +10,10 @@
     </select>
     
     <insert id="insertUserInfo" parameterType="UserVO" >
-        insert into pjuser (userId, userPw, userName, userNickname, userMail, 
+        insert into pjuser (userId, n_userId, k_userId, userPw, userName, userNickname, userMail, 
         userPhone, userAddr, userReg)
-        values (#{userId}, #{userPw}, #{userName}, #{userNickname}, #{userMail}, 
-        #{userPhone}, userAddr, DATE(NOW()))
+        values (#{userId}, #{n_userId}, #{k_userId}, #{userPw}, #{userName}, #{userNickname}, #{userMail}, 
+        #{userPhone}, #{userAddr}, NOW())
     </insert>
 
     <select id="getUserInfoByPhone" parameterType="String" resultType="UserVO" >
@@ -53,14 +53,28 @@
 
 
     <insert id="insertSocialData" parameterType="SocialVO">
-        insert into pjsocial (socialIdx, socialId, socialName, socialEmail, socialPhone)
-        values (#{socialIdx}, #{socialId}, #{socialName}, #{socialEmail}, #{socialPhone})
+        insert into pjsocial (socialIdx, socialId, socialName, socialEmail, socialPhone, socialReg)
+        values (#{socialIdx}, #{socialId}, #{socialName}, #{socialEmail}, #{socialPhone}, NOW())
     </insert>
 
     <select id="getSocialData" parameterType="String" resultType="SocialVO" >
         select * from pjsocial where socialIdx = #{socialIdx}
     </select>
 
-    
+    <update id="updateUserNaverId" parameterType="String">
+        update pjuser set n_userId = #{n_userId}, userUpdReg = NOW() 
+        where userPhone = #{userPhone}
+    </update>
+
+    <update id="updateUserKakaoId" parameterType="String">
+        update pjuser set k_userId = #{k_userId}, userUpdReg = NOW() 
+        where userPhone = #{userPhone}
+    </update>
+
+
+    <update id="updateConnRegByIdx" parameterType="String">
+        update pjuser set userConnReg = NOW() 
+        where userIdx = #{userIdx}
+    </update>
     
 </mapper>
