@@ -112,7 +112,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 response.sendRedirect(redirectUrl);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("OAuth2AuthenticationSuccessHandler error : " + e.getMessage());
             response.sendRedirect("/login?error");
         }
     }

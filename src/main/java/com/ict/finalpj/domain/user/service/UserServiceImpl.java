@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.domain.user.mapper.UserMapper;
-
 import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
