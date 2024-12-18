@@ -1,5 +1,6 @@
 package com.ict.finalpj.domain.user.service;
 
+
 import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -21,6 +22,7 @@ public interface UserService {
 
     public int updateUserNaverId(UserVO uvo);
     public int updateUserKakaoId(UserVO uvo);
+
 
     public int updateConnRegByIdx(String userIdx);
 }

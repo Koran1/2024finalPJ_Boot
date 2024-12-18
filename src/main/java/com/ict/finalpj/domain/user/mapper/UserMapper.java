@@ -26,4 +26,5 @@ public interface UserMapper {
     int updateUserKakaoId(UserVO uvo);
 
     int updateConnRegByIdx(String userIdx);
+
 }

@@ -1,6 +1,7 @@
 spring :
     application :
-        name: edu3
+        name: finalpj
+
     mail:
         host: smtp.gmail.com
         default-encoding: utf-8
@@ -18,6 +19,7 @@ spring :
                     timeout: 5000
                     writetimeout: 5000
         auth-code-expiration-millis: 1800000
+
 
     # DB 설정
     datasource:

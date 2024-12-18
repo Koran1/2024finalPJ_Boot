@@ -76,5 +76,5 @@
         update pjuser set userConnReg = NOW() 
         where userIdx = #{userIdx}
     </update>
-    
+
 </mapper>
