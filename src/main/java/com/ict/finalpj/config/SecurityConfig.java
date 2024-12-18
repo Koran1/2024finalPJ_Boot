@@ -53,10 +53,6 @@ public class SecurityConfig {
                     .requestMatchers("/upload/**").permitAll()
                     .requestMatchers("/oauth2/**").permitAll()
                     .requestMatchers("/api/**").permitAll()
-                    
-                    // .requestMatchers("/api/user/join", "/api/user/login",
-                    //         "/api/camp/**", "/api/administrator/**", "/api/guestbook/download/**")
-                    // .permitAll()
 
                     // 나머지는 인증 필요-
                     .anyRequest().authenticated())
@@ -107,12 +103,12 @@ public class SecurityConfig {
 
     @Bean
     OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(){
-    return new OAuth2AuthenticationSuccessHandler(jwtUtil, userDetailService);
+        return new OAuth2AuthenticationSuccessHandler(jwtUtil, userDetailService);
     }
 
     @Bean
     OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService(){
-    return new CustomerOAuth2UserService();
+        return new CustomerOAuth2UserService();
     }
 }
 

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.finalpj.domain.deal.mapper.DealMapper">
+  <select id="getDealMainList" resultType="DealVO">
+    select * from pjdeal where dealIdx = #{dealIdx} order by dealIdx asc
+  </select>
+
+  <select id="getDealDetail" parameterType="String" resultType="DealVO">
+    select * from pjdeal where dealIdx = #{dealIdx}
+  </select>
+
+  <update id="getDealUpdate" parameterType="DealVO">
+    update pjdeal set dealTitle = #{dealTitle}, dealCategory = #{dealCategory}, dealStatus = #{dealStatus}, dealDescription = #{dealDescription}, dealPrice = #{dealPrice}, dealPackage = #{dealPackage}, dealDirect = #{dealDirect}, dealCount = #{dealCount} 
+    where dealIdx = #{dealIdx}
+  </update>
+
+  <insert id="getDealWrite" parameterType="DealVO">
+    insert into pjdeal (dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealCount, dealRegDate)
+    values (#{dealTitle}, #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, #{dealPackage}, #{dealDirect}, #{dealCount}, now())
+  </insert>
+
+</mapper>
