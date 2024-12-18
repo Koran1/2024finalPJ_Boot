@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.domain.user.mapper.UserMapper;
-
 import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -90,10 +89,4 @@ public class UserServiceImpl implements UserService {
         return userMapper.updateConnRegByIdx(userIdx);
     }
 
-
-
-  @Override
-  public UserVO getUserInfo(String name) {
-    return userMapper.getUserInfo(name);
-  }
 }

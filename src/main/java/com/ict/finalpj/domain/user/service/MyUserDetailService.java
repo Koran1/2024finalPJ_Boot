@@ -36,6 +36,7 @@ public class MyUserDetailService implements UserDetailsService{
 
     // DB에서 정보 있는지 확인
     public String loadUserByOAuth2User(OAuth2User oAuth2User, String provider){
+        @SuppressWarnings("null")
         String id = oAuth2User.getAttribute("id").toString();
         String name = oAuth2User.getAttribute("name");
         String email = oAuth2User.getAttribute("email");
@@ -78,6 +79,7 @@ public class MyUserDetailService implements UserDetailsService{
 
     // DB에서 정보 있는지 확인
     public boolean chkJoinedByPhone(OAuth2User oAuth2User){
+        @SuppressWarnings("null")
         String phone = oAuth2User.getAttribute("phone").toString();
 
         UserVO uvo_true = userMapper.getUserInfoByPhone(phone);
@@ -95,6 +97,7 @@ public class MyUserDetailService implements UserDetailsService{
     
     // DB에서 정보 있는지 확인
     public UserVO getUserInfoByOAuth2User(OAuth2User oAuth2User, String provider){
+        @SuppressWarnings("null")
         String id = oAuth2User.getAttribute("id").toString();
         UserVO uvo_true = new UserVO();
 
