@@ -1,27 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
-<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 는 반드시 mapper 의 위치로 설정해야 된다 -->
 <mapper namespace="com.ict.finalpj.domain.user.mapper.UserMapper">
-	<insert id="insertUser" parameterType="UserVO">
-		insert into pjuser (userId, usrPw, usrName, usrReg)
-		values(#{userId},#{usrPw},#{usrName},now())
-	</insert>
-	
-	<select id="getUserById" parameterType="String" resultType="UserVO">
-		select * from pjuser where userId = #{userId}
-	</select>
 
-	<select id="findUserByProvider" parameterType="UserVO" resultType="UserVO">
-		select * from pjuser 
-		where  
-		(
-    (sns_provider = 'kakao' and k_userId = #{k_userId})
-		OR
-		(sns_provider = 'naver' and n_userId = #{n_userId})
-		)
-	</select>
+    <select id="getUserInfoById" parameterType="String" resultType="UserVO" >
+        select * from pjuser where userId = #{userId}
+    </select>
+    
+    <insert id="insertUserInfo" parameterType="UserVO" >
+        insert into pjuser (userId, n_userId, k_userId, userPw, userName, userNickname, userMail, 
+        userPhone, userAddr, userReg)
+        values (#{userId}, #{n_userId}, #{k_userId}, #{userPw}, #{userName}, #{userNickname}, #{userMail}, 
+        #{userPhone}, #{userAddr}, NOW())
+    </insert>
+
+    <select id="getUserInfoByPhone" parameterType="String" resultType="UserVO" >
+        select * from pjuser where userPhone = #{userPhone}
+    </select>
+
+    <select id="getUserInfoByNickname" parameterType="String" resultType="UserVO" >
+        select * from pjuser where userNickname = #{userNickname}
+    </select>
+
+    <select id="getUserInfoByMail" parameterType="String" resultType="UserVO" >
+        select * from pjuser where userMail = #{userMail}
+    </select>
+
+    <select id="findUserId" parameterType="UserVO" resultType="UserVO" >
+        select * from pjuser where userId = #{userId} and userMail = #{userMail}
+    </select>
+
+    <select id="findUserPw" parameterType="UserVO" resultType="UserVO" >
+        select * from pjuser where userName = #{userName} and userId = #{userId}
+         and userMail = #{userMail} and userPhone = #{userPhone}
+    </select>
+
+    <update id="changeUserPw" parameterType="UserVO">
+        update pjuser set userPw = #{userPw} 
+        where userIdx = #{userIdx}
+    </update>
+
+    <select id="getUserInfoByKakaoId" parameterType="String" resultType="UserVO" >
+        select * from pjuser where k_userId = #{k_userId}
+    </select>
+
+    <select id="getUserInfoByNaverId" parameterType="String" resultType="UserVO" >
+        select * from pjuser where n_userId = #{n_userId}
+    </select>
+
+
+
+    <insert id="insertSocialData" parameterType="SocialVO">
+        insert into pjsocial (socialIdx, socialId, socialName, socialEmail, socialPhone, socialReg)
+        values (#{socialIdx}, #{socialId}, #{socialName}, #{socialEmail}, #{socialPhone}, NOW())
+    </insert>
+
+    <select id="getSocialData" parameterType="String" resultType="SocialVO" >
+        select * from pjsocial where socialIdx = #{socialIdx}
+    </select>
+
+    <update id="updateUserNaverId" parameterType="String">
+        update pjuser set n_userId = #{n_userId}, userUpdReg = NOW() 
+        where userPhone = #{userPhone}
+    </update>
+
+    <update id="updateUserKakaoId" parameterType="String">
+        update pjuser set k_userId = #{k_userId}, userUpdReg = NOW() 
+        where userPhone = #{userPhone}
+    </update>
+
+
+    <update id="updateConnRegByIdx" parameterType="String">
+        update pjuser set userConnReg = NOW() 
+        where userIdx = #{userIdx}
+    </update>
 
 </mapper>

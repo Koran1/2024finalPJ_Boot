@@ -103,12 +103,12 @@ public class SecurityConfig {
 
     @Bean
     OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(){
-    return new OAuth2AuthenticationSuccessHandler(jwtUtil, userDetailService);
+        return new OAuth2AuthenticationSuccessHandler(jwtUtil, userDetailService);
     }
 
     @Bean
     OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService(){
-    return new CustomerOAuth2UserService();
+        return new CustomerOAuth2UserService();
     }
 }
 

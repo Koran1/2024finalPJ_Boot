@@ -2,6 +2,25 @@ spring :
     application :
         name: finalpj
 
+    mail:
+        host: smtp.gmail.com
+        default-encoding: utf-8
+        port: 587
+        username: koraniphoto@gmail.com
+        password: onjf xhcu xykj upga
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enabled: true
+                        required: true
+                    connectiontimeout: 5000
+                    timeout: 5000
+                    writetimeout: 5000
+        auth-code-expiration-millis: 1800000
+
+
     # DB 설정
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -56,6 +75,9 @@ server:
     port: 8080
     servlet:
         context-path: /
+        session:
+            timeout: 1800
+        
 
 # mapper 연결
 mybatis:
@@ -68,3 +90,4 @@ mybatis:
 jwt:
     secret: "abcdABCD1234qwerQWER5678zxcvZXCV"
     expiration: 3600000 # 1시간 (3600 s * 1000ms)
+
