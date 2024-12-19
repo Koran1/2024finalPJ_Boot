@@ -1,5 +1,7 @@
 package com.ict.finalpj.domain.deal.vo;
 
+import com.ict.finalpj.common.vo.FileVo;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,5 +33,6 @@ public class DealVO {
   deal01, 
   deal02, 
   deal03;
+  private FileVo fileVO;
 }
 

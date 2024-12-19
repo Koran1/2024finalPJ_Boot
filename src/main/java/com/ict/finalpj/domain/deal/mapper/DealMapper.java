@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 @Mapper
@@ -12,4 +13,6 @@ public interface DealMapper {
   DealVO getDealDetail(String dealIdx);
   int getDealUpdate(DealVO dealVO);
   int getDealWrite(DealVO dealVO);
+  void insertFile(FileVo fileVO);
+  void updateFile(FileVo fileVO);
 }

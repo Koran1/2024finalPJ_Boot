@@ -13,9 +13,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FileVo {
   private String fileIdx, fileTableType, fileTableIdx, fileName, fileUpdated, fileCreated, fileOrder, fileActive;
-
-  public MultipartFile getMultipartFile() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getMultipartFile'");
-  }
+  private MultipartFile multipartFile; 
 }

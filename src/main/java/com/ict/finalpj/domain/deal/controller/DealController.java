@@ -1,22 +1,12 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,8 +17,11 @@ import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.domain.deal.service.DealService;
 import com.ict.finalpj.domain.deal.vo.DealVO;
+
+import lombok.extern.slf4j.Slf4j;
 // import com.ict.finalpj.domain.user.vo.UserVO;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/deal")
 public class DealController {
@@ -112,9 +105,10 @@ public DataVO getDealMainList() {
 @PostMapping("/write")
 public DataVO getDealWrite(
   @ModelAttribute("data") DealVO dealVO, 
-  @RequestParam(value="file", required=false) MultipartFile multipartFile) {
+  @RequestParam(value="file", required=false) MultipartFile[] files) {
   DataVO dataVO = new DataVO();
   try {
+    log.info("dealVO : " + dealVO);
     if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || 
         dealVO.getDealStatus() == null || dealVO.getDealDescription() == null ||
         dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || 
@@ -124,26 +118,39 @@ public DataVO getDealWrite(
       return dataVO;
     }
 
-    dealVO.setDealSellerUserIdx("임시사용자IDX");
-    dealVO.setDealSellerNick("임시닉네임");
+    if (files != null && files.length > 0) {
+      for (int i = 0; i < files.length; i++) {
+        MultipartFile file = files[i];
+        FileVo fileVo = new FileVo();
+        
+        // 파일명 생성
+        UUID uuid = UUID.randomUUID();
+        String fileName = uuid.toString() + "_" + file.getOriginalFilename();
+        
+        // FileVo 설정
+        fileVo.setFileTableType("2");  // 테이블 타입 설정
+        fileVo.setFileTableIdx(dealVO.getDealIdx());  // 테이블 인덱스 설정
+        fileVo.setFileName(fileName);
+        fileVo.setFileOrder(String.valueOf(i));  // 파일 순서 설정
+        fileVo.setFileActive("1");  // 활성화 상태
+        
+        // 파일 업로드 경로
+        String path = "D:\\upload\\deal";
+        File upLoadDir = new File(path);
+        
+        if (!upLoadDir.exists()) {
+          upLoadDir.mkdirs();
+        }
 
-    // DealVO에 파일 정보 추가
-    FileVo fileVo = new FileVo();
-    if (multipartFile != null && !multipartFile.isEmpty()) {
-      String fileName = multipartFile.getOriginalFilename();
-      UUID uuid = UUID.randomUUID();
-      String file = uuid.toString() + "_" + fileName;
-      fileVo.setFileName(file);
-      String path = "D:\\upload\\deal";
-      File upLoadDir = new File(path);
-      if (!upLoadDir.exists()) {
-        upLoadDir.mkdirs();
+        // 파일 업로드
+        files[i].transferTo(new File(upLoadDir, fileName));
+
+        // DealVO에 파일 정보를 설정
+        dealVO.setFileVO(fileVo);
       }
-      multipartFile.transferTo(new File(upLoadDir, file));
-      fileVo.setFileName(file);
     }
-
-     // DealVO를 데이터베이스에 저장
+    
+    // DealVO와 파일 정보를 함께 저장
     int result = dealService.getDealWrite(dealVO);
     if (result == 0) {
       dataVO.setSuccess(false);
@@ -153,27 +160,11 @@ public DataVO getDealWrite(
     dataVO.setSuccess(true);
     dataVO.setMessage("상품등록 완료");
   } catch (Exception e) {
+    log.error("상품등록 중 오류", e);
     dataVO.setSuccess(false);
     dataVO.setMessage("상품등록 중 오류 발생");
   }
   return dataVO;
-}
-
-@GetMapping("/download/{filename}")
-public ResponseEntity<Resource> getDealDownload(@PathVariable("filename") String filename) {
-  try {
-    Path filePath = Paths.get("D:/upload/deal/").resolve(filename).normalize();
-    Resource resource = new UrlResource(filePath.toUri());
-    if (!resource.exists() || !resource.isReadable()) {
-      throw new FileNotFoundException("File not found: " + filename);
-    } 
-    return ResponseEntity.ok()
-      .contentType(MediaType.APPLICATION_OCTET_STREAM)
-      .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-      .body(resource);
-  } catch (Exception e) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-  }
 }
 
 // @GetMapping("/management")
