@@ -15,4 +15,5 @@ public interface DealMapper {
   int getDealWrite(DealVO dealVO);
   void insertFile(FileVo fileVO);
   void updateFile(FileVo fileVO);
+  void insertFileInfo(FileVo fileVo);
 }

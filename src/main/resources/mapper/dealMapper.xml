@@ -23,9 +23,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     values (#{dealTitle}, #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, #{dealPackage}, #{dealDirect}, #{dealCount}, now())
   </insert>
 
-  <insert id="insertFile" parameterType="FileVo">
-    insert into pjFile (fileTableType, fileTableIdx, fileName, fileOrder, fileActive)
-    values (#{fileTableType}, #{fileTableIdx}, #{fileName}, #{fileOrder}, #{fileActive})
-  </insert>
+  <insert id="insertFileInfo" parameterType="com.ict.finalpj.common.vo.FileVo">
+    INSERT INTO pjfile (
+        fileTableType,
+        fileTableIdx,
+        fileName,
+        fileOrder,
+        fileCreated
+    ) VALUES (
+        2,
+        #{fileTableIdx},
+        #{fileName},
+        #{fileOrder},
+        now()
+    )
+</insert> 
 
 </mapper>

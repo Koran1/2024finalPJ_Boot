@@ -108,7 +108,8 @@ public DataVO getDealWrite(
   @RequestParam(value="file", required=false) MultipartFile[] files) {
   DataVO dataVO = new DataVO();
   try {
-    log.info("dealVO : " + dealVO);
+    log.info("상품 등록 시작");
+    // 모든 항목을 입력해주세요.
     if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || 
         dealVO.getDealStatus() == null || dealVO.getDealDescription() == null ||
         dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || 
@@ -118,45 +119,56 @@ public DataVO getDealWrite(
       return dataVO;
     }
 
-    if (files != null && files.length > 0) {
-      for (int i = 0; i < files.length; i++) {
-        MultipartFile file = files[i];
-        FileVo fileVo = new FileVo();
-        
-        // 파일명 생성
-        UUID uuid = UUID.randomUUID();
-        String fileName = uuid.toString() + "_" + file.getOriginalFilename();
-        
-        // FileVo 설정
-        fileVo.setFileTableType("2");  // 테이블 타입 설정
-        fileVo.setFileTableIdx(dealVO.getDealIdx());  // 테이블 인덱스 설정
-        fileVo.setFileName(fileName);
-        fileVo.setFileOrder(String.valueOf(i));  // 파일 순서 설정
-        fileVo.setFileActive("1");  // 활성화 상태
-        
-        // 파일 업로드 경로
-        String path = "D:\\upload\\deal";
-        File upLoadDir = new File(path);
-        
-        if (!upLoadDir.exists()) {
-          upLoadDir.mkdirs();
-        }
-
-        // 파일 업로드
-        files[i].transferTo(new File(upLoadDir, fileName));
-
-        // DealVO에 파일 정보를 설정
-        dealVO.setFileVO(fileVo);
-      }
-    }
-    
-    // DealVO와 파일 정보를 함께 저장
+    // 상품 정보 먼저 저장
     int result = dealService.getDealWrite(dealVO);
     if (result == 0) {
       dataVO.setSuccess(false);
       dataVO.setMessage("상품등록 실패");
       return dataVO;
     }
+
+    // 파일 업로드 및 DB 저장 처리
+    if (files != null && files.length > 0) {
+      log.info("첨부된 파일 개수: " + files.length);
+      
+      for (int i = 0; i < files.length; i++) {
+        MultipartFile file = files[i];
+        if (!file.isEmpty()) {
+          FileVo fileVo = new FileVo();
+          
+          // 파일명 생성
+          UUID uuid = UUID.randomUUID();
+          String fileName = uuid.toString() + "_" + file.getOriginalFilename();
+          log.info("생성된 파일명: " + fileName);
+          
+          // FileVo 설정
+          fileVo.setFileTableType("2");
+          fileVo.setFileTableIdx(dealVO.getDealIdx());
+          fileVo.setFileName(fileName);
+          fileVo.setFileOrder(String.valueOf(i));
+          
+          // 파일 업로드 경로
+          String path = "D:\\upload\\deal";
+          // 업로드할 디렉토리 객체 생성
+          File upLoadDir = new File(path);
+          
+          if (!upLoadDir.exists()) {
+            upLoadDir.mkdirs();
+          }
+
+          // 파일 업로드
+          file.transferTo(new File(upLoadDir, fileName));
+          log.info("파일 업로드 완료: " + fileName);
+          
+          // DB에 파일 정보 저장
+          dealService.insertFileInfo(fileVo);
+          log.info("파일 정보 DB 저장 완료 - 순서: " + i);
+        }
+      }
+    } else {
+      log.info("첨부된 파일 없음");
+    }
+    
     dataVO.setSuccess(true);
     dataVO.setMessage("상품등록 완료");
   } catch (Exception e) {
@@ -167,33 +179,4 @@ public DataVO getDealWrite(
   return dataVO;
 }
 
-// @GetMapping("/management")
-// public List<DealVO> getDealManagementList() {
-//   DataVO dataVO = new DataVO();
-//   try {
-//     List<DealVO> list = dealService.getDealManagementList();
-//     dataVO.setSuccess(true);
-//     dataVO.setMessage("캠핑마켓 메인페이지 조회 완료");
-//     dataVO.setData(list);
-//   } catch (Exception e) {
-//     dataVO.setSuccess(false);
-//     dataVO.setMessage("캠핑마켓 메인페이지 조회 실패");
-//   }
-//   return dataVO;
-// }
-
-// @PostMapping("/note")
-// public DataVO getDealNoteWrite(@PathVariable("dealIdx") String dealIdx, @RequestBody DealVO dealVO, Authentication authentication) {
-//   return dealService.getDealNoteWrite(dealIdx, dealVO, authentication);
-// }
-
-// @PostMapping("/report")
-// public DataVO getDealReportWrite(@PathVariable("dealIdx") String dealIdx, @RequestBody DealVO dealVO, Authentication authentication) {
-//   return dealService.getDealReportWrite(dealIdx, dealVO, authentication);
-// }
-
-// @PostMapping("/satis")
-// public DataVO getDealSatisWrite(@PathVariable("dealIdx") String dealIdx, @RequestBody DealVO dealVO, Authentication authentication) {
-//   return dealService.getDealSatisWrite(dealIdx, dealVO, authentication);
-// }
 }
