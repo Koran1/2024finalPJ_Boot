@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
@@ -14,6 +15,6 @@ public interface DealService {
   DealVO getDealDetail(String dealIdx);
   int getDealUpdate(DealVO dealVO);
   @Transactional
-  int getDealWrite(DealVO dealVO);
+  DataVO getDealWrite(DealVO dealVO);
   void insertFileInfo(FileVo fileVo);
 }

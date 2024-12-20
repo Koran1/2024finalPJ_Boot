@@ -10,33 +10,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </select>
 
   <select id="getDealDetail" parameterType="String" resultType="DealVO">
-    select * from pjdeal where dealIdx = #{dealIdx}
+    SELECT 
+        d.*,
+        GROUP_CONCAT(f.fileName ORDER BY f.fileOrder) as fileNames,
+        GROUP_CONCAT(f.fileOrder ORDER BY f.fileOrder) as fileOrders
+    FROM pjdeal d
+    LEFT JOIN pjfile f ON d.dealIdx = f.fileTableIdx AND f.fileTableType = '2'
+    WHERE d.dealIdx = #{dealIdx}
+    GROUP BY d.dealIdx
+  </select>
+
+  <select id="getDealFileList" parameterType="String" resultType="FileVo">
+    select * from pjfile 
+    where fileTableIdx = #{dealIdx} 
+    and fileTableType = '2'
+    order by fileOrder
   </select>
 
   <update id="getDealUpdate" parameterType="DealVO">
-    update pjdeal set dealTitle = #{dealTitle}, dealCategory = #{dealCategory}, dealStatus = #{dealStatus}, dealDescription = #{dealDescription}, dealPrice = #{dealPrice}, dealPackage = #{dealPackage}, dealDirect = #{dealDirect}, dealCount = #{dealCount} 
+    update pjdeal 
+    set dealTitle = #{dealTitle}, 
+        dealCategory = #{dealCategory}, 
+        dealStatus = #{dealStatus}, 
+        dealDescription = #{dealDescription}, 
+        dealPrice = #{dealPrice}, 
+        dealPackage = #{dealPackage}, 
+        dealDirect = #{dealDirect},
+        dealDirectContent = #{dealDirectContent},
+        dealCount = #{dealCount} 
     where dealIdx = #{dealIdx}
   </update>
 
   <insert id="getDealWrite" parameterType="DealVO">
-    insert into pjdeal (dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealCount, dealRegDate)
-    values (#{dealTitle}, #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, #{dealPackage}, #{dealDirect}, #{dealCount}, now())
+    INSERT INTO pjdeal (dealIdx, dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealDirectContent, dealCount, dealRegDate)
+    VALUES (#{dealIdx},#{dealTitle},#{dealCategory},#{dealStatus},#{dealDescription},#{dealPrice},#{dealPackage},#{dealDirect},#{dealDirectContent},#{dealCount},NOW())
   </insert>
 
-  <insert id="insertFileInfo" parameterType="com.ict.finalpj.common.vo.FileVo">
-    INSERT INTO pjfile (
-        fileTableType,
-        fileTableIdx,
-        fileName,
-        fileOrder,
-        fileCreated
-    ) VALUES (
-        2,
-        #{fileTableIdx},
-        #{fileName},
-        #{fileOrder},
-        now()
-    )
-</insert> 
+  <insert id="insertFileInfo" parameterType="FileVo">
+    INSERT INTO pjfile (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
+    VALUES (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
+  </insert> 
 
 </mapper>

@@ -26,6 +26,7 @@ public class DealVO {
   dealPrice, 
   dealPackage, 
   dealDirect, 
+  dealDirectContent, 
   dealCount, 
   dealRegDate, 
   dealRegDateUpdate, 
