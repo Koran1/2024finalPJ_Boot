@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class FileVo {
-  private String fileIdx, fileTableType, fileTableIdx, fileName, fileUpdated, fileCreated, fileOrder, fileActive;
+  private String fileIdx, fileTableType, fileTableIdx, fileName, fileUpdated, fileCreated, fileActive;
+  private int fileOrder;
   private MultipartFile multipartFile; 
   private String dealIdx;
 }

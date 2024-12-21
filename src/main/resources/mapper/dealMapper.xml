@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
   <select id="getDealFileList" parameterType="String" resultType="FileVo">
     select * from pjfile
-    where fileTableIdx = #{dealIdx}
+    where fileTableIdx = #{dealIdx} order by fileOrder asc
   </select>
 
   <update id="getDealUpdate" parameterType="DealVO">
@@ -50,7 +50,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </insert> 
 
   <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
-    select * from pjfile where fileTableIdx = #{dealIdx}
+    select * from pjfile 
+    where fileTableIdx = #{dealIdx}
+    order by fileOrder asc
   </select>
 
 </mapper>
