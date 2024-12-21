@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
@@ -13,7 +14,7 @@ import com.ict.finalpj.domain.deal.vo.DealVO;
 public interface DealService {
   List<DealVO> getDealMainList();
   DealVO getDealDetail(String dealIdx);
-  int getDealUpdate(DealVO dealVO);
+  DataVO getDealUpdate(DealVO dealVO, MultipartFile[] files);
   @Transactional
   DataVO getDealWrite(DealVO dealVO);
   void insertFileInfo(FileVo fileVo);

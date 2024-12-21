@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -83,7 +85,7 @@ public class DealController {
         if (files != null && files.length > 0) {
             log.info("첨부된 파일 개수: " + files.length);
 
-            int maxFiles = 5; // 최대 파일 개수 설정
+            int maxFiles = 6; // 최대 파일 개수 설정
             int storedFiles = 0; // 저장된 파일 개수 추적
 
             for (int i = 0; i < files.length; i++) {
@@ -142,6 +144,43 @@ public class DealController {
         }
 
         return dataVO;
+    }
+
+@PutMapping("/update/{dealIdx}")
+    public DataVO getDealUpdate(@PathVariable("dealIdx") String dealIdx, @RequestBody DealVO dealVO) {
+        DataVO dataVO = new DataVO();
+        try {
+            dealVO.setDealIdx(dealIdx);
+            
+            // 파라미터 유효성 검사
+            if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || dealVO.getDealStatus() == null || dealVO.getDealDescription() == null || 
+              dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || dealVO.getDealDirect() == null || dealVO.getDealDirectContent() == null || 
+              dealVO.getDealCount() == null) { // 필수 필드가 누락되었는지 확인
+                dataVO.setSuccess(false); // 실패 여부 설정
+                dataVO.setMessage("필수 입력값이 누락되었습니다."); // 입력값 누락 메시지 설정
+                return dataVO; // 데이터 전달 객체 반환
+            }
+
+            DataVO result = dealService.getDealUpdate(dealVO, files);
+
+            if (result == null) { // 업데이트 실패 시
+                dataVO.setSuccess(false); // 실패 여부 설정
+                dataVO.setMessage("캠핑마켓 수정 실패"); // 수정 실패 메시지 설정
+                return dataVO; // 데이터 전달 객체 반환
+            }
+            dataVO.setSuccess(true); // 성공 여부 설정
+            dataVO.setMessage("캠핑마켓 수정 성공"); // 수정 성공 메시지 설정
+
+        } catch (NullPointerException | IllegalArgumentException e) { // NullPointerException 또는 IllegalArgumentException 발생 시
+            dataVO.setSuccess(false); // 실패 여부 설정
+            dataVO.setMessage("캠핑마켓 수정 중 잘못된 입력이 발생했습니다."); // 잘못된 입력 메시지 설정
+            log.error("캠핑마켓 수정 오류: ", e); // 오류 로그 기록
+        } catch (Exception e) { // 그 외의 예외 발생 시
+            dataVO.setSuccess(false); // 실패 여부 설정
+            dataVO.setMessage("캠핑마켓 수정 중 예상치 못한 오류가 발생했습니다."); // 예상치 못한 오류 메시지 설정
+            log.error("캠핑마켓 수정 오류: ", e); // 오류 로그 기록
+        }
+        return dataVO;  // 데이터 전달 객체 반환
     }
 
 }
