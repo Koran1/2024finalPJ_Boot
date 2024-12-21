@@ -1,10 +1,13 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,39 +55,20 @@ public DataVO getDealMainList() {
 }
 
 @GetMapping("/detail/{dealIdx}")
-public DataVO getDealDetail(@PathVariable("dealIdx") String dealIdx) {
-    DataVO dataVO = new DataVO();
+public ResponseEntity<Map<String, Object>> getDealDetail(@PathVariable String dealIdx) {
+    Map<String, Object> response = new HashMap<>();
     try {
-        log.info("상세 페이지 조회 요청 - dealIdx: {}", dealIdx);
-        
-        // dealIdx 유효성 검사
-        if (dealIdx == null || dealIdx.trim().isEmpty()) {
-            log.warn("유효하지 않은 dealIdx");
-            dataVO.setSuccess(false);
-            dataVO.setMessage("유효하지 않은 상품 ID입니다.");
-            return dataVO;
-        }
-        
-        DealVO dealVO = dealService.getDealDetail(dealIdx);
-        log.info("조회된 상품 정보: {}", dealVO);
-        
-        if (dealVO == null) {
-            log.warn("상품 정보 없음 - dealIdx: {}", dealIdx);
-            dataVO.setSuccess(false);
-            dataVO.setMessage("존재하지 않는 상품입니다.");
-            return dataVO;
-        }
-        
-        dataVO.setSuccess(true);
-        dataVO.setMessage("상품 정보 조회 성공");
-        dataVO.setData(dealVO);
-        
+        DealVO deal = dealService.getDealDetail(dealIdx);
+        List<FileVo> files = dealService.getPjFileByDealIdx(dealIdx);
+
+        response.put("success", true);
+        response.put("deal", deal);
+        response.put("files", files);
     } catch (Exception e) {
-        log.error("상품 상세 조회 중 오류 발생 - dealIdx: {}", dealIdx, e);
-        dataVO.setSuccess(false);
-        dataVO.setMessage("상품 정보를 불러오는 중 오류가 발생했습니다.");
+        response.put("success", false);
+        response.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
     }
-    return dataVO;
+    return ResponseEntity.ok(response);
 }
 
 // @PutMapping("/update/{dealIdx}")
@@ -114,7 +98,7 @@ public DataVO getDealDetail(@PathVariable("dealIdx") String dealIdx) {
 //     dataVO.setMessage("상품수정 완료");
 //   } catch (Exception e) {
 //     dataVO.setSuccess(false);
-//     dataVO.setMessage("상품수정 중 오�� 발생");
+//     dataVO.setMessage("상품수정 중 오류 발생");
 //   }
 //   return dataVO;
 // }
@@ -138,7 +122,8 @@ public DataVO getDealWrite(
   if (files != null && files.length > 0) {
     log.info("첨부된 파일 개수: " + files.length);
     
-    for (int i = 0; i < files.length; i++) {
+    int maxFiles = 5; // 최대 파일 개수 설정
+    for (int i = 0; i < files.length && i < maxFiles; i++) {
       MultipartFile file = files[i];
       if (!file.isEmpty()) {
         FileVo fileVo = new FileVo();
@@ -175,6 +160,12 @@ public DataVO getDealWrite(
         dealService.insertFileInfo(fileVo);
         log.info("파일 정보 DB 저장 완료 - 순서: " + i);
       }
+    }
+
+    // 만약 업로드된 파일이 최대 개수를 초과한다면 로그 또는 메시지 추가
+    if (files.length > maxFiles) {
+        log.warn("최대 " + maxFiles + "개의 파일만 업로드됩니다. 초과된 파일은 무시됩니다.");
+        // 필요 시 사용자에게 메시지를 반환하도록 구현
     }
   } else {
     log.info("첨부된 파일 없음");

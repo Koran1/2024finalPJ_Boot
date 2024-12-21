@@ -21,10 +21,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </select>
 
   <select id="getDealFileList" parameterType="String" resultType="FileVo">
-    select * from pjfile 
-    where fileTableIdx = #{dealIdx} 
-    and fileTableType = '2'
-    order by fileOrder
+    select * from pjfile
+    where fileTableIdx = #{dealIdx}
   </select>
 
   <update id="getDealUpdate" parameterType="DealVO">
@@ -50,5 +48,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     INSERT INTO pjfile (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
     VALUES (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
   </insert> 
+
+  <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
+    select * from pjfile where fileTableIdx = #{dealIdx}
+  </select>
 
 </mapper>

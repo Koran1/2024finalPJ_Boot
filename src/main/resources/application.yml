@@ -29,7 +29,7 @@ spring :
         password: 1111
     web:
         resources:
-            static-locations: file:D:/upload/
+            static-locations: file:D:/upload/deal/
             # static-locations: classpath:/static/
     security:
         oauth2:
@@ -69,7 +69,7 @@ spring :
                             
 # 파일 업로드 기능에서 파일이 저장될 물리적 경로를 명시
 file:
-    upload-dir: D:/upload
+    upload-dir: D:/upload/deal
     
 server:
     port: 8080

@@ -17,4 +17,5 @@ public interface DealService {
   @Transactional
   DataVO getDealWrite(DealVO dealVO);
   void insertFileInfo(FileVo fileVo);
+  List<FileVo> getPjFileByDealIdx(String dealIdx);
 }

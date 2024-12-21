@@ -63,4 +63,9 @@ public class DealServiceImpl implements DealService {
         log.info("Inserting file info: " + fileVo.toString()); // 로그 추가
         dealMapper.insertFileInfo(fileVo);
     }
+
+    @Override
+    public List<FileVo> getPjFileByDealIdx(String dealIdx) {
+        return dealMapper.getPjFileByDealIdx(dealIdx);
+    }
 }
