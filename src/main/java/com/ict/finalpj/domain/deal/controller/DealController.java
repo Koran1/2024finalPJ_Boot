@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,20 +49,35 @@ public class DealController {
     }
 
     @GetMapping("/detail/{dealIdx}")
-    public ResponseEntity<Map<String, Object>> getDealDetail(@PathVariable String dealIdx) {
-        Map<String, Object> response = new HashMap<>();
+    public DataVO getDealDetail(@PathVariable("dealIdx") String dealIdx) {
+        DataVO dataVO = new DataVO();
         try {
+            // 상품 정보 조회
             DealVO deal = dealService.getDealDetail(dealIdx);
-            List<FileVo> files = dealService.getPjFileByDealIdx(dealIdx);
+            if (deal == null) {
+                dataVO.setSuccess(false);
+                dataVO.setMessage("상품을 찾을 수 없습니다.");
+                return dataVO;
+            }
 
-            response.put("success", true);
-            response.put("deal", deal);
-            response.put("files", files);
+            // 파일 정보 조회
+            List<FileVo> files = dealService.getPjFileByDealIdx(dealIdx);
+            
+            // 응답 데이터 구성
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("deal", deal);
+            responseData.put("files", files);
+
+            dataVO.setSuccess(true);
+            dataVO.setData(responseData);
+            
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+            log.error("상품 상세 정보 조회 중 오류 발생: ", e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage("상품 정보를 불러오는 중 오류가 발생했습니다.");
         }
-        return ResponseEntity.ok(response);
+        
+        return dataVO;
     }
 
     @PostMapping("/write")
@@ -146,44 +160,75 @@ public class DealController {
         return dataVO;
     }
 
-@PutMapping("/update/{dealIdx}")
+    @PutMapping("/update/{dealIdx}")
     public DataVO getDealUpdate(
-        @PathVariable("dealIdx") String dealIdx, 
-        @RequestBody DealVO dealVO, 
+        @PathVariable("dealIdx") String dealIdx,
+        @ModelAttribute DealVO dealVO,
         @RequestParam(value = "file", required = false) MultipartFile[] files) {
+        
         DataVO dataVO = new DataVO();
         try {
             dealVO.setDealIdx(dealIdx);
             
-            // 파라미터 유효성 검사
-            if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || dealVO.getDealStatus() == null || dealVO.getDealDescription() == null || 
-                dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || dealVO.getDealDirect() == null || dealVO.getDealDirectContent() == null || 
-                dealVO.getDealCount() == null) { // 필수 필드가 누락되었는지 확인
-                dataVO.setSuccess(false); // 실패 여부 설정
-                dataVO.setMessage("필수 입력값이 누락되었습니다."); // 입력값 누락 메시지 설정
-                return dataVO; // 데이터 전달 객체 반환
+            // 필수 필드 유효성 검사
+            if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || 
+                dealVO.getDealStatus() == null || dealVO.getDealDescription() == null || 
+                dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || 
+                dealVO.getDealDirect() == null || dealVO.getDealCount() == null) {
+                dataVO.setSuccess(false);
+                dataVO.setMessage("필수 입력값이 누락되었습니다.");
+                return dataVO;
             }
 
-            DataVO result = dealService.getDealUpdate(dealVO, null);
- 
-            if (result == null) { // 업데이트 실패 시
-                dataVO.setSuccess(false); // 실패 여부 설정
-                dataVO.setMessage("캠핑마켓 수정 실패"); // 수정 실패 메시지 설정
-                return dataVO; // 데이터 전달 객체 반환
+            // 직거래 가능일 경우 직거래 내용 필수 체크
+            if ("직거래 가능".equals(dealVO.getDealDirect()) && 
+                (dealVO.getDealDirectContent() == null || dealVO.getDealDirectContent().trim().isEmpty())) {
+                dataVO.setSuccess(false);
+                dataVO.setMessage("직거래 가능 지역을 입력해주세요.");
+                return dataVO;
             }
-            dataVO.setSuccess(true); // 성공 여부 설정
-            dataVO.setMessage("캠핑마켓 수정 성공"); // 수정 성공 메시지 설정
 
-        } catch (NullPointerException | IllegalArgumentException e) { // NullPointerException 또는 IllegalArgumentException 발생 시
-            dataVO.setSuccess(false); // 실패 여부 설정
-            dataVO.setMessage("캠핑마켓 수정 중 잘못된 입력이 발생했습니다."); // 잘못된 입력 메시지 설정
-            log.error("캠핑마켓 수정 오류: ", e); // 오류 로그 기록
-        } catch (Exception e) { // 그 외의 예외 발생 시
-            dataVO.setSuccess(false); // 실패 여부 설정
-            dataVO.setMessage("캠핑마켓 수정 중 예상치 못한 오류가 발생했습니다."); // 예상치 못한 오류 메시지 설정
-            log.error("캠핑마켓 수정 오류: ", e); // 오류 로그 기록
+            // 파일 처리
+            if (files != null && files.length > 0) {
+                String path = "D:\\upload\\deal";
+                File uploadDir = new File(path);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                        FileVo fileVo = new FileVo();
+                        fileVo.setFileTableType("2");
+                        fileVo.setFileTableIdx(dealIdx);
+                        fileVo.setFileName(fileName);
+                        
+                        file.transferTo(new File(uploadDir, fileName));
+                        dealService.insertFileInfo(fileVo);
+                    }
+                }
+            }
+
+            // 상품 정보 업데이트
+            DataVO result = dealService.getDealUpdate(dealVO, files);
+            if (result == null) {
+                dataVO.setSuccess(false);
+                dataVO.setMessage("상품 수정에 실패했습니다.");
+                return dataVO;
+            }
+
+            dataVO.setSuccess(true);
+            dataVO.setMessage("상품이 성공적으로 수정되었습니다.");
+            dataVO.setData(dealVO);
+
+        } catch (Exception e) {
+            log.error("상품 수정 중 오류 발생: ", e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage("상품 수정 중 오류가 발생했습니다.");
         }
-        return dataVO;  // 데이터 전달 객체 반환
+        
+        return dataVO;
     }
 
 }
