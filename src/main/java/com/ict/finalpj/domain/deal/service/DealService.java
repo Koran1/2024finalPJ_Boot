@@ -18,6 +18,6 @@ public interface DealService {
   DataVO getDealWrite(DealVO dealVO);
   void insertFileInfo(FileVo fileVo);
   List<FileVo> getPjFileByDealIdx(String dealIdx);
-  DealVO getDealManagement(String userIdx);
+  List<DealVO> getDealManagement(String userIdx);
 
 }

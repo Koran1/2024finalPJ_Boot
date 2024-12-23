@@ -1,5 +1,7 @@
 package com.ict.finalpj.domain.deal.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,18 +33,18 @@ public class DealController2 {
           }
   
           // 거래 관리 정보를 가져옵니다.
-          DealVO dealVO = dealService.getDealManagement(userIdx);
+          List<DealVO> list = dealService.getDealManagement(userIdx);
           log.info(userIdx);
           log.info("deal VO 저장");
 
   
-          if (dealVO == null) {
+          if (list == null) {
               dataVO.setSuccess(false);
               dataVO.setMessage("거래 관리 정보를 찾을 수 없습니다.");
           } else {
               dataVO.setSuccess(true);
               dataVO.setMessage("거래 관리 정보를 성공적으로 가져왔습니다.");
-              dataVO.setData(dealVO);
+              dataVO.setData(list);
           }
       } catch (Exception e) {
           dataVO.setSuccess(false);
