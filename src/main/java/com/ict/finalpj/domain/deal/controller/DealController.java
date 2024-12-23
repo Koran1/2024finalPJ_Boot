@@ -164,7 +164,7 @@ public class DealController {
                 return dataVO; // 데이터 전달 객체 반환
             }
 
-            DataVO result = dealService.getDealUpdate(dealVO, files);
+            DataVO result = dealService.getDealUpdate(dealVO, null);
  
             if (result == null) { // 업데이트 실패 시
                 dataVO.setSuccess(false); // 실패 여부 설정

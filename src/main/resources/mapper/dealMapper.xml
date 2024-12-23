@@ -6,34 +6,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.finalpj.domain.deal.mapper.DealMapper">
   <select id="getDealMainList" resultType="DealVO">
-    select * from pjdeal order by dealIdx asc
+    select * from pjdeal 
+    order by dealIdx desc
   </select>
 
-
   <select id="getDealDetail" parameterType="String" resultType="DealVO">
-    SELECT 
-        d.*,
-        GROUP_CONCAT(f.fileName ORDER BY f.fileOrder) as fileNames,
-        GROUP_CONCAT(f.fileOrder ORDER BY f.fileOrder) as fileOrders
-    FROM pjdeal d
-    LEFT JOIN pjfile f ON d.dealIdx = f.fileTableIdx AND f.fileTableType = '2'
-    WHERE d.dealIdx = #{dealIdx}
-    GROUP BY d.dealIdx
+    SELECT * FROM pjdeal 
+    WHERE dealIdx = #{dealIdx}
   </select>
 
   <select id="getDealFileList" parameterType="String" resultType="FileVo">
-    select * from pjfile
+    select * from pjfile 
     where fileTableIdx = #{dealIdx} order by fileOrder asc
   </select>
 
 
   <insert id="getDealWrite" parameterType="DealVO">
-    INSERT INTO pjdeal (dealIdx, dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealDirectContent, dealCount, dealRegDate)
+    INSERT INTO pjdeal 
+    (dealIdx, dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealDirectContent, dealCount, dealRegDate)
     VALUES (#{dealIdx},#{dealTitle},#{dealCategory},#{dealStatus},#{dealDescription},#{dealPrice},#{dealPackage},#{dealDirect},#{dealDirectContent},#{dealCount},NOW())
   </insert>
 
   <insert id="insertFileInfo" parameterType="FileVo">
-    INSERT INTO pjfile (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
+    INSERT INTO pjfile 
+    (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
     VALUES (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
   </insert>
 
@@ -54,35 +50,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </update>
 
   <update id="updateDealCount" parameterType="FileVo">
-    update pjdeal set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
+    update pjdeal 
+    set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
   </update>
 
 
   <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
     select * from pjfile 
-    where fileTableIdx = #{dealIdx}
+    where fileTableIdx = #{dealIdx} 
     order by fileOrder asc
   </select>
 
   <update id="updateDeal" parameterType="DealVO">
-    UPDATE pjdeal
-    SET
-        dealTitle = #{dealTitle},
-        dealCategory = #{dealCategory},
-        dealStatus = #{dealStatus},
-        dealDescription = #{dealDescription},
-        dealPrice = #{dealPrice},
-        dealPackage = #{dealPackage},
-        dealDirect = #{dealDirect},
-        dealDirectContent = #{dealDirectContent},
-        dealCount = #{dealCount},
-        dealRegDateUpdate = NOW()
+    UPDATE pjdeal 
+    SET 
+        dealTitle = #{dealTitle}, 
+        dealCategory = #{dealCategory}, 
+        dealStatus = #{dealStatus}, 
+        dealDescription = #{dealDescription}, 
+        dealPrice = #{dealPrice}, 
+        dealPackage = #{dealPackage}, 
+        dealDirect = #{dealDirect}, 
+        dealDirectContent = #{dealDirectContent}, 
+        dealCount = #{dealCount}, 
+        dealRegDateUpdate = NOW() 
     WHERE dealIdx = #{dealIdx}
   </update>
 
 
 <select id="getDealManagement" parameterType="String" resultType="DealVO">
-    select * from pjdeal where dealSellerUserIdx = #{userIdx}
+    select * from pjdeal 
+    where dealSellerUserIdx = #{userIdx}
   </select>
 
 </mapper>
