@@ -1,11 +1,8 @@
 package com.ict.finalpj.domain.camp.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
@@ -31,7 +27,7 @@ public class CampController2 {
 
     // 캠핑장 상세보기 기능
     @GetMapping("/detail/{campIdx}")
-    public DataVO getCampDetail(@PathVariable String campIdx) {
+    public DataVO getCampDetail(@PathVariable("campIdx") String campIdx) {
         DataVO dataVO = new DataVO();
         try {
             // 캠핑장 상세 정보 조회
@@ -51,7 +47,7 @@ public class CampController2 {
 
     // 후기 가져오기 기능
     @GetMapping("/detail/log/{campIdx}")
-    public DataVO getLogDetail(@PathVariable String campIdx) {
+    public DataVO getLogDetail(@PathVariable("campIdx") String campIdx) {
         DataVO dataVO = new DataVO();
         try {
             List<CampLogVO> campLogDetail = campService2.getCampLog(campIdx);
@@ -70,10 +66,11 @@ public class CampController2 {
     // 찜하기 상태 조회 + 조회수 로직 처리 API
     @GetMapping("/like-status")
     public ResponseEntity<DataVO> getLikeStatus(
-            @RequestParam String userIdx,
-            @RequestParam String campIdx) {
+            @RequestParam("userIdx") String userIdx,
+            @RequestParam("campIdx") String campIdx) {
         boolean isLiked = campService2.isLiked(userIdx, campIdx);
         String message = isLiked ? "The user has already liked this camp." : "The user has not liked this camp yet.";
+        log.info(message);
         // 조회수 로직 처리
         campService2.updateViewCount(userIdx, campIdx);
         // DataVO로 응답
@@ -89,11 +86,13 @@ public class CampController2 {
     }
 
     // 좋아요 추가/삭제 API
-    @PostMapping("/like")
+    @RequestMapping("/like")
     public ResponseEntity<DataVO> toggleLike(
-            @RequestParam String userIdx,
-            @RequestParam String campIdx,
-            @RequestParam boolean isLiked) {
+            @RequestParam("userIdx") String userIdx,
+            @RequestParam("campIdx") String campIdx,
+            @RequestParam("isLiked") boolean isLiked) {
+        log.info("좋아요 추가/삭제 API 호출");
+
         if (isLiked) {
             // 이미 좋아요 상태라면 좋아요 취소
             campService2.unlikeCamp(userIdx, campIdx);
@@ -103,6 +102,8 @@ public class CampController2 {
         }
 
         String message = isLiked ? "Like removed successfully." : "Like added successfully.";
+        log.info(message);
+
         DataVO response = new DataVO(
                 true, // 성공 여부
                 null, // data는 불필요하므로 null

@@ -29,7 +29,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserInfoByPhone(userPhone);
     }
 
-
     @Override
     public UserVO getUserInfoByNickname(String userNickname) {
         return userMapper.getUserInfoByNickname(userNickname);
@@ -90,10 +89,9 @@ public class UserServiceImpl implements UserService {
         return userMapper.updateConnRegByIdx(userIdx);
     }
 
-
-
-  @Override
-  public UserVO getUserInfo(String name) {
-    return userMapper.getUserInfo(name);
-  }
+    // 오류나서 잠시 주석
+    // @Override
+    // public UserVO getUserInfo(String name) {
+    // return userMapper.getUserInfo(name);
+    // }
 }

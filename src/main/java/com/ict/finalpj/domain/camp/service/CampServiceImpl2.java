@@ -48,7 +48,7 @@ public class CampServiceImpl2 implements CampService2 {
     @Override
     public void updateViewCount(String userIdx, String campIdx) {
         // 현재 시간
-        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        // String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
         // 조회수 정보가 이미 존재하는지 확인
         ViewsVO viewTable = campMapper2.getViewInfo(userIdx, campIdx);
