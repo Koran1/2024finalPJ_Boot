@@ -1,6 +1,9 @@
 package com.ict.finalpj.domain.camp.controller;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.crypto.Data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.camp.service.CampService;
-import com.ict.finalpj.domain.camp.vo.CampVO;
+import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,11 +25,29 @@ public class CampController {
     @Autowired
     private CampService campService;
 
+    // @GetMapping("/list")
+    // public DataVO getCampingList() {
+    //     DataVO dataVO = new DataVO();
+    //     try {
+    //         List<CampVO> campingList = campService.getCampingList();
+    //         dataVO.setSuccess(true);
+    //         dataVO.setMessage("캠핑장 리스트 조회 성공");
+    //         dataVO.setData(campingList);
+    //         log.info("캠핑장 리스트 조회 성공");
+    //     } catch (Exception e) {
+    //         dataVO.setSuccess(false);
+    //         dataVO.setMessage("캠핑장 리스트 조회 실패");
+    //         log.info("캠핑장 리스트 조회 실패");
+    //     }
+    //     return dataVO;
+    // }
+    
     @GetMapping("/list")
-    public DataVO getCampingList() {
+    public DataVO getCampingList(CampSearchVO campSearchVO) {
+        log.info("Sort Option: {}", campSearchVO.getSortOption());
         DataVO dataVO = new DataVO();
         try {
-            List<CampVO> campingList = campService.getCampingList();
+            Map<String, Object> campingList = campService.getCampingList(campSearchVO);
             dataVO.setSuccess(true);
             dataVO.setMessage("캠핑장 리스트 조회 성공");
             dataVO.setData(campingList);
@@ -34,11 +55,11 @@ public class CampController {
         } catch (Exception e) {
             dataVO.setSuccess(false);
             dataVO.setMessage("캠핑장 리스트 조회 실패");
-            log.info("캠핑장 리스트 조회 실패");
+            log.info("캠핑장 리스트 조회 실패", e);
         }
         return dataVO;
     }
-    
+
     @GetMapping("/sido")
     public DataVO getDoNmList() {
         DataVO dataVO = new DataVO();

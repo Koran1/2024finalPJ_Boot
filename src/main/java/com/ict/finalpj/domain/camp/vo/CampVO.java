@@ -87,6 +87,9 @@ public class CampVO {
     createdtime, // 등록일
     modifiedtime, // 수정일
     campView, // 캠핑장 조회순
-    campActive // 활성화 여부
+    campActive, // 활성화 여부
+    totalViews, // 조회수
+    totalLogs, // 캠핑로그수
+    totalLikes // 찜수
     ;
 }
