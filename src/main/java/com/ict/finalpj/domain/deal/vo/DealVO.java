@@ -4,18 +4,21 @@ import java.util.List;
 
 import com.ict.finalpj.common.vo.FileVo;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class DealVO {
-  private String dealIdx, 
-  dealSellerUserIdx, 
+  @Setter(AccessLevel.NONE)
+  private String dealIdx;
+  private String dealSellerUserIdx, 
   dealSellerNick, 
   dealBuyerUserIdx, 
   dealBuyerNick, 

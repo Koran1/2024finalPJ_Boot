@@ -9,7 +9,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     select * from pjdeal order by dealIdx asc
   </select>
 
-
   <select id="getDealDetail" parameterType="String" resultType="DealVO">
     SELECT 
         d.*,
@@ -26,7 +25,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     where fileTableIdx = #{dealIdx} order by fileOrder asc
   </select>
 
-
   <insert id="getDealWrite" parameterType="DealVO">
     INSERT INTO pjdeal (dealIdx, dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealDirectContent, dealCount, dealRegDate)
     VALUES (#{dealIdx},#{dealTitle},#{dealCategory},#{dealStatus},#{dealDescription},#{dealPrice},#{dealPackage},#{dealDirect},#{dealDirectContent},#{dealCount},NOW())
@@ -37,34 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     VALUES (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
   </insert>
 
-
   <update id="getDealUpdate" parameterType="DealVO">
-    UPDATE pjdeal 
-    SET 
-        dealTitle = #{dealTitle}, 
-        dealCategory = #{dealCategory}, 
-        dealStatus = #{dealStatus}, 
-        dealDescription = #{dealDescription}, 
-        dealPrice = #{dealPrice}, 
-        dealPackage = #{dealPackage}, 
-        dealDirect = #{dealDirect},
-        dealDirectContent = #{dealDirectContent},
-        dealCount = #{dealCount} 
-    WHERE dealIdx = #{dealIdx}
-  </update>
-
-  <update id="updateDealCount" parameterType="FileVo">
-    update pjdeal set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
-  </update>
-
-
-  <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
-    select * from pjfile 
-    where fileTableIdx = #{dealIdx}
-    order by fileOrder asc
-  </select>
-
-  <update id="updateDeal" parameterType="DealVO">
     UPDATE pjdeal
     SET
         dealTitle = #{dealTitle},
@@ -78,6 +49,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         dealCount = #{dealCount},
         dealRegDateUpdate = NOW()
     WHERE dealIdx = #{dealIdx}
+  </update>
+
+  <update id="updateDealCount" parameterType="FileVo">
+    update pjdeal set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
   </update>
 
 </mapper>
