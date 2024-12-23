@@ -1,4 +1,4 @@
-package com.ict.finalpj.domain.deal.controller;
+package com.ict.finalpj.domain.deal.controller; 
 
 import java.io.File;
 import java.util.HashMap;
@@ -147,22 +147,25 @@ public class DealController {
     }
 
 @PutMapping("/update/{dealIdx}")
-    public DataVO getDealUpdate(@PathVariable("dealIdx") String dealIdx, @RequestBody DealVO dealVO) {
+    public DataVO getDealUpdate(
+        @PathVariable("dealIdx") String dealIdx, 
+        @RequestBody DealVO dealVO, 
+        @RequestParam(value = "file", required = false) MultipartFile[] files) {
         DataVO dataVO = new DataVO();
         try {
             dealVO.setDealIdx(dealIdx);
             
             // 파라미터 유효성 검사
             if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || dealVO.getDealStatus() == null || dealVO.getDealDescription() == null || 
-              dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || dealVO.getDealDirect() == null || dealVO.getDealDirectContent() == null || 
-              dealVO.getDealCount() == null) { // 필수 필드가 누락되었는지 확인
+                dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || dealVO.getDealDirect() == null || dealVO.getDealDirectContent() == null || 
+                dealVO.getDealCount() == null) { // 필수 필드가 누락되었는지 확인
                 dataVO.setSuccess(false); // 실패 여부 설정
                 dataVO.setMessage("필수 입력값이 누락되었습니다."); // 입력값 누락 메시지 설정
                 return dataVO; // 데이터 전달 객체 반환
             }
 
             DataVO result = dealService.getDealUpdate(dealVO, files);
-
+ 
             if (result == null) { // 업데이트 실패 시
                 dataVO.setSuccess(false); // 실패 여부 설정
                 dataVO.setMessage("캠핑마켓 수정 실패"); // 수정 실패 메시지 설정
