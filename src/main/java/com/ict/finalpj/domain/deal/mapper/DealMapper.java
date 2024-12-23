@@ -18,4 +18,7 @@ public interface DealMapper {
   void insertFileInfo(FileVo fileVo);
   List<FileVo> getPjFileByDealIdx(String dealIdx);
   int updateDeal(DealVO dealVO);
+  
+  DealVO getDealManagement(String userIdx);
+  
 }
