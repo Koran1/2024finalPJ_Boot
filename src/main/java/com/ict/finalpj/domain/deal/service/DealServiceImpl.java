@@ -141,4 +141,10 @@ public class DealServiceImpl implements DealService {
         }
         return dataVO;
     }
+
+    public DealVO getDealManagement(String userIdx) {
+        return dealMapper.getDealManagement(userIdx);
+    }
+
+
 }

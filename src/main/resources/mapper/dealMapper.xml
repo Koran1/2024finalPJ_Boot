@@ -80,4 +80,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE dealIdx = #{dealIdx}
   </update>
 
+
+<select id="getDealManagement" parameterType="String" resultType="DealVO">
+    select * from pjdeal where dealSellerUserIdx = #{userIdx}
+  </select>
+
 </mapper>
