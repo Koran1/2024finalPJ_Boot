@@ -37,6 +37,32 @@ public class ChatSocketHandler {
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
         server.addEventListener("send_message", ChatVO.class, onChatReceived());
+        server.addEventListener("first_message", ChatVO.class, onFirstChat());
+    }
+
+    private DataListener<ChatVO> onFirstChat() {
+        return (senderClient, data, ackSender) -> {
+            log.info("data" + data);
+            log.info("Chat Received : " + data.getChatMessage());
+
+            // Get the current date and time
+            LocalDateTime now = LocalDateTime.now();
+
+            // Define the format for the timestamp
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            // Format the current date and time
+            String formattedTimestamp = now.format(formatter);
+
+            data.setChatTime(formattedTimestamp);
+            
+            // DB에 채팅 내용 저장
+            socketService.saveChatMessage(data);
+
+
+            // 메세지 알림
+            server.getRoomOperations(data.getChatRoom()).sendEvent("receive_message", data);
+        };
     }
 
     private DataListener<ChatVO> onChatReceived() {
