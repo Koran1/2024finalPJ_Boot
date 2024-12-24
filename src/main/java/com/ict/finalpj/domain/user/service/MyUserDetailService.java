@@ -40,7 +40,7 @@ public class MyUserDetailService implements UserDetailsService{
         String id = oAuth2User.getAttribute("id").toString();
         String name = oAuth2User.getAttribute("name");
         String email = oAuth2User.getAttribute("email");
-        
+        log.info(id);
         UserVO uvo_true = new UserVO();
         SocialVO sovo = new SocialVO();
         String socialIdx = UUID.randomUUID().toString();

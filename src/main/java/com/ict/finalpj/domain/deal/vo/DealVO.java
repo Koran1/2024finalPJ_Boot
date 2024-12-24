@@ -1,5 +1,9 @@
 package com.ict.finalpj.domain.deal.vo;
 
+import java.util.List;
+
+import com.ict.finalpj.common.vo.FileVo;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DealVO {
-  private String dealIdx, 
-  dealSellerUserIdx, 
+  private String dealIdx;
+  private String dealSellerUserIdx, 
   dealSellerNick, 
   dealBuyerUserIdx, 
   dealBuyerNick, 
@@ -22,6 +26,7 @@ public class DealVO {
   dealPrice, 
   dealPackage, 
   dealDirect, 
+  dealDirectContent, 
   dealCount, 
   dealRegDate, 
   dealRegDateUpdate, 
@@ -31,5 +36,14 @@ public class DealVO {
   deal01, 
   deal02, 
   deal03;
-}
+  private FileVo fileVO;
+  private List<FileVo> fileList;
 
+  public void setFileList(List<FileVo> fileList) {
+    this.fileList = fileList;
+  }
+
+  public List<FileVo> getFileList() {
+    return fileList;
+  }
+}

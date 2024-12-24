@@ -23,13 +23,13 @@ spring :
 
     # DB 설정
     datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://localhost:3306/ictedu_db
         username: ictedu
         password: 1111
+        driver-class-name: com.mysql.cj.jdbc.Driver
     web:
         resources:
-            static-locations: file:D:/upload/
+            static-locations: file:D:/upload/deal/
             # static-locations: classpath:/static/
     security:
         oauth2:
@@ -69,7 +69,7 @@ spring :
                             
 # 파일 업로드 기능에서 파일이 저장될 물리적 경로를 명시
 file:
-    upload-dir: D:/upload
+    upload-dir: D:/upload/deal
     
 server:
     port: 8080
