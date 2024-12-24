@@ -10,7 +10,7 @@ public interface CampService2 {
     CampVO getCampDetail(String campIdx);
 
     // 캠핑로그 목록
-    List<CampLogVO> getCampLog(String campIdx);
+    List<CampLogVO> getCampLog(String campIdx, String logAlign);
 
     // 좋아요 상태 확인
     boolean isLiked(String userIdx, String campIdx);

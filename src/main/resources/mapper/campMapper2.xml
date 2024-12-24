@@ -13,6 +13,14 @@
     <!-- 캠핑로그 목록 -->
     <select id="getCampLog" resultType="CampLogVO">
         SELECT * FROM pjcamplog WHERE campIdx = #{campIdx}
+        <choose>
+            <when test="logAlign == 'rec'">
+                ORDER BY logRecommend DESC
+            </when>
+            <otherwise>
+                ORDER BY logUpdateDate DESC
+            </otherwise>
+        </choose>
     </select>
 
     <!-- 좋아요 상태 확인 -->

@@ -15,7 +15,7 @@ public interface CampMapper2 {
     CampVO getCampDetail(String campIdx);
 
     // 캠핑로그 목록
-    List<CampLogVO> getCampLog(String campIdx);
+    List<CampLogVO> getCampLog(@Param("campIdx") String campIdx, @Param("logAlign") String logAlign);
 
     // 좋아요 상태 조회
     boolean isLiked(@Param("userIdx") String userIdx, @Param("campIdx") String campIdx);

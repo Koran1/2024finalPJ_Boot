@@ -23,8 +23,8 @@ public class CampServiceImpl2 implements CampService2 {
     }
 
     @Override
-    public List<CampLogVO> getCampLog(String campIdx) {
-        return campMapper2.getCampLog(campIdx);
+    public List<CampLogVO> getCampLog(String campIdx, String logAlign) {
+        return campMapper2.getCampLog(campIdx, logAlign);
     }
 
     @Override

@@ -47,10 +47,11 @@ public class CampController2 {
 
     // 후기 가져오기 기능
     @GetMapping("/detail/log/{campIdx}")
-    public DataVO getLogDetail(@PathVariable("campIdx") String campIdx) {
+    public DataVO getLogDetail(@PathVariable("campIdx") String campIdx, @RequestParam("logAlign") String logAlign) {
         DataVO dataVO = new DataVO();
+        log.info("logAlign: " + logAlign);
         try {
-            List<CampLogVO> campLogDetail = campService2.getCampLog(campIdx);
+            List<CampLogVO> campLogDetail = campService2.getCampLog(campIdx, logAlign);
             dataVO.setSuccess(true);
             dataVO.setMessage("후기 목록 접근 성공");
             dataVO.setData(campLogDetail);
