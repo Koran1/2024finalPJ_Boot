@@ -147,5 +147,11 @@ public class DealServiceImpl implements DealService {
      return (List<DealVO>) dealMapper.getDealManagement(userIdx);
  }
 
+@Override
+public FileVo getFileVO(String dealIdx) {
+    return dealMapper.getFileVO(dealIdx);
+}
+
+
 
 }

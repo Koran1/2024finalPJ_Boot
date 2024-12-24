@@ -12,6 +12,8 @@ import com.ict.finalpj.domain.deal.vo.DealVO;
 @Service
 public interface DealService {
   List<DealVO> getDealMainList();
+  FileVo getFileVO(String dealIdx);
+
   DealVO getDealDetail(String dealIdx);
   DataVO getDealUpdate(DealVO dealVO, MultipartFile[] files);
   @Transactional

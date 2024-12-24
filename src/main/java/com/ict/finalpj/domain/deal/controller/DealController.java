@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.controller; 
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +38,23 @@ public class DealController {
     public DataVO getDealMainList() {
         DataVO dataVO = new DataVO();
         try {
+            List<FileVo> file_list = new ArrayList<>();
             List<DealVO> list = dealService.getDealMainList();
+
+            for(DealVO k : list){
+                FileVo fvo =  dealService.getFileVO(k.getDealIdx());
+                if(fvo == null) continue;
+                file_list.add(fvo);
+            }  
+
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("list", list);
+            resultMap.put("file_list", file_list);
+
+
             dataVO.setSuccess(true);
             dataVO.setMessage("캠핑마켓 메인페이지 조회 완료");
-            dataVO.setData(list);
+            dataVO.setData(resultMap);
         } catch (Exception e) {
             dataVO.setSuccess(false);
             dataVO.setMessage("캠핑마켓 메인페이지 조회 실패");

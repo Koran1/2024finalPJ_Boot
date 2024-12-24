@@ -6,8 +6,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.finalpj.domain.deal.mapper.DealMapper">
   <select id="getDealMainList" resultType="DealVO">
-    select * from pjdeal 
-    order by dealIdx desc
+    select * from pjdeal order by dealIdx desc
+  </select>
+
+ <select id="getFileVO" parameterType="String" resultType="FileVo">
+    SELECT * FROM pjfile 
+    WHERE fileTableIdx = #{dealIdx}
   </select>
 
   <select id="getDealDetail" parameterType="String" resultType="DealVO">
