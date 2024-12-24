@@ -20,5 +20,5 @@ public interface DealMapper {
   void insertFile(FileVo fileVO);
   void updateFile(FileVo fileVO);
   void insertFileInfo(FileVo fileVo);
-  DealVO getDealManagement(String userIdx);
+  List<DealVO> getDealManagement(String userIdx);
 }
