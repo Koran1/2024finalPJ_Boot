@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +38,8 @@ public class DealController {
     private DealService dealService;
 
     @GetMapping("/dealMain")
-    public ResponseEntity<Map<String, Object>> getDealMainList() {
-        Map<String, Object> response = new HashMap<>();
-        
+    public DataVO getDealMainList() {
+        DataVO dataVO = new DataVO();
         try {
             List<FileVo> file_list = new ArrayList<>();
             List<DealVO> list = dealService.getDealMainList();
@@ -59,32 +59,36 @@ public class DealController {
             dataVO.setMessage("캠핑마켓 메인페이지 조회 완료");
             dataVO.setData(resultMap);
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "캠핑마켓 메인페이지 조회 실패");
-            
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            dataVO.setSuccess(false);
+            dataVO.setMessage("캠핑마켓 메인페이지 조회 실패");
+            e.printStackTrace();
         }
+        return dataVO;
     }
 
     @GetMapping("/detail/{dealIdx}")
-    public ResponseEntity<Map<String, Object>> getDealDetail(@PathVariable("dealIdx") String dealIdx) {
-        Map<String, Object> response = new HashMap<>();
+    public DataVO getDealDetail(@PathVariable("dealIdx") String dealIdx) {
+        DataVO dataVO = new DataVO();
         
         try {
+            
             DealVO dealVO = dealService.getDealDetail(dealIdx);
             List<FileVo> files = dealService.getPjFileByDealIdx(dealIdx);
+            
+            dataVO.setSuccess(true);
+            dataVO.setMessage("상품 정보 조회 성공");
 
-            response.put("success", true);
+            Map<String, Object> response = new HashMap<>();
             response.put("deal", dealVO);
             response.put("files", files);
+            dataVO.setData(response);
             
-            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
-            
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            e.printStackTrace();
+            dataVO.setSuccess(false);
+            dataVO.setMessage("상품 정보 조회 실패");
         }
+        return dataVO;
     }
 
     @PostMapping("/write")
@@ -98,7 +102,7 @@ public class DealController {
         log.info("Generated dealIdx: " + dealIdx); // 로그 추가
 
         // Deal 저장을 서비스 레이어로 위임
-        DataVO dataVO = dealService.getDealWrite(dealVO, null); // files 파라미터 제거
+        DataVO dataVO = dealService.getDealWrite(dealVO, files); // files 파라미터 제거
 
         log.info("After service call, dealIdx: " + dealVO.getDealIdx()); // 로그 추가
 
