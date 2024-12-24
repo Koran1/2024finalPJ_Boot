@@ -7,6 +7,8 @@ import com.ict.finalpj.domain.user.vo.UserVO;
 
 @Mapper
 public interface UserMapper {
+    UserVO getUserInfoByIdx(String userIdx);
+    
     UserVO getUserInfoById(String userId);
     UserVO getUserInfoByPhone(String userPhone);
     UserVO getUserInfoByNickname(String userNickname);

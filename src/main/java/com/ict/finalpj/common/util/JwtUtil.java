@@ -16,7 +16,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtUtil {
     @Value("${jwt.secret}")
@@ -31,13 +33,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성2
-    public String generateToken(String id){
+    public String generateToken(String idx){
         Map<String, Object> claims = new HashMap<>();
-        return generateToken(id, claims);
+        return generateToken(idx, claims);
     }
 
     // 토큰 생성
-    public String generateToken(String username, Map<String, Object> claims){
+    public String generateToken(String userIdx, Map<String, Object> claims){
         // 내용을 추가하고 싶은 경우
         // 하지만 보안 때문에 중요한 정보를 넣으면 안됨 (보통 아이디, 이름까지만)
         
@@ -45,7 +47,7 @@ public class JwtUtil {
 
         return Jwts.builder()
         .setClaims(claims)
-        .setSubject(username)
+        .setSubject(userIdx)
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis()+expiration))
         .signWith(getKey(), SignatureAlgorithm.HS256)

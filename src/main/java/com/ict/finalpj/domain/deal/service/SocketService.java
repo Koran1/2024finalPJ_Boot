@@ -1,19 +1,29 @@
 package com.ict.finalpj.domain.deal.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.ict.finalpj.domain.deal.vo.MessageVO;
+import com.ict.finalpj.domain.deal.mapper.ChatMapper;
+import com.ict.finalpj.domain.deal.vo.ChatVO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class SocketService {
-    public void sendMessage(String room, String eventName, SocketIOClient senderClient, String message) {
-        for (
-                SocketIOClient client : senderClient.getNamespace().getRoomOperations(room).getClients()) {
-            if (!client.getSessionId().equals(senderClient.getSessionId())) {
-                client.sendEvent(eventName,
-                        new MessageVO(MessageVO.MessageType.SERVER, message));
-            }
-        }
+
+    @Autowired
+    private ChatMapper chatMapper;
+
+    public int saveChatMessage(ChatVO chatvo) {
+        return chatMapper.insertChatMessage(chatvo);
     }
+
+    public List<ChatVO> getChatList(String chatRoom) {
+        return chatMapper.getChatList(chatRoom);
+    }
+
 }
