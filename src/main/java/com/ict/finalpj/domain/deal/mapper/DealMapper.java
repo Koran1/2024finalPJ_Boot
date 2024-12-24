@@ -13,14 +13,11 @@ public interface DealMapper {
   FileVo getFileVO(String dealIdx);
 
   DealVO getDealDetail(String dealIdx);
-  int getDealUpdate(DealVO dealVO);
-  int getDealWrite(DealVO dealVO);
+  List<FileVo> getPjFileByDealIdx(String dealIdx);
+
+  int updateDeal(DealVO dealVO);
   void insertFile(FileVo fileVO);
   void updateFile(FileVo fileVO);
   void insertFileInfo(FileVo fileVo);
-  List<FileVo> getPjFileByDealIdx(String dealIdx);
-  int updateDeal(DealVO dealVO);
-  
   List<DealVO> getDealManagement(String userIdx);
-  
 }

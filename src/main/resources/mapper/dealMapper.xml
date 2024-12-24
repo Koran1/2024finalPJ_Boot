@@ -14,16 +14,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE fileTableIdx = #{dealIdx}
   </select>
 
-  <select id="getDealDetail" parameterType="String" resultType="DealVO">
-    SELECT * FROM pjdeal 
-    WHERE dealIdx = #{dealIdx}
+  <select id="getDealDetail" parameterType="String" resultType="com.ict.finalpj.domain.deal.vo.DealVO">
+    SELECT * FROM pjdeal WHERE dealIdx = #{dealIdx}
   </select>
 
   <select id="getDealFileList" parameterType="String" resultType="FileVo">
     select * from pjfile 
     where fileTableIdx = #{dealIdx} order by fileOrder asc
   </select>
-
 
   <insert id="getDealWrite" parameterType="DealVO">
     INSERT INTO pjdeal 
@@ -36,7 +34,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
     VALUES (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
   </insert>
-
 
   <update id="getDealUpdate" parameterType="DealVO">
     UPDATE pjdeal 
@@ -53,31 +50,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE dealIdx = #{dealIdx}
   </update>
 
-  <update id="updateDealCount" parameterType="FileVo">
-    update pjdeal 
-    set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
-  </update>
-
-
   <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
     select * from pjfile 
-    where fileTableIdx = #{dealIdx} 
+    where fileTableIdx = #{dealIdx}
     order by fileOrder asc
   </select>
 
   <update id="updateDeal" parameterType="DealVO">
-    UPDATE pjdeal 
-    SET 
-        dealTitle = #{dealTitle}, 
-        dealCategory = #{dealCategory}, 
-        dealStatus = #{dealStatus}, 
-        dealDescription = #{dealDescription}, 
-        dealPrice = #{dealPrice}, 
-        dealPackage = #{dealPackage}, 
-        dealDirect = #{dealDirect}, 
-        dealDirectContent = #{dealDirectContent}, 
-        dealCount = #{dealCount}, 
-        dealRegDateUpdate = NOW() 
+    UPDATE pjdeal
+    SET
+        dealTitle = #{dealTitle},
+        dealCategory = #{dealCategory},
+        dealStatus = #{dealStatus},
+        dealDescription = #{dealDescription},
+        dealPrice = #{dealPrice},
+        dealPackage = #{dealPackage},
+        dealDirect = #{dealDirect},
+        dealDirectContent = #{dealDirectContent},
+        dealCount = #{dealCount},
+        dealRegDateUpdate = NOW()
     WHERE dealIdx = #{dealIdx}
   </update>
 

@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DealVO {
-  private String dealIdx, 
-  dealSellerUserIdx, 
+  private String dealIdx;
+  private String dealSellerUserIdx, 
   dealSellerNick, 
   dealBuyerUserIdx, 
   dealBuyerNick, 
@@ -47,4 +47,3 @@ public class DealVO {
     return fileList;
   }
 }
-
