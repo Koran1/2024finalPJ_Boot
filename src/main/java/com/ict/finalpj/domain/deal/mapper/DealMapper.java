@@ -10,15 +10,17 @@ import com.ict.finalpj.domain.deal.vo.DealVO;
 @Mapper
 public interface DealMapper {
   List<DealVO> getDealMainList();
-  DealVO getDealDetail(String dealIdx);
-  int updateDeal(DealVO dealVO);
+  
   int getDealWrite(DealVO dealVO);
+  
+  DealVO getDealDetail(String dealIdx);
+  List<FileVo> getPjFileByDealIdx(String dealIdx);
+
+  int updateDeal(DealVO dealVO);
   void insertFile(FileVo fileVO);
   void updateFile(FileVo fileVO);
   void insertFileInfo(FileVo fileVo);
-  List<FileVo> getPjFileByDealIdx(String dealIdx);
-  int updateDeal(DealVO dealVO);
-  
   DealVO getDealManagement(String userIdx);
   
+
 }

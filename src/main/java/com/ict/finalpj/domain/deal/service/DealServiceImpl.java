@@ -29,7 +29,14 @@ public class DealServiceImpl implements DealService {
 
     @Override
     public DealVO getDealDetail(String dealIdx) {
-        return dealMapper.getDealDetail(dealIdx);
+        log.info("getDealDetail 호출됨: dealIdx={}", dealIdx); // 로그 추가
+        DealVO deal = dealMapper.getDealDetail(dealIdx);
+        if (deal == null) {
+            log.warn("해당 dealIdx에 대한 DealVO를 찾을 수 없습니다: {}", dealIdx);
+        } else {
+            log.info("DealVO 조회 성공: {}", deal);
+        }
+        return deal;
     }
 
     @Override
@@ -107,9 +114,8 @@ public class DealServiceImpl implements DealService {
         return dataVO;
     }
 
+    @Override
     public DealVO getDealManagement(String userIdx) {
         return dealMapper.getDealManagement(userIdx);
     }
-
-
 }

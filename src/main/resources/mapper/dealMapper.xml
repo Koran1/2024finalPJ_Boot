@@ -10,9 +10,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     order by dealIdx desc
   </select>
 
-  <select id="getDealDetail" parameterType="String" resultType="DealVO">
-    SELECT * FROM pjdeal 
-    WHERE dealIdx = #{dealIdx}
+  <select id="getDealDetail" parameterType="String" resultType="com.ict.finalpj.domain.deal.vo.DealVO">
+    SELECT * FROM pjdeal WHERE dealIdx = #{dealIdx}
   </select>
 
   <select id="getDealFileList" parameterType="String" resultType="FileVo">
@@ -47,11 +46,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE dealIdx = #{dealIdx}
   </update>
 
-  <update id="updateDealCount" parameterType="FileVo">
-    update pjdeal set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
-  </update>
-
-
   <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
     select * from pjfile 
     where fileTableIdx = #{dealIdx}
@@ -79,9 +73,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     select * from pjdeal 
     where dealSellerUserIdx = #{userIdx}
   </select>
-
-  <update id="updateDealCount" parameterType="FileVo">
-    update pjdeal set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
-  </update>
 
 </mapper>
