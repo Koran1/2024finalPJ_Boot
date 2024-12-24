@@ -114,8 +114,10 @@ public class DealServiceImpl implements DealService {
         return dataVO;
     }
 
-    @Override
-    public DealVO getDealManagement(String userIdx) {
-        return dealMapper.getDealManagement(userIdx);
-    }
+ @Override
+ public List<DealVO> getDealManagement(String userIdx) {    
+     return (List<DealVO>) dealMapper.getDealManagement(userIdx);
+ }
+
+
 }
