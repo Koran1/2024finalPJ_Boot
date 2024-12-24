@@ -99,6 +99,8 @@ public class DealServiceImpl implements DealService {
                     }
 
                     // 파일 업로드 및 DB 저장은 컨트롤러에서 처리
+                } else {
+                    log.info("첨부된 파일 없음");
                 }
                 dataVO.setSuccess(true);
                 dataVO.setMessage("상품 수정 완료");
@@ -114,10 +116,9 @@ public class DealServiceImpl implements DealService {
         return dataVO;
     }
 
- @Override
- public List<DealVO> getDealManagement(String userIdx) {    
-     return (List<DealVO>) dealMapper.getDealManagement(userIdx);
- }
-
+    @Override
+    public DealVO getDealManagement(String userIdx) {
+        return dealMapper.getDealManagement(userIdx); 
+    }
 
 }
