@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,53 +38,59 @@ public class DealController {
     private DealService dealService;
 
     @GetMapping("/dealMain")
-    public ResponseEntity<Map<String, Object>> getDealMainList() {
-        Map<String, Object> response = new HashMap<>();
-        
+    public ResponseEntity<DataVO> getDealMainList() {
+        Map<String, Object> resultMap = new HashMap<>();
+        DataVO dataVO = new DataVO();
         try {
+            List<DealVO> dealList = dealService.getDealMainList(); 
             List<FileVo> file_list = new ArrayList<>();
-            List<DealVO> list = dealService.getDealMainList();
+            
+            for(DealVO dealVO : dealList) {
+                List<FileVo> fvos = dealService.getPjFileByDealIdx(dealVO.getDealIdx());
+                if(fvos != null && !fvos.isEmpty()) {
+                    file_list.addAll(fvos);
+                }
+            }
 
-            for(DealVO k : list){
-                FileVo fvo =  dealService.getFileVO(k.getDealIdx());
-                if(fvo == null) continue;
-                file_list.add(fvo);
-            }  
-
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("list", list);
+            resultMap.put("list", dealList);
             resultMap.put("file_list", file_list);
-
-
+            
             dataVO.setSuccess(true);
             dataVO.setMessage("캠핑마켓 메인페이지 조회 완료");
             dataVO.setData(resultMap);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "캠핑마켓 메인페이지 조회 실패");
             
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.ok(dataVO);
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("캠핑마켓 메인페이지 조회 실패");
+            log.error("캠핑마켓 메인페이지 조회 중 오류 발생", e);
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dataVO);
         }
     }
 
     @GetMapping("/detail/{dealIdx}")
-    public ResponseEntity<Map<String, Object>> getDealDetail(@PathVariable("dealIdx") String dealIdx) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<DataVO> getDealDetail(@PathVariable("dealIdx") String dealIdx) {
+        DataVO dataVO = new DataVO();
         
         try {
             DealVO dealVO = dealService.getDealDetail(dealIdx);
             List<FileVo> files = dealService.getPjFileByDealIdx(dealIdx);
 
-            response.put("success", true);
-            response.put("deal", dealVO);
-            response.put("files", files);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("deal", dealVO);
+            resultMap.put("files", files);
             
-            return ResponseEntity.ok(response);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("상품 상세 정보 조회 완료");
+            dataVO.setData(resultMap);
+            
+            return ResponseEntity.ok(dataVO);
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+            dataVO.setSuccess(false);
+            dataVO.setMessage("상품 정보를 불러오는 중 오류가 발생했습니다.");
             
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dataVO);
         }
     }
 
@@ -170,7 +177,6 @@ public class DealController {
         @RequestBody DealVO dealVO,
         @RequestParam(value = "file", required = false) MultipartFile[] files) 
     {
-        // dealIdx를 DealVO에 설정
         dealVO.setDealIdx(dealIdx);
         
         try {
@@ -254,10 +260,13 @@ public class DealController {
             URI redirectUri = URI.create("/detail/" + dealIdx);
             return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();
 
-        } catch (NullPointerException | IllegalArgumentException e) { 
-            log.error("캠핑마켓 수정 오류: ", e);
+        } catch (IllegalArgumentException e) {
+            log.error("잘못된 입력값: ", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (Exception e) { 
+        } catch (NullPointerException e) {
+            log.error("필수 데이터 누락: ", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
             log.error("캠핑마켓 수정 오류: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

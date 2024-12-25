@@ -28,7 +28,7 @@ public class DealServiceImpl implements DealService {
     }
 
     @Override
-    public DealVO getDealDetail(String dealIdx) {
+    public DealVO getDealDetail(String dealIdx) { 
         log.info("getDealDetail 호출됨: dealIdx={}", dealIdx); // 로그 추가
         DealVO deal = dealMapper.getDealDetail(dealIdx);
         if (deal == null) {
