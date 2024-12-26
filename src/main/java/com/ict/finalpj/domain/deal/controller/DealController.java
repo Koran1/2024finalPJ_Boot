@@ -35,42 +35,59 @@ public class DealController {
     private DealService dealService;
 
     @GetMapping("/dealMain")
-    public ResponseEntity<Map<String, Object>> getDealMainList() {
-        Map<String, Object> response = new HashMap<>();
-        
+    public ResponseEntity<DataVO> getDealMainList() {
+        Map<String, Object> resultMap = new HashMap<>();
+        DataVO dataVO = new DataVO();
         try {
-            List<DealVO> list = dealService.getDealMainList();
-            response.put("success", true);
-            response.put("message", "캠핑마켓 메인페이지 조회 완료");
-            response.put("data", list);
+            List<DealVO> dealList = dealService.getDealMainList(); 
+            List<FileVo> file_list = new ArrayList<>();
             
-            return ResponseEntity.ok(response);
+            for(DealVO dealVO : dealList) {
+                List<FileVo> fvos = dealService.getPjFileByDealIdx(dealVO.getDealIdx());
+                if(fvos != null && !fvos.isEmpty()) {
+                    file_list.addAll(fvos);
+                }
+            }
+
+            resultMap.put("list", dealList);
+            resultMap.put("file_list", file_list);
+            
+            dataVO.setSuccess(true);
+            dataVO.setMessage("캠핑마켓 메인페이지 조회 완료");
+            dataVO.setData(resultMap);
+            
+            return ResponseEntity.ok(dataVO);
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "캠핑마켓 메인페이지 조회 실패");
+            dataVO.setSuccess(false);
+            dataVO.setMessage("캠핑마켓 메인페이지 조회 실패");
+            log.error("캠핑마켓 메인페이지 조회 중 오류 발생", e);
             
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dataVO);
         }
     }
 
     @GetMapping("/detail/{dealIdx}")
-    public ResponseEntity<Map<String, Object>> getDealDetail(@PathVariable("dealIdx") String dealIdx) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<DataVO> getDealDetail(@PathVariable("dealIdx") String dealIdx) {
+        DataVO dataVO = new DataVO();
         
         try {
             DealVO dealVO = dealService.getDealDetail(dealIdx);
             List<FileVo> files = dealService.getPjFileByDealIdx(dealIdx);
 
-            response.put("success", true);
-            response.put("deal", dealVO);
-            response.put("files", files);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("deal", dealVO);
+            resultMap.put("files", files);
             
-            return ResponseEntity.ok(response);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("상품 상세 정보 조회 완료");
+            dataVO.setData(resultMap);
+            
+            return ResponseEntity.ok(dataVO);
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+            dataVO.setSuccess(false);
+            dataVO.setMessage("상품 정보를 불러오는 중 오류가 발생했습니다.");
             
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dataVO);
         }
     }
 
@@ -157,7 +174,8 @@ public class DealController {
         @ModelAttribute DealVO dealVO,
         @RequestParam(value = "file", required = false) MultipartFile[] files) 
     {
-        Map<String, Object> response = new HashMap<>();
+        // dealIdx를 DealVO에 설정
+        dealVO.setDealIdx(dealIdx);
         
         try {
             dealVO.setDealIdx(dealIdx);
@@ -196,76 +214,41 @@ public class DealController {
                             upLoadDir.mkdirs();
                         }
 
-                        // 기존 파일이 있다면 업데이트
-                        FileVo existingFile = existingFileMap.get(i);
-                        if (existingFile != null) {
-                            // 기존 파일 삭제 (파일 시스템에서만)
-                            File oldFile = new File(path, existingFile.getFileName());
-                            if (oldFile.exists()) {
-                                oldFile.delete();
-                            }
-
-                            try {
-                                // 새 파일 업로드
-                                file.transferTo(new File(upLoadDir, fileName));
-
-                                // FileVo 업데이트
-                                FileVo fileVo = FileVo.builder()
-                                    .fileTableType("2")
-                                    .fileTableIdx(dealIdx)
-                                    .fileName(fileName)
-                                    .fileOrder(i)
-                                    .fileIdx(existingFile.getFileIdx())  // 기존 fileIdx 유지
-                                    .build();
-
-                                dealService.updateFileInfo(fileVo);
-                            } catch (Exception e) {
-                                log.error("파일 업로드 중 오류 발생: " + e.getMessage());
-                                continue;
-                            }
-                        } else {
-                            try {
-                                // 새 파일 업로드
-                                file.transferTo(new File(upLoadDir, fileName));
-
-                                // 새로운 FileVo 생성 및 저장
-                                FileVo fileVo = FileVo.builder()
-                                    .fileTableType("2")
-                                    .fileTableIdx(dealIdx)
-                                    .fileName(fileName)
-                                    .fileOrder(i)
-                                    .build();
-
-                                dealService.insertFileInfo(fileVo);
-                            } catch (Exception e) {
-                                log.error("파일 업로드 중 오류 발생: " + e.getMessage());
-                                continue;
-                            }
+                        // 파일 업로드
+                        try {
+                            file.transferTo(new File(upLoadDir, fileName));
+                            log.info("파일 업로드 완료: " + fileName);
+                        } catch (Exception e) {
+                            log.error("파일 업로드 중 오류 발생: " + e.getMessage());
+                            continue; // 다음 파일로 이동
                         }
+
+                        // DB에 파일 정보 저장 (insertFileInfo은 여기서 한 번만 호출됩니다.)
+                        dealService.insertFileInfo(fileVo);
+
+                        storedFiles++; // 저장된 파일 개수 증가
                     }
                 }
+
+                // 만약 업로드된 파일이 최대 개수를 초과한다면 로그 또는 메시지 추가
+                if (files.length > maxFiles) {
+                    log.warn("최대 " + maxFiles + "개의 파일만 업로드됩니다. 초과된 파일은 무시됩니다.");
+                    // 필요 시 사용자에게 메시지를 반환하도록 구현
+                }
+            } else {
+                log.info("첨부된 파일 없음");
             }
 
-            // 상품 정보 업데이트
-            DataVO result = dealService.updateDeal(dealVO, null);
-            
-            if (!result.isSuccess()) {
-                response.put("success", false);
-                response.put("message", "상품 수정에 실패했습니다.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-            }
+            // 수정이 성공하면 /api/deal/detail/{dealIdx}로 리다이렉트
+            URI redirectUri = URI.create("/detail/" + dealIdx);
+            return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();
 
-            response.put("success", true);
-            response.put("message", "상품이 성공적으로 수정되었습니다.");
-            response.put("dealIdx", dealIdx);
-            
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            log.error("상품 수정 중 오류 발생: ", e);
-            response.put("success", false);
-            response.put("message", "상품 수정 중 오류가 발생했습니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (NullPointerException | IllegalArgumentException e) { 
+            log.error("캠핑마켓 수정 오류: ", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) { 
+            log.error("캠핑마켓 수정 오류: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

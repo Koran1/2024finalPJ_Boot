@@ -38,9 +38,13 @@ public class DealVO {
   deal03;
   private FileVo fileVO;
   private List<FileVo> fileList;
+  private FileVo mainFile;
 
   public void setFileList(List<FileVo> fileList) {
     this.fileList = fileList;
+    if (fileList != null && !fileList.isEmpty()) {
+      this.mainFile = fileList.get(0);
+    }
   }
 
   public List<FileVo> getFileList() {
