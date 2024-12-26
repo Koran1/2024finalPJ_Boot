@@ -20,4 +20,7 @@ public interface DealService {
   void insertFileInfo(FileVo fileVo);
   List<FileVo> getPjFileByDealIdx(String dealIdx);
   List<DealVO> getDealManagement(String userIdx);
+  void updateFileInfo(FileVo fileVo);
+
+  DataVO getDealFileDelete(String fileTableIdx);
 }

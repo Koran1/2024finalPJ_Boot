@@ -1,6 +1,5 @@
 package com.ict.finalpj.domain.deal.service;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,24 +83,6 @@ public class DealServiceImpl implements DealService {
             log.info("Updating deal with dealIdx: {}", dealVO.getDealIdx());
             int result = dealMapper.updateDeal(dealVO);
             if (result > 0) {
-                // 기존 파일 삭제 로직만 유지
-                if (files != null && files.length > 0) {
-                    // 기존 파일 삭제
-                    List<FileVo> existingFiles = dealMapper.getPjFileByDealIdx(dealVO.getDealIdx());
-                    for (FileVo file : existingFiles) {
-                        // 파일 시스템에서 삭제
-                        File deleteFile = new File("D:\\upload\\deal", file.getFileName());
-                        if (deleteFile.exists()) {
-                            deleteFile.delete();
-                        }
-                        // DB에서 파일 정보 삭제 (필요 시 추가)
-                        // dealMapper.deleteFileInfo(file.getFileIdx());
-                    }
-
-                    // 파일 업로드 및 DB 저장은 컨트롤러에서 처리
-                } else {
-                    log.info("첨부된 파일 없음");
-                }
                 dataVO.setSuccess(true);
                 dataVO.setMessage("상품 수정 완료");
             } else {
@@ -117,8 +98,20 @@ public class DealServiceImpl implements DealService {
     }
 
     @Override
+    public DataVO getDealFileDelete(String fileTableIdx) {
+        return dealMapper.getDealFileDelete(fileTableIdx);
+    }
+
+    @Override
     public List<DealVO> getDealManagement(String userIdx) {
         return dealMapper.getDealManagement(userIdx);
-    } 
+    }
+
+    @Override
+    public void updateFileInfo(FileVo fileVo) {
+        dealMapper.updateFileInfo(fileVo);
+    }
+
+
 
 }

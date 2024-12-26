@@ -49,6 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
     select * from pjfile 
     where fileTableIdx = #{dealIdx}
+    and fileActive = 1
     order by fileOrder asc
   </select>
 
@@ -72,5 +73,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  <select id="getDealManagement" parameterType="String" resultType="DealVO">
     select * from pjdeal where dealSellerUserIdx = #{userIdx}
   </select>
+
+  <update id="updateFileInfo" parameterType="FileVo">
+    UPDATE pjfile 
+    SET fileName = #{fileName},
+        fileUpdated = NOW(),
+        fileActive = CASE 
+            WHEN #{fileName} IS NULL THEN 0
+            ELSE 1
+        END
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileOrder = #{fileOrder}
+    AND fileTableType = #{fileTableType}
+  </update>
 
 </mapper>
