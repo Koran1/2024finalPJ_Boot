@@ -51,10 +51,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </update>
 
   <select id="getPjFileByDealIdx" parameterType="String" resultType="FileVo">
-    select * from pjfile 
-    where fileTableIdx = #{dealIdx}
+    SELECT * FROM pjfile 
+    WHERE fileTableIdx = #{dealIdx}
     and fileActive = 1
-    order by fileOrder asc
+    ORDER BY fileOrder ASC
   </select>
 
   <update id="updateDeal" parameterType="DealVO">

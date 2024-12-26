@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -102,7 +104,7 @@ public class DealController {
         log.info("Generated dealIdx: " + dealIdx); // 로그 추가
 
         // Deal 저장을 서비스 레이어로 위임
-        DataVO dataVO = dealService.getDealWrite(dealVO, null); // files 파라미터 제거
+        DataVO dataVO = dealService.getDealWrite(dealVO, null);
 
         log.info("After service call, dealIdx: " + dealVO.getDealIdx()); // 로그 추가
 
@@ -195,21 +197,68 @@ public class DealController {
             // 기존 파일 정보 조회
             List<FileVo> existingFiles = dealService.getPjFileByDealIdx(dealIdx);
             Map<Integer, FileVo> existingFileMap = new HashMap<>();
+
+            if (result == null || !result.isSuccess()) { // 업데이트 실패 시
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            DataVO result = dealService.updateDeal(dealVO, null); // files 파라미터 제거
+            log.info("updateDeal 결과: " + result);
             for (FileVo file : existingFiles) {
                 existingFileMap.put(file.getFileOrder(), file);
             }
-
-            // 새로운 파일 처리
+            
+            // 파일 업로드 및 DB 저장 처리
+            
+            // 파일 업로드 및 DB 저장 처리
             if (files != null && files.length > 0) {
-                int maxFiles = 5;
-                for (int i = 0; i < files.length && i < maxFiles; i++) {
-                    MultipartFile file = files[i];
+                log.info("첨부된 파일 개수: " + files.length);
+
+                int maxFiles = 5; // 최대 파일 개수 설정
+                int storedFiles = 0; // 저장된 파일 개수 추적
+
+                for (MultipartFile file : files) {
+                    if (storedFiles >= maxFiles) {
+                        break; // 최대 파일 수 도달 시 루프 종료
+                    }
+
+                log.info("첨부된 파일 개수: " + files.length);
+
+                int maxFiles = 5; // 최대 파일 개수 설정
+                int storedFiles = 0; // 저장된 파일 개수 추적
+
+                for (MultipartFile file : files) {
+                    if (storedFiles >= maxFiles) {
+                        break; // 최대 파일 수 도달 시 루프 종료
+                    }
+
                     if (!file.isEmpty()) {
+                        // 파일명 생성 (UUID는 여기서 한 번만 생성됩니다.)
+                        // 파일명 생성 (UUID는 여기서 한 번만 생성됩니다.)
                         String uuid = UUID.randomUUID().toString();
                         String fileName = uuid + "_" + file.getOriginalFilename();
+                        log.info("생성된 파일명: " + fileName);
 
+                        // FileVO 설정
+                        FileVo fileVo = FileVo.builder()
+                            .fileTableType("2")
+                            .fileTableIdx(dealVO.getDealIdx())
+                            .fileName(fileName)
+                            .fileOrder(storedFiles)
+                            .build();
+
+                        // 파일 업로드 경로                        log.info("생성된 파일명: " + fileName);
+
+                        // FileVO 설정
+                        FileVo fileVo = FileVo.builder()
+                            .fileTableType("2")
+                            .fileTableIdx(dealVO.getDealIdx())
+                            .fileName(fileName)
+                            .fileOrder(storedFiles)
+                            .build();
+
+                        // 파일 업로드 경로
                         String path = "D:\\upload\\deal";
                         File upLoadDir = new File(path);
+
                         if (!upLoadDir.exists()) {
                             upLoadDir.mkdirs();
                         }
@@ -249,6 +298,25 @@ public class DealController {
         } catch (Exception e) { 
             log.error("캠핑마켓 수정 오류: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/updateFile")
+    public ResponseEntity<Map<String, Object>> updateFile(@RequestBody FileVo fileVo) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 파일 정보 업데이트
+            dealService.updateFileInfo(fileVo);
+
+            response.put("success", true);
+            response.put("message", "파일이 성공적으로 업데이트되었습니다.");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("파일 업데이트 중 오류 발생: ", e);
+            response.put("success", false);
+            response.put("message", "파일 업데이트 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

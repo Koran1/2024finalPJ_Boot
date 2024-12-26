@@ -18,13 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class DealServiceImpl implements DealService {
 
-    @Autowired
-    private DealMapper dealMapper;
+  @Autowired
+  private DealMapper dealMapper;
 
-    @Override
-    public List<DealVO> getDealMainList() {
-        return dealMapper.getDealMainList();
-    }
+  @Override
+  public List<DealVO> getDealMainList() {
+    return dealMapper.getDealMainList();
+  }
 
     @Override
     public DealVO getDealDetail(String dealIdx) { 
@@ -38,42 +38,21 @@ public class DealServiceImpl implements DealService {
         return deal;
     }
 
-    @Override
-    @Transactional
-    public DataVO getDealWrite(DealVO dealVO, MultipartFile[] files) {
-        DataVO dataVO = new DataVO();
-        
-        // Deal 저장
-        int result = dealMapper.getDealWrite(dealVO);
-        
-        // dealIdx가 설정된 후에 로그 출력
-        log.info("dealIdx: " + dealVO.getDealIdx()); // 로그 추가
+  @Override
+  @Transactional
+  public DataVO getDealWrite(DealVO dealVO, MultipartFile[] files) {
+    return dealMapper.getDealWrite(dealVO, files); 
+  }
 
-        if (result > 0) {
-            dataVO.setSuccess(true);
-            dataVO.setMessage("상품등록 완료");
-            dataVO.setData(dealVO.getDealIdx()); // dealIdx를 응답 데이터에 설정
+  @Override
+  public List<FileVo> listFile(String fileTableIdx) {
+    return dealMapper.listFile(fileTableIdx);
+  }
 
-            // 파일 업로드 및 DB 저장 처리는 이제 컨트롤러에서 처리됩니다.
-            // ... existing code ...
-        } else {
-            dataVO.setSuccess(false);
-            dataVO.setMessage("상품등록 실패");
-        }
-
-        return dataVO;
-    }
-
-    @Override
-    public void insertFileInfo(FileVo fileVo) {
-        log.info("파일 정보 삽입: " + fileVo.toString()); // 로그 추가
-        dealMapper.insertFileInfo(fileVo);
-    }
-
-    @Override
-    public List<FileVo> getPjFileByDealIdx(String dealIdx) {
-        return dealMapper.getPjFileByDealIdx(dealIdx);
-    }
+  @Override
+  public int saveFile(FileVo fileVo) {
+    return dealMapper.saveFile(fileVo);
+  }
 
     @Override
     @Transactional
@@ -102,10 +81,17 @@ public class DealServiceImpl implements DealService {
         return dealMapper.getDealFileDelete(fileTableIdx);
     }
 
+  @Override
+  public DealVO getDealDetailWithFiles(String dealIdx) {
+    return dealMapper.getDealDetailWithFiles(dealIdx);
+  } 
+
     @Override
-    public List<DealVO> getDealManagement(String userIdx) {
-        return dealMapper.getDealManagement(userIdx);
+    public void updateFileInfo(FileVo fileVo) {
+        dealMapper.updateFileInfo(fileVo);
     }
+
+
 
     @Override
     public void updateFileInfo(FileVo fileVo) {
@@ -118,7 +104,5 @@ public class DealServiceImpl implements DealService {
 public FileVo getFileVO(String dealIdx) {
     return dealMapper.getFileVO(dealIdx);
 }
-
-
 
 }
