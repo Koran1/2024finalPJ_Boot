@@ -18,5 +18,23 @@
         ORDER BY chatTime asc
     </select>
 
+    <select id="chkByUserIdx" parameterType="map" resultType="ChatRoomVO" >
+        SELECT chatroom FROM pjchatroom 
+        WHERE userIdx in (#{userIdx}, #{sellerIdx}) 
+        group by chatRoom HAVING COUNT(DISTINCT userIdx) = 2
+    </select>
+
+    <insert id="insertNewChat" parameterType="map">
+        INSERT INTO pjchatroom (chatRoom, userIdx, joinedTime) 
+        VALUES (#{chatRoom}, #{userIdx}, NOW()), 
+        (#{chatRoom}, #{sellerIdx}, NOW())
+    </insert>
+
+    <select id="getChatListByUserIdx" parameterType="String" resultType="ChatRoomVO" >
+        SELECT DISTINCT c1.* 
+        FROM pjchatroom c1 
+        JOIN pjchatroom c2 ON c1.chatRoom = c2.chatRoom 
+        WHERE c2.userIdx = #{userIdx} AND c1.userIdx != #{userIdx}
+    </select>
 
 </mapper>
