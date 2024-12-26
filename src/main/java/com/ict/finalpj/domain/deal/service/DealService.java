@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 @Service
@@ -25,4 +26,5 @@ public interface DealService {
   DataVO getDealUpdate(DealVO dealVO, MultipartFile[] files);
   
   List<DealVO> getDealManagement(String userIdx);
+  List<DealFavoriteVO> getDealinterest(String userIdx);
 }
