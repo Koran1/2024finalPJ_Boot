@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -124,6 +125,11 @@ public class DealServiceImpl implements DealService {
     @Override
     public FileVo getFileVO(String dealIdx) {
         return dealMapper.getFileVO(dealIdx);
+    }
+
+    @Override
+    public List<DealFavoriteVO> getDealinterest(String userIdx) {
+        return dealMapper.getDealinterest(userIdx);
     }
 
 
