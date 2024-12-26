@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
@@ -26,6 +25,11 @@ public class DealServiceImpl implements DealService {
     public List<DealVO> getDealMainList() {
         return dealMapper.getDealMainList();
     }
+    
+    @Override
+    public FileVo getDealFileOne(String dealIdx) {
+        return dealMapper.getDealFileOne(dealIdx);
+    }
 
     @Override
     public DealVO getDealDetail(String dealIdx) {
@@ -38,19 +42,23 @@ public class DealServiceImpl implements DealService {
         }
         return deal;
     }
+    
+    @Override
+    public List<FileVo> getDealFileDetail(String dealIdx) {
+        return dealMapper.getDealFileDetail(dealIdx);
+    }
 
     @Override
-    @Transactional
-    public DataVO getDealWrite(DealVO dealVO, MultipartFile[] files) {
+    public int getDealWrite(DealVO dealVO) {
         DataVO dataVO = new DataVO();
         
         // Deal 저장
-        int result = dealMapper.getDealWrite(dealVO);
+        int result = dealMapper.getDealWrite(dealVO); 
         
         // dealIdx가 설정된 후에 로그 출력
         log.info("dealIdx: " + dealVO.getDealIdx()); // 로그 추가
 
-        if (result > 0) {
+        if (result > 0) {   
             dataVO.setSuccess(true);
             dataVO.setMessage("상품등록 완료");
             dataVO.setData(dealVO.getDealIdx()); // dealIdx를 응답 데이터에 설정
@@ -61,46 +69,33 @@ public class DealServiceImpl implements DealService {
             dataVO.setSuccess(false);
             dataVO.setMessage("상품등록 실패");
         }
-
-        return dataVO;
+        return result;
     }
 
     @Override
-    public void insertFileInfo(FileVo fileVo) {
-        log.info("파일 정보 삽입: " + fileVo.toString()); // 로그 추가
-        dealMapper.insertFileInfo(fileVo);
+    public void getIDealFileInsert(FileVo fileVo) {
+        dealMapper.getIDealFileInsert(fileVo);
     }
 
     @Override
-    public List<FileVo> getPjFileByDealIdx(String dealIdx) {
-        return dealMapper.getPjFileByDealIdx(dealIdx);
-    }
-
-    @Override
-    @Transactional
-    public DataVO updateDeal(DealVO dealVO, MultipartFile[] files) {
+    public DataVO getDealUpdate(DealVO dealVO, MultipartFile[] files) {
         DataVO dataVO = new DataVO();
         try {
-            log.info("Updating deal with dealIdx: {}", dealVO.getDealIdx());
-            int result = dealMapper.updateDeal(dealVO);
-            if (result > 0) {
-                // 기존 파일 삭제 로직만 유지
+            DataVO result = dealMapper.getDealUpdate(dealVO, files);
+            
+            if (result.isSuccess()) {
                 if (files != null && files.length > 0) {
-                    // 기존 파일 삭제
-                    List<FileVo> existingFiles = dealMapper.getPjFileByDealIdx(dealVO.getDealIdx());
+                    List<FileVo> existingFiles = dealMapper.getDealFileDetail(dealVO.getDealIdx());
+                    
+                    // 파일 시스템에서 기존 파일 삭제
                     for (FileVo file : existingFiles) {
-                        // 파일 시스템에서 삭제
                         File deleteFile = new File("D:\\upload\\deal", file.getFileName());
                         if (deleteFile.exists()) {
                             deleteFile.delete();
+                            // DB에서 파일 삭제
+                            dealMapper.getDealFileDelete(file);
                         }
-                        // DB에서 파일 정보 삭제 (필요 시 추가)
-                        // dealMapper.deleteFileInfo(file.getFileIdx());
                     }
-
-                    // 파일 업로드 및 DB 저장은 컨트롤러에서 처리
-                } else {
-                    log.info("첨부된 파일 없음");
                 }
                 dataVO.setSuccess(true);
                 dataVO.setMessage("상품 수정 완료");
@@ -117,15 +112,28 @@ public class DealServiceImpl implements DealService {
     }
 
     @Override
+    public void getDealFileDelete(FileVo fileVo) {
+        try {
+            // 파일 시스템에서 삭제
+            File deleteFile = new File("D:\\upload\\deal", fileVo.getFileName());
+            if (deleteFile.exists()) {
+                deleteFile.delete();
+            }
+            // DB에서 파일 정보 삭제
+            dealMapper.getDealFileDelete(fileVo);
+        } catch (Exception e) {
+            log.error("파일 삭제 중 오류 발생: ", e);
+            throw e;  // 트랜잭션 롤백을 위해 예외를 다시 던짐
+        }
+    }
+
+    @Override
+    public void getDealFileUpdate(String dealIdx) {
+        dealMapper.getDealFileUpdate(dealIdx);
+    }
+    
+    @Override
     public List<DealVO> getDealManagement(String userIdx) {
         return dealMapper.getDealManagement(userIdx);
     } 
-
-    @Override
-    public FileVo getFileVO(String dealIdx) {
-        return dealMapper.getFileVO(dealIdx);
-    }
-
-
-
 }
