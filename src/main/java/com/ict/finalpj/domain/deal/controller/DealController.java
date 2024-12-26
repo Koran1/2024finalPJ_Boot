@@ -1,7 +1,6 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,14 +8,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -169,14 +165,15 @@ public class DealController {
     }
 
     @PutMapping("/update/{dealIdx}")
-    public ResponseEntity<Void> getDealUpdate(
+    public DataVO updateDeal(
         @PathVariable("dealIdx") String dealIdx,
-        @RequestBody DealVO dealVO,
+        @ModelAttribute DealVO dealVO,
         @RequestParam(value = "file", required = false) MultipartFile[] files) 
     {
         // dealIdx를 DealVO에 설정
         dealVO.setDealIdx(dealIdx);
-        
+        DataVO dataVO = new DataVO();
+
         try {
             // 유효성 검사
             if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || 
@@ -185,14 +182,18 @@ public class DealController {
                 dealVO.getDealDirect() == null || dealVO.getDealDirectContent() == null || 
                 dealVO.getDealCount() == null) 
             {
-                return ResponseEntity.badRequest().build();
+                dataVO.setSuccess(false);
+                dataVO.setMessage("필수 항목이 누락되었습니다.");
+                return dataVO;
             }
 
-            DataVO result = dealService.updateDeal(dealVO, null); // files 파라미터 제거
+            DataVO result = dealService.updateDeal(dealVO, files); // files 파라미터 제거
             log.info("updateDeal 결과: " + result);
 
             if (result == null || !result.isSuccess()) { // 업데이트 실패 시
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                dataVO.setSuccess(false);
+                dataVO.setMessage("상품 수정 실패");
+                return dataVO;
             }
             
             // 파일 업로드 및 DB 저장 처리
@@ -255,15 +256,14 @@ public class DealController {
             }
 
             // 수정이 성공하면 /api/deal/detail/{dealIdx}로 리다이렉트
-            URI redirectUri = URI.create("/detail/" + dealIdx);
-            return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();
-
-        } catch (NullPointerException | IllegalArgumentException e) { 
-            log.error("캠핑마켓 수정 오류: ", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            dataVO.setSuccess(true);
+            dataVO.setMessage("상품 수정 완료");
+            return dataVO;            
         } catch (Exception e) { 
             log.error("캠핑마켓 수정 오류: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            dataVO.setSuccess(false);
+            dataVO.setMessage("상품 수정 오류");
+            return dataVO;
         }
     }
 

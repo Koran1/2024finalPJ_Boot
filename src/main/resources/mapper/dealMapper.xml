@@ -11,7 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
  <select id="getFileVO" parameterType="String" resultType="FileVo">
     SELECT * FROM pjfile 
-    WHERE fileTableIdx = #{dealIdx}
+    WHERE fileTableIdx = #{dealIdx} and fileOrder = 0 and fileActive = 1 limit 1
   </select>
 
   <select id="getDealDetail" parameterType="String" resultType="com.ict.finalpj.domain.deal.vo.DealVO">

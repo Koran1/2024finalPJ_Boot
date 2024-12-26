@@ -121,10 +121,10 @@ public class DealServiceImpl implements DealService {
         return dealMapper.getDealManagement(userIdx);
     } 
 
-@Override
-public FileVo getFileVO(String dealIdx) {
-    return dealMapper.getFileVO(dealIdx);
-}
+    @Override
+    public FileVo getFileVO(String dealIdx) {
+        return dealMapper.getFileVO(dealIdx);
+    }
 
 
 
