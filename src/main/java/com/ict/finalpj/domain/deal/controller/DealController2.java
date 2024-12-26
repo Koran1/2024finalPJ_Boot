@@ -57,7 +57,7 @@ public class DealController2 {
   }
   
 
-  @GetMapping("/management/{userIdx}")
+  @GetMapping("/management/interest/{userIdx}")
   public DataVO getDealinterest(@PathVariable("userIdx") String userIdx) {
       DataVO dataVO = new DataVO();
       try {

@@ -3,9 +3,7 @@ package com.ict.finalpj.domain.deal.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
@@ -13,17 +11,17 @@ import com.ict.finalpj.domain.deal.vo.DealVO;
 @Service
 public interface DealService {
   List<DealVO> getDealMainList();
-  FileVo getDealFileOne(String dealIdx);
+  FileVo getDealFileOne(String fileTableIdx);
 
   DealVO getDealDetail(String dealIdx);
-  List<FileVo> getDealFileDetail(String dealIdx);
+  List<FileVo> getDealFileDetail(String fileTableIdx);
 
   int getDealWrite(DealVO dealVO);
-  void getIDealFileInsert(FileVo fileVo);
+  int getIDealFileInsert(FileVo fileVo);
   
-  void getDealFileDelete(FileVo fileVo);
-  void getDealFileUpdate(String dealIdx);
-  DataVO getDealUpdate(DealVO dealVO, MultipartFile[] files);
+  int getDealFileDelete(FileVo fileVo);
+  int getDealFileUpdate(FileVo fileVo);
+  int getDealUpdate(DealVO dealVO);
   
   List<DealVO> getDealManagement(String userIdx);
   List<DealFavoriteVO> getDealinterest(String userIdx);
