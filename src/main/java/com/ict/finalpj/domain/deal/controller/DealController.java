@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.service.DealService;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
@@ -282,6 +284,75 @@ public class DealController {
                 dealVO.getDealDirect() != null && 
                 dealVO.getDealDirectContent() != null && 
                 dealVO.getDealCount() != null;
+    }
+
+
+     // 찜하기 상태 조회 + 조회수 로직 처리 API
+    @GetMapping("/like-status")
+    public ResponseEntity<DataVO> getLikeStatus(
+            @RequestParam("userIdx") String userIdx,
+            @RequestParam("dealIdx") String dealIdx) {
+        try {
+            log.info("좋아요 상태 조회 시작 - userIdx: {}, dealIdx: {}", userIdx, dealIdx);
+            
+            boolean isLiked = dealService.isLiked(userIdx, dealIdx);
+            log.info("좋아요 상태 조회 결과 - isLiked: {}", isLiked);
+            
+            // 조회수 로직 처리
+            ViewsVO viewInfo = dealService.getViewCount(userIdx, dealIdx);
+            if (viewInfo == null) {
+                log.info("신규 조회 기록 생성");
+                dealService.insertViewCount(userIdx, dealIdx);
+            } else {
+                log.info("기존 조회수 업데이트 - 현재 조회수: {}", viewInfo.getViewCount());
+                dealService.updateViewCount(userIdx, dealIdx);
+            }
+            
+            String message = isLiked ? "이미 좋아요한 상품입니다." : "아직 좋아요하지 않은 상품입니다.";
+            log.info("좋아요 상태 조회 완료 - message: {}", message);
+            
+            return ResponseEntity.ok(new DataVO(true, isLiked, null, message, null));
+        } catch (Exception e) {
+            log.error("좋아요 상태 확인 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "오류가 발생했습니다.", null));
+        }
+    }
+
+    // 좋아요 추가/삭제 API
+    @RequestMapping("/like")
+    public ResponseEntity<DataVO> toggleLike(
+            @RequestParam("userIdx") String userIdx,
+            @RequestParam("dealIdx") String dealIdx,
+            @RequestParam("isLiked") boolean isLiked) {
+        try {
+            log.info("좋아요 토글 시작 - userIdx: {}, dealIdx: {}, 현재상태: {}", 
+                    userIdx, dealIdx, isLiked ? "좋아요" : "좋아요 안함");
+
+            int result;
+            if (isLiked) {
+                // 이미 좋아요 상태라면 좋아요 취소
+                result = dealService.unlikeDeal(userIdx, dealIdx);
+                log.info("좋아요 취소 처리 결과 - result: {}", result);
+            } else {
+                // 좋아요 추가
+                result = dealService.likeDeal(userIdx, dealIdx);
+                log.info("좋아요 추가 처리 결과 - result: {}", result);
+            }
+
+            String message = isLiked ? "좋아요가 취소되었습니다." : "좋아요가 추가되었습니다.";
+            log.info("좋아요 토글 완료 - message: {}", message);
+
+            return ResponseEntity.ok(new DataVO(
+                    result > 0, // 성공 여부
+                    null,      // data
+                    null,      // JWT 토큰
+                    message,   // 메시지
+                    null       // UserDetails
+            ));
+        } catch (Exception e) {
+            log.error("좋아요 처리 중 오류 발생 - userIdx: {}, dealIdx: {}", userIdx, dealIdx, e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "좋아요 처리 중 오류가 발생했습니다.", null));
+        }
     }
 
 }

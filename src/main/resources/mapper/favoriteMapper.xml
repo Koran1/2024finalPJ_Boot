@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.finalpj.domain.deal.mapper.FavoriteMapper">
+ <!-- 좋아요 상태 확인 -->
+    <select id="isLiked" resultType="boolean">
+        SELECT COUNT(*) <![CDATA[>]]> 0
+        FROM pjdealfavorite
+        WHERE userIdx = #{userIdx} AND dealIdx = #{dealIdx}
+    </select>
+
+    <!-- 좋아요 추가 -->
+    <insert id="likeDeal"> 
+        INSERT INTO pjdealfavorite (userIdx, dealIdx)
+        VALUES (#{userIdx}, #{dealIdx})
+    </insert>
+
+    <!-- 좋아요 삭제 -->
+    <delete id="unlikeDeal">
+        DELETE FROM pjdealfavorite
+        WHERE userIdx = #{userIdx} AND dealIdx = #{dealIdx}
+    </delete>
+
+
+    <!-- 조회수 정보 가져오기 -->
+    <select id="getViewCount" resultType="ViewsVO">
+        SELECT * 
+        FROM pjviews
+        WHERE userIdx = #{userIdx}
+          AND viewTableIdx = #{dealIdx}
+          AND viewTableType = 1
+    </select>
+
+    <!-- 조회수 정보 삽입 -->
+    <insert id="insertViewCount">
+        INSERT INTO pjviews (userIdx, viewTableIdx, viewCount, viewTableType, viewRegTime)
+        VALUES (#{userIdx}, #{dealIdx}, 1, 1, now())
+    </insert>
+
+    <!-- 조회수 정보 업데이트 -->
+    <update id="updateViewCount"> 
+        UPDATE pjviews
+        SET viewCount = viewCount + 1, 
+            viewRegTime = now()
+        WHERE userIdx = #{userIdx}
+          AND viewTableIdx = #{dealIdx}
+          AND viewTableType = 1
+    </update>
+
+</mapper>
