@@ -6,5 +6,6 @@ import lombok.Data;
 public class ChatRoomVO {
     private String chatRoom;
     private String userIdx;
-    private String joinedTime;
+    private String lastRead;
+    private String unReadCount;
 }

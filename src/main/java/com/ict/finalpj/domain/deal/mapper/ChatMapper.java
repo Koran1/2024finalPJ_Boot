@@ -19,4 +19,5 @@ public interface ChatMapper {
     
     List<ChatRoomVO> getChatListByUserIdx(String userIdx);
 
+    ChatVO getRecentChat(ChatRoomVO chatRoom);
 }

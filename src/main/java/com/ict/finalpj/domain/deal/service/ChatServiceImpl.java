@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.domain.deal.mapper.ChatMapper;
 import com.ict.finalpj.domain.deal.vo.ChatRoomVO;
+import com.ict.finalpj.domain.deal.vo.ChatVO;
 
 @Service
 public class ChatServiceImpl implements ChatService {
@@ -28,6 +29,11 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<ChatRoomVO> getChatListByUserIdx(String userIdx) {
         return chatMapper.getChatListByUserIdx(userIdx);
+    }
+
+    @Override
+    public ChatVO getRecentChat(ChatRoomVO chatRoom) {
+        return chatMapper.getRecentChat(chatRoom);
     }
 
 

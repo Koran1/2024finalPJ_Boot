@@ -1,5 +1,6 @@
 package com.ict.finalpj.domain.deal.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,9 @@ import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.deal.service.ChatService;
 import com.ict.finalpj.domain.deal.service.SocketService;
 import com.ict.finalpj.domain.deal.vo.ChatRoomVO;
+import com.ict.finalpj.domain.deal.vo.ChatVO;
+import com.ict.finalpj.domain.user.service.UserService;
+import com.ict.finalpj.domain.user.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +30,9 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    @Autowired
+    private UserService userService;
+    
     @Autowired
     private SocketService socketService;
 
@@ -39,6 +46,31 @@ public class ChatController {
             log.info("sellerIdx : "+sellerIdx);
             
             List<ChatRoomVO> chatList = chatService.getChatListByUserIdx(userIdx);
+
+            List<UserVO> userList = new ArrayList<>();
+
+            List<ChatVO> recentChat = new ArrayList<>();
+            
+            for (ChatRoomVO k : chatList) {
+                // 사용자 Idx, nickname, 평점 가져오기
+                UserVO uvo = userService.getUserInfoByIdx(k.getUserIdx());
+                UserVO setUvo = new UserVO();
+                setUvo.setUserNickname(uvo.getUserNickname());
+                setUvo.setUserIdx(uvo.getUserIdx());
+                setUvo.setDealSatisSellerScore(uvo.getDealSatisSellerScore());
+                userList.add(setUvo);
+
+                ChatVO chatvo = new ChatVO();
+                ChatVO cvo_true = chatService.getRecentChat(k);
+
+                if(cvo_true == null){
+                    chatvo.setChatRoom(k.getChatRoom());
+                    recentChat.add(chatvo);
+                }else{
+                    recentChat.add(cvo_true);
+                }
+
+            }
 
             // 신규 채팅인지 확인하기
             Map<String, String> map = new HashMap<>();
@@ -66,8 +98,17 @@ public class ChatController {
                 log.info("User is already in that chatting");
                 // load chats
             }
+
             log.info("chatList : " + chatList);
-            dvo.setData(chatList);
+            log.info("userList : " + userList);
+            log.info("recentChat : " + recentChat);
+
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("chatList", chatList);
+            resultMap.put("userList", userList);
+            resultMap.put("recentChat", recentChat);
+
+            dvo.setData(resultMap);
             dvo.setSuccess(true);
             dvo.setMessage("채팅 정보 가져오기 성공");
 
