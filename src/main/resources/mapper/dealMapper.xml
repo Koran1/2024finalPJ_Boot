@@ -13,13 +13,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     dealDirectContent, dealCount, dealRegDate
   </sql>
 
-  <!-- 구분 1 -->
   <select id="getDealMainList" resultType="DealVO">
     SELECT <include refid="dealColumns"/> 
     FROM pjdeal 
     ORDER BY dealIdx DESC
   </select>
 
+<!-- 파일 하나 가져오기 --> 
   <select id="getDealFileOne" parameterType="String" resultType="FileVo">
     SELECT * FROM pjfile 
     WHERE fileTableIdx = #{fileTableIdx} 
@@ -34,25 +34,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE dealIdx = #{dealIdx}
   </select>
 
+<!-- 파일 여러개 가져오기 --> 
   <select id="getDealFileDetail" parameterType="String" resultType="FileVo">
     SELECT * FROM pjfile 
     WHERE fileTableIdx = #{fileTableIdx}
     AND fileTableType = 2
-    AND fileOrder BETWEEN 0 AND 4
     ORDER BY fileOrder ASC
   </select>
 
   <insert id="getDealWrite" parameterType="DealVO">
     INSERT INTO pjdeal 
     (dealIdx, dealSellerUserIdx, dealSellerNick, dealTitle, dealCategory, 
-     dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
-     dealDirectContent, dealCount, dealRegDate) 
+    dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
+    dealDirectContent, dealCount, dealRegDate) 
     VALUES 
     (#{dealIdx}, #{dealSellerUserIdx}, #{dealSellerNick}, #{dealTitle}, 
-     #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, 
-     #{dealPackage}, #{dealDirect}, #{dealDirectContent}, #{dealCount}, NOW())
+    #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, 
+    #{dealPackage}, #{dealDirect}, #{dealDirectContent}, #{dealCount}, NOW())
   </insert>
 
+<!-- 파일 여러개 삽입 -->
   <insert id="getIDealFileInsert" parameterType="FileVo">
     INSERT INTO pjfile 
     (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
@@ -60,25 +61,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
   </insert>
 
-  <delete id="getDealFileDelete" parameterType="FileVo">
+<!-- 파일명으로 파일 삭제 -->
+  <delete id="getDealFileNameDelete">
     DELETE FROM pjfile 
-    WHERE fileTableIdx = #{fileTableIdx}
-    AND fileOrder = #{fileOrder}
+    WHERE fileTableIdx = #{param1}
+    AND fileName = #{param2}
+    AND fileTableType = 2
   </delete>
 
+<!-- 파일 하나 수정 -->
   <update id="getDealFileUpdate" parameterType="FileVo">
     UPDATE pjfile 
-    SET fileOrder = (
-      SELECT tmp.new_order 
-      FROM (
-        SELECT fileName, (@row_number:=@row_number + 1) - 1 AS new_order
-        FROM pjfile, (SELECT @row_number:=0) AS t
-        WHERE fileTableIdx = #{fileTableIdx}
-        ORDER BY fileOrder ASC
-      ) AS tmp
-      WHERE tmp.fileName = pjfile.fileName
-    )
-    WHERE fileTableIdx = #{fileTableIdx}
+    SET fileName = #{fileName}
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileOrder = #{fileOrder}
   </update>
 
   <update id="getDealUpdate" parameterType="DealVO">
@@ -95,19 +91,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE dealIdx = #{dealIdx}
   </update>
 
-
-
-  <!-- 구분 2 -->
-
- <select id="getDealManagement" parameterType="String" resultType="DealVO">
-    select * from pjdeal where dealSellerUserIdx = #{userIdx}
-  </select>
-
-  <update id="updateFileOrder">
-    UPDATE file_table 
-    SET file_order = #{newOrder}
-    WHERE file_table_idx = #{dealIdx} 
-    AND file_name = #{fileName}
+<!-- 파일 순서 변경 -->
+  <update id="getDealFileOrder" parameterType="FileVo">
+    UPDATE pjfile 
+    SET fileOrder = #{fileOrder}
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileName = #{fileName}
   </update>
 
   <select id="getDealinterest" parameterType="String" resultType="DealFavoriteVO">
@@ -116,6 +105,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     JOIN pjdeal d ON df.dealIdx = d.dealIdx
     WHERE df.userIdx = #{userIdx}
     ORDER BY df.favoriteIdx DESC
+  </select>
+
+  <select id="getDealManagement" parameterType="String" resultType="DealVO">
+    select * from pjdeal where dealSellerUserIdx = #{userIdx}
   </select>
 
 </mapper>

@@ -25,4 +25,7 @@ public interface DealService {
   
   List<DealVO> getDealManagement(String userIdx);
   List<DealFavoriteVO> getDealinterest(String userIdx);
+
+  int getDealFileNameDelete(String fileTableIdx, String fileName);
+  int getDealFileOrder(FileVo fileVo);
 }

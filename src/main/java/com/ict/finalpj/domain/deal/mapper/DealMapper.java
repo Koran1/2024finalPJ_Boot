@@ -11,18 +11,21 @@ import com.ict.finalpj.domain.deal.vo.DealVO;
 @Mapper
 public interface DealMapper {
   List<DealVO> getDealMainList();
-  FileVo getDealFileOne(String fileTableIdx);
+  FileVo getDealFileOne(String fileTableIdx);  // 파일 메인만 조회
 
   DealVO getDealDetail(String dealIdx);
-  List<FileVo> getDealFileDetail(String fileTableIdx);
+  List<FileVo> getDealFileDetail(String fileTableIdx);  // 파일 조회
 
   int getDealWrite(DealVO dealVO);
-  int getIDealFileInsert(FileVo fileVo);
+  int getIDealFileInsert(FileVo fileVo); // 파일 추가
   
-  int getDealFileDelete(FileVo fileVo);
-  int getDealFileUpdate(FileVo fileVo);
   int getDealUpdate(DealVO dealVO);
+  int getDealFileUpdate(FileVo fileVo); // 파일 수정
+  int getDealFileDelete(FileVo fileVo); // 파일 삭제
   
   List<DealVO> getDealManagement(String userIdx);
-  List<DealFavoriteVO> getDealinterest(String userIdx);
+  List<DealFavoriteVO> getDealinterest(String userIdx); 
+
+  int getDealFileNameDelete(String fileTableIdx, String fileName);
+  int getDealFileOrder(FileVo fileVo); // 파일 순서 매칭
 }

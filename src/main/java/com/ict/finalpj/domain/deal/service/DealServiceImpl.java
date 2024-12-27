@@ -77,5 +77,15 @@ public class DealServiceImpl implements DealService {
     @Override
     public List<DealFavoriteVO> getDealinterest(String userIdx) {
         return dealMapper.getDealinterest(userIdx);
+    } 
+
+    @Override
+    public int getDealFileNameDelete(String fileTableIdx, String fileName) {
+        return dealMapper.getDealFileNameDelete(fileTableIdx, fileName);
+    }
+
+    @Override
+    public int getDealFileOrder(FileVo fileVo) {
+        return dealMapper.getDealFileOrder(fileVo);
     }
 }

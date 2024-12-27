@@ -1,15 +1,17 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.domain.deal.service.DealService;
@@ -86,7 +86,6 @@ public class DealController {
     private List<FileVo> getFileList(String fileTableIdx) {
         try {
             List<FileVo> fileList = dealService.getDealFileDetail(fileTableIdx);
-            log.info("Files found for dealIdx {}: {}", fileTableIdx, fileList);
             return fileList != null ? fileList : new ArrayList<>();
         } catch (Exception e) {
             log.error("파일 조회 중 오류 발생: {}", e.getMessage());
@@ -137,6 +136,10 @@ public class DealController {
             @ModelAttribute("data") DealVO dealVO,
             @RequestParam(value = "file", required = false) MultipartFile[] files) {
         try {
+            if (!isValidDealVO(dealVO)) {
+                return createResponse(false, "필수 입력값이 누락되었습니다", null);
+            }
+
             String dealIdx = UUID.randomUUID().toString();
             dealVO.setDealIdx(dealIdx);
 
@@ -157,62 +160,128 @@ public class DealController {
         @PathVariable("dealIdx") String dealIdx,
         @ModelAttribute DealVO dealVO,
         @RequestParam(value = "file", required = false) MultipartFile[] files,
-        @RequestParam(value = "deletedFiles", required = false) String deletedFilesJson) 
+        @RequestParam(value = "fileName", required = false) List<String> fileNames)
     {
         try {
             dealVO.setDealIdx(dealIdx);
+            log.info("상품 수정 시작 - dealIdx: {}", dealIdx);
             
-            if (!isValidDealVO(dealVO)) {
-                return createResponse(false, "필수 항목이 누락되었습니다.", null);
+            // 삭제할 파일 처리
+            if (fileNames != null && !fileNames.isEmpty()) {
+                log.info("삭제할 파일 개수: {}", fileNames.size());
+                for (String fileName : fileNames) {
+                    try {
+                        // 실제 파일 삭제
+                        String filePath = "D:\\upload\\deal\\" + fileName;
+                        File file = new File(filePath);
+                        if (file.exists()) {
+                            boolean isDeleted = file.delete();
+                            if (isDeleted) {
+                                log.info("물리적 파일 삭제 성공 - fileName: {}", fileName);
+                                dealService.getDealFileNameDelete(dealIdx, fileName);
+                                log.info("DB 파일 정보 삭제 완료 - fileName: {}", fileName);
+                            } else {
+                                log.error("물리적 파일 삭제 실패 - fileName: {}", fileName);
+                            }
+                        } else {
+                            log.warn("삭제할 파일이 존재하지 않음 - fileName: {}", fileName);
+                            dealService.getDealFileNameDelete(dealIdx, fileName);
+                            log.info("DB 파일 정보만 삭제 완료 - fileName: {}", fileName);
+                        }
+                    } catch (Exception e) {
+                        log.error("파일 삭제 중 오류 발생 - fileName: {}", fileName, e);
+                    }
+                }
             }
 
-            handleDeletedFiles(dealIdx, deletedFilesJson);
+            // 새 파일 업로드
+            if (files != null && files.length > 0) {
+                log.info("업로드할 새 파일 개수: {}", files.length);
+                List<FileVo> existingFiles = dealService.getDealFileDetail(dealIdx);
+                int nextOrder = existingFiles != null ? existingFiles.size() : 0;
+
+                for (MultipartFile file : files) {
+                    if (file != null && !file.isEmpty()) {
+                        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                        log.info("새 파일 업로드 시작 - originalName: {}, newFileName: {}", 
+                                file.getOriginalFilename(), fileName);
+                        
+                        FileVo fileVo = FileVo.builder()
+                            .fileTableType("2")
+                            .fileTableIdx(dealIdx)
+                            .fileName(fileName)
+                            .fileOrder(nextOrder++)
+                            .build();
+
+                        File uploadDir = new File("D:\\upload\\deal");
+                        if (!uploadDir.exists()) {
+                            uploadDir.mkdirs();
+                        }
+
+                        file.transferTo(new File(uploadDir, fileName));
+                        dealService.getIDealFileInsert(fileVo);
+                        log.info("새 파일 업로드 완료 - fileName: {}", fileName);
+                    }
+                }
+            }
+
+            // 상품 정보 업데이트
             int result = dealService.getDealUpdate(dealVO);
+            log.info("상품 정보 업데이트 결과 - dealIdx: {}, result: {}", dealIdx, result);
             
-            return createResponse(
-                result > 0,
-                result > 0 ? "상품 수정 완료" : "상품 수정 실패",
-                null
-            );
+            return createResponse(result > 0, 
+                "상품 수정 " + (result > 0 ? "완료" : "실패"), null);
+            
+        } catch (IOException e) {
+            log.error("파일 처리 오류 - dealIdx: {}", dealIdx, e);
+            return createResponse(false, "파일 처리 중 오류가 발생했습니다", null);
         } catch (Exception e) {
-            log.error("캠핑마켓 수정 오류", e);
-            return createResponse(false, "상품 수정 오류", null);
+            log.error("상품 수정 오류 - dealIdx: {}", dealIdx, e);
+            return createResponse(false, "상품 수정 실패", null);
+        }
+    }
+
+    @DeleteMapping("/update/{dealIdx}/file")
+    public DataVO deleteFile(
+        @PathVariable("dealIdx") String dealIdx,
+        @RequestParam("fileName") String fileName) 
+    {
+        try {
+            // 실제 파일 삭제
+            String filePath = "D:\\upload\\deal\\" + fileName;
+            File file = new File(filePath);
+            if (file.exists()) {
+                boolean isDeleted = file.delete();
+                if (isDeleted) {
+                    log.info("물리적 파일 삭제 성공 - fileName: {}", fileName);
+                    dealService.getDealFileNameDelete(dealIdx, fileName);
+                    log.info("DB 파일 정보 삭제 완료 - fileName: {}", fileName);
+                    return createResponse(true, "파일 삭제 성공", null);
+                } else {
+                    return createResponse(false, "파일 삭제 실패", null);
+                }
+            } else {
+                // 파일이 없더라도 DB에서는 삭제
+                dealService.getDealFileNameDelete(dealIdx, fileName);
+                return createResponse(true, "DB 파일 정보 삭제 완료", null);
+            }
+        } catch (Exception e) {
+            log.error("파일 삭제 중 오류 발생 - fileName: {}", fileName, e);
+            return createResponse(false, "파일 삭제 중 오류 발생", null);
         }
     }
 
     // 유효성 검사 메서드
     private boolean isValidDealVO(DealVO dealVO) {
         return dealVO.getDealTitle() != null && 
-               dealVO.getDealCategory() != null && 
-               dealVO.getDealStatus() != null && 
-               dealVO.getDealDescription() != null && 
-               dealVO.getDealPrice() != null && 
-               dealVO.getDealPackage() != null && 
-               dealVO.getDealDirect() != null && 
-               dealVO.getDealDirectContent() != null && 
-               dealVO.getDealCount() != null;
+                dealVO.getDealCategory() != null && 
+                dealVO.getDealStatus() != null && 
+                dealVO.getDealDescription() != null && 
+                dealVO.getDealPrice() != null && 
+                dealVO.getDealPackage() != null && 
+                dealVO.getDealDirect() != null && 
+                dealVO.getDealDirectContent() != null && 
+                dealVO.getDealCount() != null;
     }
 
-    // 삭제된 파일 처리 메서드
-    private void handleDeletedFiles(String dealIdx, String deletedFilesJson) throws Exception {
-        if (deletedFilesJson == null || deletedFilesJson.isEmpty()) return;
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<Map<String, Object>> deletedFiles = mapper.readValue(deletedFilesJson, 
-            new TypeReference<List<Map<String, Object>>>() {});
-
-        for (Map<String, Object> fileInfo : deletedFiles) {
-            FileVo fileVo = FileVo.builder()
-                .fileTableType("2")
-                .fileTableIdx(dealIdx)
-                .fileName((String) fileInfo.get("fileName"))
-                .fileOrder(((Number) fileInfo.get("fileOrder")).intValue())
-                .build();
-            dealService.getDealFileDelete(fileVo);
-        }
-        
-        dealService.getDealFileUpdate(FileVo.builder()
-            .fileTableIdx(dealIdx)
-            .build());
-    }
 }
