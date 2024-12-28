@@ -9,7 +9,7 @@
     	select 
         	c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, c.doNm2, c.sigunguNm,
         	c.lineIntro, c.intro, c.featureNm, c.addr1, c.tel,
-        	c.manageSttus, c.hvofBgnde, c.hvofEnddle,
+        	c.manageSttus, c.hvofBgnde, c.hvofEnddle, c.modifiedtime,
         	coalesce(v.totalViews, 0) as totalViews, 
 			count(l.campIdx) as totalLogs,
         	coalesce(f.totalLikes, 0) AS totalLikes
@@ -39,7 +39,7 @@
     	group by
         	c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, c.doNm2, c.sigunguNm,
         	c.lineIntro, c.intro, c.featureNm, c.addr1, c.tel, 
-        	c.manageSttus, c.hvofBgnde, c.hvofEnddle, v.totalViews, f.totalLikes
+        	c.manageSttus, c.hvofBgnde, c.hvofEnddle, c.modifiedtime, v.totalViews, f.totalLikes
    	 	order by 
         	<choose>
 				<!-- 조회수순 -->
