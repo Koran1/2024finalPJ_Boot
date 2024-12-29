@@ -238,7 +238,7 @@ public class UserController {
 
     // 이메일 전송 및 확인
     @GetMapping("/join/mailchk/{userMail}")
-    public DataVO sendMail(@PathVariable String userMail) {
+    public DataVO sendMail(@PathVariable("userMail") String userMail) {
         DataVO dvo = new DataVO();
         try {
             Random rand = new Random();
@@ -331,7 +331,7 @@ public class UserController {
     }
     
     @GetMapping("/getSocials")
-    public DataVO getSocialData(@RequestParam String socialIdx) {
+    public DataVO getSocialData(@RequestParam("socialIdx") String socialIdx) {
         DataVO dvo = new DataVO();
         try {
             log.info("socialIdx : " + socialIdx);

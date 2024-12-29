@@ -23,10 +23,10 @@ spring :
 
     # DB 설정
     datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://localhost:3306/ictedu_db
         username: ictedu
         password: 1111
+        driver-class-name: com.mysql.cj.jdbc.Driver
     web:
         resources:
             static-locations: file:D:/upload/deal/

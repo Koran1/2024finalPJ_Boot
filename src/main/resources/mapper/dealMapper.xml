@@ -5,54 +5,110 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.finalpj.domain.deal.mapper.DealMapper">
+
+  <!-- 공통 컬럼 -->
+  <sql id="dealColumns">
+    dealIdx, dealSellerUserIdx, dealSellerNick, dealTitle, dealCategory, 
+    dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
+    dealDirectContent, dealCount, dealRegDate
+  </sql>
+
   <select id="getDealMainList" resultType="DealVO">
-    select * from pjdeal order by dealIdx asc
+    SELECT <include refid="dealColumns"/> 
+    FROM pjdeal 
+    ORDER BY dealIdx DESC
+  </select>
+
+<!-- 파일 하나 가져오기 --> 
+  <select id="getDealFileOne" parameterType="String" resultType="FileVo">
+    SELECT * FROM pjfile 
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileTableType = 2 
+    AND fileOrder = 0 
+    LIMIT 1
   </select>
 
   <select id="getDealDetail" parameterType="String" resultType="DealVO">
-    SELECT 
-        d.*,
-        GROUP_CONCAT(f.fileName ORDER BY f.fileOrder) as fileNames,
-        GROUP_CONCAT(f.fileOrder ORDER BY f.fileOrder) as fileOrders
-    FROM pjdeal d
-    LEFT JOIN pjfile f ON d.dealIdx = f.fileTableIdx AND f.fileTableType = '2'
-    WHERE d.dealIdx = #{dealIdx}
-    GROUP BY d.dealIdx
+    SELECT <include refid="dealColumns"/>
+    FROM pjdeal 
+    WHERE dealIdx = #{dealIdx}
   </select>
 
-  <select id="getDealFileList" parameterType="String" resultType="FileVo">
-    select * from pjfile
-    where fileTableIdx = #{dealIdx} order by fileOrder asc
+<!-- 파일 여러개 가져오기 --> 
+  <select id="getDealFileDetail" parameterType="String" resultType="FileVo">
+    SELECT * FROM pjfile 
+    WHERE fileTableIdx = #{fileTableIdx}
+    AND fileTableType = 2
+    ORDER BY fileOrder ASC
   </select>
 
   <insert id="getDealWrite" parameterType="DealVO">
-    INSERT INTO pjdeal (dealIdx, dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealDirectContent, dealCount, dealRegDate)
-    VALUES (#{dealIdx},#{dealTitle},#{dealCategory},#{dealStatus},#{dealDescription},#{dealPrice},#{dealPackage},#{dealDirect},#{dealDirectContent},#{dealCount},NOW())
+    INSERT INTO pjdeal 
+    (dealIdx, dealSellerUserIdx, dealSellerNick, dealTitle, dealCategory, 
+    dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
+    dealDirectContent, dealCount, dealRegDate) 
+    VALUES 
+    (#{dealIdx}, #{dealSellerUserIdx}, #{dealSellerNick}, #{dealTitle}, 
+    #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, 
+    #{dealPackage}, #{dealDirect}, #{dealDirectContent}, #{dealCount}, NOW())
   </insert>
 
-  <insert id="insertFileInfo" parameterType="FileVo">
-    INSERT INTO pjfile (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
-    VALUES (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
+<!-- 파일 여러개 삽입 -->
+  <insert id="getIDealFileInsert" parameterType="FileVo">
+    INSERT INTO pjfile 
+    (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
+    VALUES 
+    (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
   </insert>
+
+<!-- 파일명으로 파일 삭제 -->
+  <delete id="getDealFileNameDelete">
+    DELETE FROM pjfile 
+    WHERE fileTableIdx = #{param1}
+    AND fileName = #{param2}
+    AND fileTableType = 2
+  </delete>
+
+<!-- 파일 하나 수정 -->
+  <update id="getDealFileUpdate" parameterType="FileVo">
+    UPDATE pjfile 
+    SET fileName = #{fileName}
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileOrder = #{fileOrder}
+  </update>
 
   <update id="getDealUpdate" parameterType="DealVO">
-    UPDATE pjdeal
-    SET
-        dealTitle = #{dealTitle},
-        dealCategory = #{dealCategory},
-        dealStatus = #{dealStatus},
-        dealDescription = #{dealDescription},
-        dealPrice = #{dealPrice},
-        dealPackage = #{dealPackage},
+    UPDATE pjdeal 
+    SET dealTitle = #{dealTitle}, 
+        dealCategory = #{dealCategory}, 
+        dealStatus = #{dealStatus}, 
+        dealDescription = #{dealDescription}, 
+        dealPrice = #{dealPrice}, 
+        dealPackage = #{dealPackage}, 
         dealDirect = #{dealDirect},
         dealDirectContent = #{dealDirectContent},
-        dealCount = #{dealCount},
-        dealRegDateUpdate = NOW()
+        dealCount = #{dealCount} 
     WHERE dealIdx = #{dealIdx}
   </update>
 
-  <update id="updateDealCount" parameterType="FileVo">
-    update pjdeal set dealCount = dealCount + 1 where dealIdx = #{fileTableIdx}
+<!-- 파일 순서 변경 -->
+  <update id="getDealFileOrder" parameterType="FileVo">
+    UPDATE pjfile 
+    SET fileOrder = #{fileOrder}
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileName = #{fileName}
   </update>
+
+  <select id="getDealinterest" parameterType="String" resultType="DealFavoriteVO">
+    SELECT df.*, d.dealTitle, d.dealPrice, d.dealStatus
+    FROM pjdealfavorite df
+    JOIN pjdeal d ON df.dealIdx = d.dealIdx
+    WHERE df.userIdx = #{userIdx}
+    ORDER BY df.favoriteIdx DESC
+  </select>
+
+  <select id="getDealManagement" parameterType="String" resultType="DealVO">
+    select * from pjdeal where dealSellerUserIdx = #{userIdx}
+  </select>
 
 </mapper>
