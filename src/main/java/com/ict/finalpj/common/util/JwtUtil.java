@@ -65,7 +65,12 @@ public class JwtUtil {
 
     // 토큰에서 이름 추출 = jwtToken에서 Subject
     public String extractUserName(String jwtToken){
-        return extractClaim(jwtToken, Claims::getSubject);
+        try {
+            return extractClaim(jwtToken, Claims::getSubject);
+        } catch (Exception e) {
+            log.error("토큰에서 사용자 정보 추출 실패: {}", e.getMessage());
+            return null;
+        }
     }
 
     // 특정 데이터 추출

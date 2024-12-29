@@ -1,7 +1,5 @@
 package com.ict.finalpj.common.vo;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +13,5 @@ public class ViewsVO {
     private String viewTableIdx;
     private String userIdx;
     private Integer viewCount;
-    private Date viewRegTime;
+    private String viewRegTime;
 }

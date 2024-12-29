@@ -39,6 +39,13 @@ public class DealController {
     @Autowired
     private DealService dealService;
 
+    // JWT 관련 의존성 제거
+    // @Autowired
+    // private JwtUtil jwtUtil;
+    
+    // @Autowired
+    // private UserService userService;
+
     // 공통 응답 생성 메서드
     private DataVO createResponse(boolean success, String message, Object data) {
         return DataVO.builder()
@@ -121,10 +128,12 @@ public class DealController {
         try {
             DealVO dealVO = dealService.getDealDetail(dealIdx);
             List<FileVo> fileList = getFileList(dealIdx);
+            int viewCount = dealService.getTotalViewCount(dealIdx);
 
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("deal", dealVO);
             resultMap.put("files", fileList);
+            resultMap.put("viewCount", viewCount);
 
             return createResponse(true, "상품 정보 조회 성공", resultMap);
         } catch (Exception e) {
@@ -142,8 +151,11 @@ public class DealController {
                 return createResponse(false, "필수 입력값이 누락되었습니다", null);
             }
 
+            // 임시로 하드코딩된 사용자 정보 설정
             String dealIdx = UUID.randomUUID().toString();
             dealVO.setDealIdx(dealIdx);
+            dealVO.setDealSellerUserIdx("1");  // 테스트용 임시 userIdx
+            dealVO.setDealSellerNick("테스트사용자");  // 테스트용 임시 닉네임
 
             int result = dealService.getDealWrite(dealVO);
             if (result > 0) {
@@ -275,15 +287,11 @@ public class DealController {
 
     // 유효성 검사 메서드
     private boolean isValidDealVO(DealVO dealVO) {
-        return dealVO.getDealTitle() != null && 
-                dealVO.getDealCategory() != null && 
-                dealVO.getDealStatus() != null && 
-                dealVO.getDealDescription() != null && 
-                dealVO.getDealPrice() != null && 
-                dealVO.getDealPackage() != null && 
-                dealVO.getDealDirect() != null && 
-                dealVO.getDealDirectContent() != null && 
-                dealVO.getDealCount() != null;
+        return dealVO != null 
+            && dealVO.getDealTitle() != null && !dealVO.getDealTitle().trim().isEmpty()
+            && dealVO.getDealDescription() != null && !dealVO.getDealDescription().trim().isEmpty()
+            && dealVO.getDealPrice() != null
+            && dealVO.getDealCount() != null;
     }
 
 
@@ -352,6 +360,42 @@ public class DealController {
         } catch (Exception e) {
             log.error("좋아요 처리 중 오류 발생 - userIdx: {}, dealIdx: {}", userIdx, dealIdx, e);
             return ResponseEntity.ok(new DataVO(false, null, null, "좋아요 처리 중 오류가 발생했습니다.", null));
+        }
+    }
+
+    @PutMapping("/update/{dealIdx}/reorder")
+    public DataVO reorderFiles(@PathVariable("dealIdx") String dealIdx) {
+        try {
+            log.info("파일 순서 재정렬 시작 - dealIdx: {}", dealIdx);
+            
+            // 현재 파일 목록 조회
+            List<FileVo> files = dealService.getDealFileDetail(dealIdx);
+            
+            // 파일 순서 재정렬
+            for (int i = 0; i < files.size(); i++) {
+                FileVo file = files.get(i);
+                file.setFileOrder(i);
+                dealService.getDealFileOrder(file);
+            }
+            
+            log.info("파일 순서 재정렬 완료 - dealIdx: {}", dealIdx);
+            return createResponse(true, "파일 순서 재정렬 완료", null);
+            
+        } catch (Exception e) {
+            log.error("파일 순서 재정렬 중 오류 발생 - dealIdx: {}", dealIdx, e);
+            return createResponse(false, "파일 순서 재정렬 실패", null);
+        }
+    }
+
+    // 좋아요 개수 조회 API 추가
+    @GetMapping("/favorite-count/{dealIdx}")
+    public ResponseEntity<DataVO> getFavoriteCount(@PathVariable String dealIdx) {
+        try {
+            int count = dealService.getFavoriteCount(dealIdx); // 좋아요 개수 조회
+            return ResponseEntity.ok(new DataVO(true, count, null, "좋아요 개수 조회 성공", null));
+        } catch (Exception e) {
+            log.error("좋아요 개수 조회 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, 0, null, "좋아요 개수 조회 실패", null));
         }
     }
 
