@@ -7,8 +7,8 @@ spring :
         driver-class-name: com.mysql.cj.jdbc.Driver
         # url: jdbc:mysql://localhost:3306/ictedu_db
         # username: ictedu
-        url: jdbc:mysql://localhost:3306/campers_db
-        username: campers
+        url: jdbc:mysql://localhost:3306/ictedu_db
+        username: ictedu
         password: 1111
     web:
         resources:
