@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -43,4 +44,8 @@ public interface DealService {
 
     // 총 조회수 조회
     int getTotalViewCount(String dealIdx);
+
+    int getDealStatusUpdate(String dealIdx, String status);
+
+    int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO);
 } 

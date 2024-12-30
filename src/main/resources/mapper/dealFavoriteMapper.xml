@@ -11,6 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!-- 좋아요 상태 확인 -->
     <select id="isLiked" resultType="boolean">
+        /* 좋아요 상태 확인 - userIdx: #{userIdx}, dealIdx: #{dealIdx} */
         SELECT COUNT(*) <![CDATA[>]]> 0
         FROM pjdealfavorite
         WHERE userIdx = #{userIdx} AND dealIdx = #{dealIdx}
@@ -18,12 +19,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!-- 좋아요 추가 -->
     <insert id="likeDeal">
+        /* 좋아요 추가 - userIdx: #{userIdx}, dealIdx: #{dealIdx} */
         INSERT INTO pjdealfavorite (userIdx, dealIdx)
         VALUES (#{userIdx}, #{dealIdx})
     </insert>
 
     <!-- 좋아요 삭제 -->
     <delete id="unlikeDeal">
+        /* 좋아요 삭제 - userIdx: #{userIdx}, dealIdx: #{dealIdx} */
         DELETE FROM pjdealfavorite
         WHERE userIdx = #{userIdx} AND dealIdx = #{dealIdx}
     </delete>

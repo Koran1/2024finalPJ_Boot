@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,7 @@ import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.service.DealService;
+import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -336,30 +338,34 @@ public class DealController {
             log.info("좋아요 토글 시작 - userIdx: {}, dealIdx: {}, 현재상태: {}", 
                     userIdx, dealIdx, isLiked ? "좋아요" : "좋아요 안함");
 
-            int result;
-            if (isLiked) {
-                // 이미 좋아요 상태라면 좋아요 취소
-                result = dealService.unlikeDeal(userIdx, dealIdx);
-                log.info("좋아요 취소 처리 결과 - result: {}", result);
-            } else {
-                // 좋아요 추가
-                result = dealService.likeDeal(userIdx, dealIdx);
-                log.info("좋아요 추가 처리 결과 - result: {}", result);
+            // userIdx 유효성 검사
+            if (userIdx == null || userIdx.trim().isEmpty()) {
+                return ResponseEntity.ok(new DataVO(false, null, null, "유효하지 않은 사용자입니다.", null));
             }
 
-            String message = isLiked ? "좋아요가 취소되었습니다." : "좋아요가 추가되었습니다.";
-            log.info("좋아요 토글 완료 - message: {}", message);
+            int result;
+            String message;
+            if (isLiked) {
+                result = dealService.unlikeDeal(userIdx, dealIdx);
+                message = result > 0 ? "좋아요가 취소되었습니다." : "좋아요 취소에 실패했습니다.";
+                log.info("좋아요 취소 처리 결과 - result: {}, message: {}", result, message);
+            } else {
+                result = dealService.likeDeal(userIdx, dealIdx);
+                message = result > 0 ? "좋아요가 추가되었습니다." : "좋아요 추가에 실패했습니다.";
+                log.info("좋아요 추가 처리 결과 - result: {}, message: {}", result, message);
+            }
 
             return ResponseEntity.ok(new DataVO(
-                    result > 0, // 성공 여부
-                    null,      // data
-                    null,      // JWT 토큰
-                    message,   // 메시지
-                    null       // UserDetails
+                    result > 0,
+                    result,
+                    null,
+                    message,  // 항상 메시지 포함
+                    null
             ));
         } catch (Exception e) {
-            log.error("좋아요 처리 중 오류 발생 - userIdx: {}, dealIdx: {}", userIdx, dealIdx, e);
-            return ResponseEntity.ok(new DataVO(false, null, null, "좋아요 처리 중 오류가 발생했습니다.", null));
+            String errorMessage = "좋아요 처리 중 오류가 발생했습니다: " + e.getMessage();
+            log.error(errorMessage);
+            return ResponseEntity.ok(new DataVO(false, null, null, errorMessage, null));
         }
     }
 
@@ -397,6 +403,45 @@ public class DealController {
         } catch (Exception e) {
             log.error("좋아요 개수 조회 중 오류 발생", e);
             return ResponseEntity.ok(new DataVO(false, 0, null, "좋아요 개수 조회 실패", null));
+        }
+    }
+
+    @PutMapping("/status/{dealIdx}")
+    public ResponseEntity<DataVO> updateDealStatus(
+        @PathVariable("dealIdx") String dealIdx,
+        @RequestParam("status") String status) {
+        try {
+            log.info("판매 상태 변경 시작 - dealIdx: {}, status: {}", dealIdx, status);
+            int result = dealService.getDealStatusUpdate(dealIdx, status);
+            
+            if (result > 0) {
+                return ResponseEntity.ok(new DataVO(true, null, null, "판매 상태가 변경되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "판매 상태 변경에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            log.error("판매 상태 변경 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "판매 상태 변경 중 오류가 발생했습니다.", null));
+        }
+    }
+
+    @PostMapping("/satisfaction")
+    public ResponseEntity<DataVO> getDealSatisfactionInsert(@RequestBody DealSatisfactionVO satisfactionVO) {
+        try {
+            log.info("만족도 평가 등록 시작 - 평가점수: {}, 내용: {}", 
+                satisfactionVO.getDealSatisBuyerScore(), 
+                satisfactionVO.getDealSatisBuyerContent());
+
+            int result = dealService.getDealSatisfactionInsert(satisfactionVO);
+            
+            if (result > 0) {
+                return ResponseEntity.ok(new DataVO(true, null, null, "만족도 평가가 등록되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            log.error("만족도 평가 등록 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록 중 오류가 발생했습니다.", null));
         }
     }
 

@@ -10,7 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   <sql id="dealColumns">
     dealIdx, dealSellerUserIdx, dealSellerNick, dealTitle, dealCategory, 
     dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
-    dealDirectContent, dealCount, dealRegDate
+    dealDirectContent, dealCount, dealRegDate, deal02
   </sql>
 
   <select id="getDealMainList" resultType="DealVO">
@@ -175,5 +175,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE viewTableIdx = #{dealIdx}
     AND viewTableType = 1
 </select>
+
+<!-- 판매 상태 변경 -->
+<update id="getDealStatusUpdate" parameterType="String">
+    UPDATE pjdeal 
+    SET deal02 = #{status}
+    WHERE dealIdx = #{dealIdx}
+</update>
+
+<!-- 만족도 평가 저장 -->
+<insert id="getDealSatisfactionInsert" parameterType="DealSatisfactionVO">
+    INSERT INTO pjdealsatisfaction (
+        dealSatisSellerUserIdx,
+        dealSatisSellerNick,
+        dealSatisBuyerUserIdx,
+        dealSatisBuyerNick,
+        dealSatisBuyerContent,
+        dealSatisBuyerScore,
+        dealSatisBuyerRegDate
+    ) VALUES (
+        #{dealSatisSellerUserIdx},
+        #{dealSatisSellerNick},
+        #{dealSatisBuyerUserIdx},
+        #{dealSatisBuyerNick},
+        #{dealSatisBuyerContent},
+        #{dealSatisBuyerScore},
+        NOW()
+    )
+</insert>
 
 </mapper>

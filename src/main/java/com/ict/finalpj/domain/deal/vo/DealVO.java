@@ -1,11 +1,13 @@
 package com.ict.finalpj.domain.deal.vo;
 
+import java.util.List;
+
 import com.ict.finalpj.common.vo.FileVo;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -30,6 +32,10 @@ public class DealVO {
     private String dealRegDateUpdate;
     private String dealUserFavorCount;
     private String dealUserViewCount;
+    private String dealView;
+    private String deal01;
+    private String deal02;
+    private String deal03;
     
     // FileVO에서 처리하는 것이 더 적절할 수 있지만,
     // DealVO가 파일 정보를 포함해야 하는 비즈니스 요구사항이 있다면 현재 구조를 유지하는 것이 좋습니다.

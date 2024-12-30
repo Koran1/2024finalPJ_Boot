@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -44,5 +45,9 @@ public interface DealMapper {
 
     // 총 조회수 조회
     int getTotalViewCount(String dealIdx);
+
+    int getDealStatusUpdate(@Param("dealIdx") String dealIdx, @Param("status") String status);
+
+    int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO);
 }
  

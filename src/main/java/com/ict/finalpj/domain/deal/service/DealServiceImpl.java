@@ -11,6 +11,7 @@ import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -164,4 +165,15 @@ public class DealServiceImpl implements DealService {
     public int getTotalViewCount(String dealIdx) {
         return dealMapper.getTotalViewCount(dealIdx);
     }
+
+    @Override
+    public int getDealStatusUpdate(String dealIdx, String status) {
+        return dealMapper.getDealStatusUpdate(dealIdx, status);
+    }
+
+    @Override
+    public int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO) {
+        return dealMapper.getDealSatisfactionInsert(satisfactionVO);
+    }
+
 }

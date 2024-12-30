@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper">
+
+  <!-- 만족도 등록 -->
+  <insert id="getDealSatisfactionInsert" parameterType="DealSatisfactionVO">
+    INSERT INTO pjdealSatis (dealSatisSellerUserIdx, dealSatisSellerNick, dealSatisBuyerUserIdx, dealSatisBuyerNick, dealSatisBuyerContent, dealSatisBuyerRegDate, dealSatisBuyerScore, dealSatis01, dealSatis02) 
+    VALUES (#{dealSellerUserIdx}, #{dealSellerNick}, #{userIdx}, #{nickname}, #{dealSatisBuyerContent}, NOW(), #{dealSatisBuyerScore})
+  </insert>
+
+  <!-- 만족도 상세 조회 -->
+  <select id="getDealSatisfactionDetail" parameterType="String" resultType="DealSatisfactionVO">
+    SELECT * FROM pjdealSatis WHERE dealSatisSellerIdx = #{dealSatisSellerIdx}
+  </select>
+
+<!-- 판매자별 만족도 조회 -->
+  <select id="getDealSellerSatisfaction" parameterType="String" resultType="DealSatisfactionVO">
+    SELECT * FROM pjdealSatis WHERE dealSatisSellerIdx = #{dealSatisSellerIdx}
+  </select>
+
+</mapper>
