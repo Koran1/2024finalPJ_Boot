@@ -77,4 +77,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     select * from pjdeal where dealSellerUserIdx = #{userIdx}
   </select>
 
+ <select id="getDealMainSearch" parameterType="String" resultType="DealVO">
+    select * from pjdeal 
+    WHERE (dealTitle LIKE CONCAT('%', #{searchKeyword}, '%') 
+        OR dealDescription LIKE CONCAT('%', #{searchKeyword}, '%'))  
+    order by dealIdx desc
+  </select>
+
+  <insert id="getFavorite" parameterType="DealFavoriteVO">
+    INSERT INTO pjdealfavorite 
+    (userIdx, dealIdx) 
+    VALUES (#{userIdx}, #{dealIdx})
+  </insert>
+
+  <delete>
+    
+  </delate>
+
+
 </mapper>

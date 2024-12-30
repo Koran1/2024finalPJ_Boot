@@ -8,13 +8,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 @Service
 public interface DealService {
   List<DealVO> getDealMainList();
   FileVo getFileVO(String dealIdx);
-
+  
   DealVO getDealDetail(String dealIdx);
   DataVO updateDeal(DealVO dealVO, MultipartFile[] files);
   @Transactional
@@ -23,4 +24,8 @@ public interface DealService {
   
   List<FileVo> getPjFileByDealIdx(String dealIdx);
   List<DealVO> getDealManagement(String userIdx);
+
+  List<DealVO> getDealMainSearch(String searchKeyword);
+  void getFavorite(DealFavoriteVO DealFavoriteVO);
+
 }

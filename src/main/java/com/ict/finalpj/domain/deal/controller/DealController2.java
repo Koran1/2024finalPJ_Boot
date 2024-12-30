@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.deal.service.DealService;
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Slf4j
 @RestController
@@ -55,5 +58,48 @@ public class DealController2 {
       return dataVO;
   }
   
+  @GetMapping("/dealMainSearch")
+  public DataVO getMethodName(@RequestParam("searchKeyword") String searchKeyword) {
+      DataVO dvo = new DataVO();
+      try {
+        List<DealVO> searchList = dealService.getDealMainSearch(searchKeyword);
+        log.info("searchList : " + searchList);
+        dvo.setData(searchList);
+        dvo.setSuccess(true);
+        dvo.setMessage("검색 성공");
+      } catch (Exception e) {
+        dvo.setSuccess(false);
+        dvo.setMessage("검색 실패");
+        e.printStackTrace();
+      }
+      return dvo;
+  }
 
+  @GetMapping("/dealMainfavorite")
+  public DataVO getFavorite(
+    @RequestParam("userIdx") String userIdx , @RequestParam("dealIdx") String dealIdx) {
+      DataVO dvo = new DataVO();
+      try {
+        log.info("userIdx : " + userIdx);
+        log.info("dealIdx : " + dealIdx);
+
+        DealFavoriteVO dfvo = new DealFavoriteVO();
+        dfvo.setUserIdx(userIdx);
+        dfvo.setDealIdx(dealIdx);
+
+        dealService.getFavorite(dfvo);
+        dvo.setSuccess(true);
+        dvo.setMessage("찜 성공");
+      } catch (Exception e) {
+        dvo.setSuccess(false);
+        dvo.setMessage("찜 실패");
+        e.printStackTrace();
+      }
+      return dvo;
+  }
+ 
+  
+  
+
+  
 }

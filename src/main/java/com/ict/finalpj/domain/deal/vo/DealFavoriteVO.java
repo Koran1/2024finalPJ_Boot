@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DealFavoriteVO {
-  private String dealFavoriteIdx, dealFavoriteUserIdx, dealFavoriteDealIdx, dealFavorit01, dealFavorit02;
+  private String dealFavoriteIdx, userIdx, dealIdx, dealFavorit01, dealFavorit02;
 }

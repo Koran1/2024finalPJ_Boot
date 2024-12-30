@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 @Mapper
@@ -21,4 +22,6 @@ public interface DealMapper {
   void updateFile(FileVo fileVO);
   void insertFileInfo(FileVo fileVo);
   List<DealVO> getDealManagement(String userIdx);
+  List<DealVO> getDealMainSearch(String searchKeyword);
+  void getFavorite(DealFavoriteVO DealFavoriteVO);
 }
