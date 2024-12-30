@@ -154,8 +154,8 @@ public class DealController {
             // 임시로 하드코딩된 사용자 정보 설정
             String dealIdx = UUID.randomUUID().toString();
             dealVO.setDealIdx(dealIdx);
-            dealVO.setDealSellerUserIdx("1");  // 테스트용 임시 userIdx
-            dealVO.setDealSellerNick("테스트사용자");  // 테스트용 임시 닉네임
+            dealVO.setDealSellerUserIdx(dealVO.getDealSellerUserIdx());  // 테스트용 임시 userIdx
+            dealVO.setDealSellerNick(dealVO.getDealSellerNick());  // 테스트용 임시 닉네임
 
             int result = dealService.getDealWrite(dealVO);
             if (result > 0) {
@@ -389,9 +389,10 @@ public class DealController {
 
     // 좋아요 개수 조회 API 추가
     @GetMapping("/favorite-count/{dealIdx}")
-    public ResponseEntity<DataVO> getFavoriteCount(@PathVariable String dealIdx) {
+    public ResponseEntity<DataVO> getFavoriteCount(@PathVariable("dealIdx") String dealIdx) {
         try {
-            int count = dealService.getFavoriteCount(dealIdx); // 좋아요 개수 조회
+            int count = dealService.getFavoriteCount(dealIdx);
+            log.info("좋아요 개수 조회 - dealIdx: {}, count: {}", dealIdx, count);
             return ResponseEntity.ok(new DataVO(true, count, null, "좋아요 개수 조회 성공", null));
         } catch (Exception e) {
             log.error("좋아요 개수 조회 중 오류 발생", e);

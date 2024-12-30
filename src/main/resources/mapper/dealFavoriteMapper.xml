@@ -30,7 +30,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!-- 좋아요 개수 조회 -->
     <select id="getFavoriteCount" parameterType="String" resultType="int">
-        SELECT COUNT(*) FROM pjdealfavorite WHERE dealIdx = #{dealIdx}
+        SELECT COUNT(*) 
+        FROM pjdealfavorite 
+        WHERE dealIdx = #{dealIdx}
     </select>
 
     <!-- 조회수 정보 가져오기 -->

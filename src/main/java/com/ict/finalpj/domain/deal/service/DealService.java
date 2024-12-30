@@ -43,4 +43,4 @@ public interface DealService {
 
     // 총 조회수 조회
     int getTotalViewCount(String dealIdx);
-}
+} 

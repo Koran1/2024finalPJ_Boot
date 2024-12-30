@@ -3,6 +3,7 @@ package com.ict.finalpj.domain.deal.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
@@ -28,15 +29,15 @@ public interface DealMapper {
 
     // DealFavorite 관련 메서드들
     List<DealFavoriteVO> getDealinterest(String userIdx);
-    boolean isLiked(String userIdx, String dealIdx);
-    int likeDeal(String userIdx, String dealIdx);
-    int unlikeDeal(String userIdx, String dealIdx);
+    boolean isLiked(@Param("userIdx") String userIdx, @Param("dealIdx") String dealIdx);
+    int likeDeal(@Param("userIdx") String userIdx, @Param("dealIdx") String dealIdx);
+    int unlikeDeal(@Param("userIdx") String userIdx, @Param("dealIdx") String dealIdx);
     int getFavoriteCount(String dealIdx);
     
     // 조회수 관련 메서드들
-    ViewsVO getViewCount(String userIdx, String dealIdx);
-    int insertViewCount(String userIdx, String dealIdx);
-    int updateViewCount(String userIdx, String dealIdx);
+    ViewsVO getViewCount(@Param("userIdx") String userIdx, @Param("dealIdx") String dealIdx);
+    int insertViewCount(@Param("userIdx") String userIdx, @Param("dealIdx") String dealIdx);
+    int updateViewCount(@Param("userIdx") String userIdx, @Param("dealIdx") String dealIdx);
 
     // 판매자 정보 조회 
     UserVO getUserInfoByIdx(String userIdx);
@@ -44,3 +45,4 @@ public interface DealMapper {
     // 총 조회수 조회
     int getTotalViewCount(String dealIdx);
 }
+ 
