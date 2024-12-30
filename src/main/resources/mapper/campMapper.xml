@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.finalpj.domain.camp.mapper.CampMapper">
+	<select id="getCampingList" parameterType="CampSearchVO" resultType="CampVO">
+    	select 
+        	c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, c.doNm2, c.sigunguNm,
+        	c.lineIntro, c.intro, c.featureNm, c.addr1, c.tel,
+        	c.manageSttus, c.hvofBgnde, c.hvofEnddle, c.modifiedtime,
+        	coalesce(v.totalViews, 0) as totalViews, 
+			count(l.campIdx) as totalLogs,
+        	coalesce(f.totalLikes, 0) AS totalLikes
+    	from pjcamp c
+    	left join (
+        	select viewTableIdx, sum(viewCount) as totalViews from pjviews 
+        	where viewTableType = 2 group by viewTableIdx
+    	) v on c.campIdx = v.viewTableIdx
+		left outer join pjcamplog l on c.campIdx = l.campIdx 
+    	left join (
+			select campIdx, count(userIdx) as totalLikes from pjfavcamp group by campIdx
+		) f on c.campIdx = f.campIdx
+    	where 1=1
+        	<if test="keyword != null and keyword != ''">
+            	and (c.facltNm like concat('%', #{keyword}, '%') 
+                	or c.lineIntro like concat('%', #{keyword}, '%') 
+                 	or c.intro like concat('%', #{keyword}, '%') 
+                 	or c.featureNm like concat('%', #{keyword}, '%')
+                 	or c.manageSttus like concat('%', #{keyword}, '%'))
+        	</if>
+        	<if test="doNm2 != null and doNm2 != ''">
+            	and c.doNm2 like concat('%', #{doNm2}, '%')
+        	</if>
+        	<if test="sigunguNm != null and sigunguNm != ''">
+           		and c.sigunguNm like concat('%', #{sigunguNm}, '%')
+        	</if>
+    	group by
+        	c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, c.doNm2, c.sigunguNm,
+        	c.lineIntro, c.intro, c.featureNm, c.addr1, c.tel, 
+        	c.manageSttus, c.hvofBgnde, c.hvofEnddle, c.modifiedtime, v.totalViews, f.totalLikes
+   	 	order by 
+        	<choose>
+				<!-- 조회수순 -->
+            	<when test="sortOption == 'views'">
+                	totalViews desc, c.campIdx asc
+            	</when>
+				<!-- 가나다순 -->
+            	<when test="sortOption == 'title'">
+                c.facltNm asc
+            	</when>
+				<!-- 찜순 -->
+            	<when test="sortOption == 'likes'">
+                	totalLikes desc, c.facltNm asc
+            	</when>
+				<!-- 최신순 -->
+            	<otherwise>
+                	c.modifiedtime desc, c.facltNm asc
+            	</otherwise>
+        	</choose>
+    		limit #{size} offset #{offset}
+	</select>
+
+	<select id="getCampSearchCount" parameterType="CampSearchVO" resultType="int">
+		select count(*) from pjcamp c 
+		left outer join pjviews v on v.viewTableType = 2 and c.campIdx = v.viewTableIdx 
+		left outer join pjfavcamp f on c.campIdx = f.campIdx 
+		where 1=1 
+			<if test="keyword != null and keyword != ''">
+        		AND (facltNm LIKE CONCAT('%', #{keyword}, '%') 
+            		OR lineIntro LIKE CONCAT('%', #{keyword}, '%') 
+            		OR intro LIKE CONCAT('%', #{keyword}, '%') 
+            		OR featureNm LIKE CONCAT('%', #{keyword}, '%')
+					OR manageSttus LIKE CONCAT('%', #{keyword}, '%'))
+    		</if>
+			<if test="doNm2 != null and doNm2 != ''">
+    			AND doNm2 LIKE CONCAT('%', #{doNm2}, '%')
+			</if>
+			<if test="sigunguNm != null and sigunguNm != ''">
+    			AND sigunguNm LIKE CONCAT('%', #{sigunguNm}, '%')
+			</if>
+	</select>
+
+	<select id="getDoNmList" resultType="String">
+		select distinct doNm2, regionCode from pjcamp order by regionCode asc
+	</select>
+
+	<select id="getSigunguList" parameterType="String" resultType="String">
+		select distinct sigunguNm from pjcamp where doNm2=#{doNm2} order by sigunguNm asc
+	</select>
+
+</mapper>

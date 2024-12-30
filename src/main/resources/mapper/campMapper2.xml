@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.finalpj.domain.camp.mapper.CampMapper2">
+
+	<!-- 캠핑장 상세 정보 -->
+    <select id="getCampDetail" resultType="CampVO">
+        SELECT * FROM pjcamp WHERE campIdx = #{campIdx}
+    </select>
+
+    <!-- 캠핑로그 목록 -->
+    <select id="getCampLog" resultType="CampLogVO">
+        SELECT * FROM pjcamplog WHERE campIdx = #{campIdx}
+        <choose>
+            <when test="logAlign == 'rec'">
+                ORDER BY logRecommend DESC
+            </when>
+            <otherwise>
+                ORDER BY logUpdateDate DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 좋아요 상태 확인 -->
+    <select id="isLiked" resultType="boolean">
+        SELECT COUNT(*) <![CDATA[>]]> 0
+        FROM pjfavcamp
+        WHERE userIdx = #{userIdx} AND campIdx = #{campIdx}
+    </select>
+
+    <!-- 좋아요 추가 -->
+    <insert id="addLike">
+        INSERT INTO pjfavcamp (userIdx, campIdx)
+        VALUES (#{userIdx}, #{campIdx})
+    </insert>
+
+    <!-- 좋아요 삭제 -->
+    <delete id="removeLike">
+        DELETE FROM pjfavcamp
+        WHERE userIdx = #{userIdx} AND campIdx = #{campIdx}
+    </delete>
+
+
+    <!-- 조회수 정보 가져오기 -->
+    <select id="getViewInfo" resultType="ViewsVO">
+        SELECT * 
+        FROM pjviews
+        WHERE userIdx = #{userIdx}
+          AND viewTableIdx = #{campIdx}
+          AND viewTableType = 2
+    </select>
+
+    <!-- 조회수 정보 삽입 -->
+    <insert id="insertViewInfo">
+        INSERT INTO pjviews (userIdx, viewTableIdx, viewCount,viewTableType, viewRegTime)
+        VALUES (#{userIdx}, #{campIdx}, 1, 2, now())
+    </insert>
+
+    <!-- 조회수 정보 업데이트 -->
+    <update id="updateViewInfo">
+        UPDATE pjviews
+        SET viewCount = viewCount + 1, viewRegTime = now()
+        WHERE userIdx = #{userIdx}
+          AND viewTableIdx = #{campIdx}
+    </update>
+
+</mapper>
