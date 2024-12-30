@@ -5,6 +5,8 @@ spring :
     # DB 설정
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
+        # url: jdbc:mysql://localhost:3306/ictedu_db
+        # username: ictedu
         url: jdbc:mysql://localhost:3306/ictedu_db
         username: ictedu
         password: 1111
@@ -68,3 +70,7 @@ mybatis:
 jwt:
     secret: "abcdABCD1234qwerQWER5678zxcvZXCV"
     expiration: 3600000 # 1시간 (3600 s * 1000ms)
+
+# 토스 
+toss:
+    secretKey: test_sk_ex6BJGQOVDxk0791WkkJVW4w2zNb
