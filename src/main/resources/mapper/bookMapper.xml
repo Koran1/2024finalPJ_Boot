@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.finalpj.domain.book.mapper.BookMapper">
+	<select id="goBookPage" parameterType="String" resultType="CampVO">
+		select * from pjcamp where campIdx = #{campIdx};
+	</select>
+
+	<insert id="getBookWrite" parameterType="BookVO">
+		insert into pjbook(campIdx, userIdx, bookCheckInDate, bookCheckOutDate, bookSelectedZone, 
+        bookAdultCount , bookYouthCount, bookChildCount, bookCarCount, bookTotalPrice, bookUserName,
+        bookUserPhone, bookCar1, bookCar2, bookRequest, orderId)
+		values(#{campIdx}, 1, #{bookCheckInDate}, #{bookCheckOutDate}, #{bookSelectedZone}, 
+        #{bookAdultCount} , #{bookYouthCount}, #{bookChildCount}, #{bookCarCount}, #{bookTotalPrice}, #{bookUserName},
+        #{bookUserPhone}, #{bookCar1}, #{bookCar2}, #{bookRequest}, #{orderId})
+	</insert>
+
+	<select id="getBookInfo" parameterType="String" resultType="BookVO">
+		select * from pjbook where bookIdx = #{bookIdx};
+	</select>
+	
+	<delete id="getBookCancel" parameterType="String">
+		delete from pjbook where bookIdx = #{bookIdx};
+	</delete>
+</mapper>
