@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -442,6 +443,65 @@ public class DealController {
         } catch (Exception e) {
             log.error("만족도 평가 등록 중 오류 발생", e);
             return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록 중 오류가 발생했습니다.", null));
+        }
+    }
+
+    //
+    @GetMapping("/seller-other-deals/{dealIdx}")
+    public DataVO getSellerOtherDeals(@PathVariable("dealIdx") String dealIdx) {
+        try {
+            DealVO currentDeal = dealService.getDealDetail(dealIdx);
+            if (currentDeal == null) {
+                return createResponse(false, "상품 정보를 찾을 수 없습니다.", null);
+            }
+
+            List<DealVO> otherDeals = dealService.getSellerOtherDeals(currentDeal.getDealSellerUserIdx(), dealIdx);
+            List<FileVo> fileList = otherDeals.stream()
+                .map(deal -> dealService.getDealFileOne(deal.getDealIdx()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+            Map<String, Object> resultMap = Map.of(
+                "deals", otherDeals,
+                "files", fileList
+            );
+
+            return createResponse(true, "판매자의 다른 상품 조회 성공", resultMap);
+        } catch (Exception e) {
+            log.error("판매자의 다른 상품 조회 실패", e);
+            return createResponse(false, "판매자의 다른 상품 조회 실패", null);
+        }
+    }
+
+    // 판매자의 평점 조회
+    @GetMapping("/seller-score/{sellerIdx}")
+    @ResponseBody
+    public ResponseEntity<DataVO> getDealSatisSellerScore(
+        @PathVariable(name = "sellerIdx") String sellerIdx
+    ) {
+        try {
+            log.info("판매자 평점 조회 시작 - sellerIdx: {}", sellerIdx);
+            String averageScore = dealService.getDealSatisSellerScore(sellerIdx);
+            log.info("조회된 평점: {}", averageScore);
+            
+            return ResponseEntity.ok(new DataVO(true, averageScore, null, "판매자 평점 조회 성공", null));
+        } catch (Exception e) {
+            log.error("판매자 평점 조회 실패", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "판매자 평점 조회 중 오류가 발생했습니다.", null));
+        }
+    }
+
+    // 판매자별 만족도 조회
+    @GetMapping("/seller-satisfaction/{sellerIdx}")
+    public ResponseEntity<DataVO> getDealSellerSatisfaction(
+        @PathVariable(name = "sellerIdx") String sellerIdx
+    ) {
+        try {
+            List<DealSatisfactionVO> satisfactions = dealService.getDealSellerSatisfaction(sellerIdx);
+            return ResponseEntity.ok(new DataVO(true, satisfactions, null, "판매자 만족도 조회 성공", null));
+        } catch (Exception e) {
+            log.error("판매자 만족도 조회 실패", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "판매자 만족도 조회 중 오류가 발생했습니다.", null));
         }
     }
 

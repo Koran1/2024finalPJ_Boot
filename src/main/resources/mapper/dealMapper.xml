@@ -204,4 +204,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     )
 </insert>
 
+<!-- 판매자의 다른 상품 목록 조회 -->
+<select id="getSellerOtherDeals" parameterType="String" resultType="DealVO">
+    SELECT <include refid="dealColumns"/> 
+    FROM pjdeal 
+    WHERE dealSellerUserIdx = #{dealSellerUserIdx}
+    AND dealIdx != #{dealIdx}  <!-- 현재 상품 제외 -->
+    ORDER BY dealRegDate DESC
+</select>
+
 </mapper>

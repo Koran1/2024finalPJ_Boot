@@ -176,4 +176,24 @@ public class DealServiceImpl implements DealService {
         return dealMapper.getDealSatisfactionInsert(satisfactionVO);
     }
 
+    @Override
+    public List<DealVO> getSellerOtherDeals(String dealSellerUserIdx, String dealIdx) {
+        return dealMapper.getSellerOtherDeals(dealSellerUserIdx, dealIdx);
+    }
+
+    @Override
+    public String getDealSatisSellerScore(String sellerIdx) {
+        return dealMapper.getDealSatisSellerScore(sellerIdx);
+    }
+
+    @Override
+    public void getDealSatisSellerScoreUpdate(String sellerIdx, String averageScore) {
+        dealMapper.getDealSatisSellerScoreUpdate(sellerIdx, averageScore);
+    }
+
+    @Override
+    public List<DealSatisfactionVO> getDealSellerSatisfaction(String sellerIdx) {
+        return dealMapper.getDealSellerSatisfaction(sellerIdx);
+    }
+
 }

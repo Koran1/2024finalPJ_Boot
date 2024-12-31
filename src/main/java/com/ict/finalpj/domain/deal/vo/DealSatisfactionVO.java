@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DealSatisfactionVO {
-  private String dealSatisSellerIdx, dealSatisSellerUserIdx, dealSatisSellerNick, dealSatisBuyerUserIdx, dealSatisBuyerNick, dealSatisBuyerContent, dealSatisBuyerRegDate, dealSatisBuyerScore, dealSatis01, dealSatis02;
+  private String dealSatisSellerUserIdx, dealSatisSellerNick, dealSatisBuyerUserIdx, dealSatisBuyerNick, dealSatisBuyerContent, dealSatisBuyerRegDate, dealSatisBuyerScore, dealSatis01, dealSatis02;
 }

@@ -48,4 +48,16 @@ public interface DealService {
     int getDealStatusUpdate(String dealIdx, String status);
 
     int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO);
+
+    // 판매자의 다른 상품 조회
+    List<DealVO> getSellerOtherDeals(String dealSellerUserIdx, String dealIdx);
+
+    // 판매자의 평균 평점 계산 및 업데이트
+    void getDealSatisSellerScoreUpdate(String sellerIdx, String averageScore);
+
+    // 판매자의 평점 조회
+    String getDealSatisSellerScore(String sellerIdx);
+
+    // 판매자별 만족도 조회
+    List<DealSatisfactionVO> getDealSellerSatisfaction(String sellerIdx);
 } 
