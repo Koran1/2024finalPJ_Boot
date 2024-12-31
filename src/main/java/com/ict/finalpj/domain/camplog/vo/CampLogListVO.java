@@ -11,6 +11,7 @@ public class CampLogListVO {
     private String 
         logIdx, // 캠프로그 제목 고유번호
         userIdx, // 사용자 고유번호
+        userNickname, // 사용자 닉네임
         campIdx, // 캠핑장 고유번호
         facltNm, // 캠핑장명
         logTitle, // 후기 제목
@@ -33,6 +34,15 @@ public class CampLogListVO {
         isThumbnail, // 썸네일
         logRecommendIdx, // 후기 공감 고유번호
         logCommentIdx, // 후기 댓글 고유번호
-        logCommentIsActive // 후기 댓글 활성화 여부
+        logCommentIsActive, // 후기 댓글 활성화 여부
+        reportIdx, // 신고글 고유번호
+        reportedUserIdx, // 피신고자 고유번호
+        reportTableType, // 신고 테이블 종류(3인 경우에, 후기 글 신고)
+        reportTableIdx, // reportTableIdx = logIdx
+        reportStatus, // 신고 처리 상태(0인 경우, 처리 전 / 1인 경우 처리 완료)
+        reporterUserIdx 
         ;
+
+        private String keyword, option, sortOption, totalLikes, totalCount;
+        private int page, size, offset;
 }
