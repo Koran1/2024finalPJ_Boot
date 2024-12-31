@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.finalpj.domain.camplog.mapper.CampLogMapper">
+	<select id="getCamplogList" parameterType="CampLogListVO" resultType="CampLogListVO">
+    	select
+        	cl.logIdx, cl.logTitle, cl.logRegDate, u.userNickname, c.campIdx, c.facltNm, cn.logContent, f.fileName, 
+        	IFNULL(re.reportStatus, '') as reportStatus, 
+			IFNULL(re.userIdx, '') as reporterUserIdx, 
+			IFNULL(re.reportedUserIdx, '') as reportedUserIdx, 
+			re.reportTableIdx, 
+        	(select count(*) from pjcamplogrecommend cr where cr.logIdx = cl.logIdx) as totalLikes, 
+        	(select count(*) from pjcamplogcomment cm where cm.logIdx = cl.logIdx and cm.logCommentIsActive = 1) as totalCount 
+    	from pjcamplog cl 
+    	left join pjuser u on cl.userIdx = u.userIdx
+    	left join pjcamplogcontent cn on cl.logIdx = cn.logIdx 
+    	left join pjfile f on f.fileTableType = 1 and cl.logIdx = f.fileTableIdx and f.isThumbnail = 1
+    	left join pjcamp c on cl.campIdx = c.campIdx 
+    	left join pjreport re on re.reportTableType = 3 and re.reportTableIdx = cl.logIdx 
+    	where 1=1 
+        	<if test="option == 'all' and keyword != null"> 
+            	and (cl.logTitle like concat('%', #{keyword}, '%') 
+                	or cn.logContent like concat('%', #{keyword}, '%'))
+        	</if>
+        	<if test="option == 'title' and keyword != null"> 
+            	and cl.logTitle like concat('%', #{keyword}, '%')
+        	</if>
+        	<if test="option == 'content' and keyword != null"> 
+            	and cn.logContent like concat('%', #{keyword}, '%')
+        	</if>
+    	order by 
+        	<choose>
+            	<when test="sortOption == 'latest'"> 
+                	cl.logIdx desc
+           		</when>
+            	<when test="sortOption == 'likes'">
+                	totalLikes desc, cl.logIdx desc
+            	</when>
+        	</choose>
+    	limit #{size} offset #{offset}
+	</select>
+
+	<select id="getCampLogCount" parameterType="CampLogListVO" resultType="int">
+		select count(cl.logIdx) from pjcamplog cl 
+		left join pjcamplogcontent cn on cl.logIdx = cn.logIdx 
+		left join pjreport re on re.reportTableType = 3 and re.reportTableIdx = cl.logIdx
+		where 1=1 
+			<if test="option == 'all' and keyword != null and keyword != ''"> 
+				and (cl.logTitle like concat('%', #{keyword}, '%')
+					or cn.logContent like concat('%', #{keyword}, '%')) 
+			</if>
+			<if test="option == 'title' and keyword != null and keyword != ''">
+				and cl.logTitle like concat('%', #{keyword}, '%') 
+			</if>
+			<if test="option == 'content' and keyword != null and keyword != ''">
+				and cn.logContent like concat('%', #{keyword}, '%')
+			</if>
+	</select>
+</mapper>
