@@ -90,9 +90,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     VALUES (#{userIdx}, #{dealIdx})
   </insert>
 
-  <!-- <delete>
-    
-  </delete> -->
+ <select id="getFavoriteList" parameterType="String" resultType="DealVO">
+    SELECT 
+        COALESCE(pjfile.fileName, 'noimg') AS deal01, 
+        pjdeal.*
+    FROM 
+        pjdeal
+    JOIN 
+        pjdealfavorite 
+    ON 
+        pjdeal.dealIdx = pjdealfavorite.dealIdx
+    JOIN 
+        pjfile 
+    ON 
+        pjfile.fileTableIdx = pjdealfavorite.dealIdx
+    WHERE 
+        pjdealfavorite.userIdx = #{userIdx};
+  </select>
+
+  <delete id="deleteFavorite" parameterType="DealFavoriteVO">
+    delete from pjdealfavorite where userIdx = #{userIdx} and dealIdx = #{dealIdx}
+  </delete>
 
 
 </mapper>

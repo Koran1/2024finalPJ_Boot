@@ -137,6 +137,16 @@ public class DealServiceImpl implements DealService {
        dealMapper.getFavorite(DealFavoriteVO);
     }
 
+    @Override
+    public List<DealVO> getFavoriteList(String userIdx) {
+        return dealMapper.getFavoriteList(userIdx);
+    }
+
+    @Override
+    public void deleteFavorite(DealFavoriteVO dfvo) {
+        dealMapper.deleteFavorite(dfvo);
+    }
+
   
 
 
