@@ -12,4 +12,7 @@ public interface ChatService {
     public List<ChatRoomVO> getChatListByUserIdx(String userIdx);
 
     public ChatVO getRecentChat(ChatRoomVO chatRoom);
+    public int getUnReadMessages(String userIdx);
+
+    public void updateLastRead(Map<String, String> map);
 }

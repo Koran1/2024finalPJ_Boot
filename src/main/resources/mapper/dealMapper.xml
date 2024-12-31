@@ -90,9 +90,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     VALUES (#{userIdx}, #{dealIdx})
   </insert>
 
-  <delete>
+  <!-- <delete>
     
-  </delate>
+  </delete> -->
 
 
 </mapper>

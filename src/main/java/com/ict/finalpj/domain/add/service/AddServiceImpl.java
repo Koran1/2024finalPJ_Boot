@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.domain.add.mapper.AddMapper;
+import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 
 @Service
@@ -38,6 +39,11 @@ public class AddServiceImpl implements AddService {
     @Override
     public List<NoticeVO> getNoticeLv1Details(String noticeIdx) {
         return addMapper.getNoticeLv1Details(noticeIdx);
+    }
+
+    @Override
+    public List<FAQVO> getFaqs() {
+        return addMapper.getFaqs();
     }
 
 }

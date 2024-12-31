@@ -72,31 +72,34 @@ public class ChatController {
 
             }
 
-            // 신규 채팅인지 확인하기
-            Map<String, String> map = new HashMap<>();
-            map.put("userIdx", userIdx);
-            map.put("sellerIdx", sellerIdx);
-            ChatRoomVO chkRoom = chatService.chkByUserIdx(map);
-            log.info("chkRoom" + chkRoom);
+            if(!sellerIdx.equals("null")){
 
-            if(chkRoom == null){
-                log.info("User is new");
-                // add chats
-                String chatRoom = UUID.randomUUID().toString();
-                map.put("chatRoom", chatRoom);
-                int result = chatService.insertNewChat(map);
-                if(result == 0){
-                    dvo.setSuccess(false);
-                    dvo.setMessage("채팅 생성 실패!");
-                    return dvo;
+                // 신규 채팅인지 확인하기
+                Map<String, String> map = new HashMap<>();
+                map.put("userIdx", userIdx);
+                map.put("sellerIdx", sellerIdx);
+                ChatRoomVO chkRoom = chatService.chkByUserIdx(map);
+                log.info("chkRoom" + chkRoom);
+                
+                if(chkRoom == null){
+                    log.info("User is new");
+                    // add chats
+                    String chatRoom = UUID.randomUUID().toString();
+                    map.put("chatRoom", chatRoom);
+                    int result = chatService.insertNewChat(map);
+                    if(result == 0){
+                        dvo.setSuccess(false);
+                        dvo.setMessage("채팅 생성 실패!");
+                        return dvo;
+                    }else{
+                        chkRoom.setChatRoom(chatRoom);
+                        chkRoom.setUserIdx(sellerIdx);
+                        chatList.add(chkRoom);
+                    }
                 }else{
-                    chkRoom.setChatRoom(chatRoom);
-                    chkRoom.setUserIdx(sellerIdx);
-                    chatList.add(chkRoom);
+                    log.info("User is already in that chatting");
+                    // load chats
                 }
-            }else{
-                log.info("User is already in that chatting");
-                // load chats
             }
 
             log.info("chatList : " + chatList);
@@ -112,12 +115,34 @@ public class ChatController {
             dvo.setSuccess(true);
             dvo.setMessage("채팅 정보 가져오기 성공");
 
+            // lastRead 시간 업데이트 하기
+            
         } catch (Exception e) {
             dvo.setSuccess(false);
             dvo.setMessage("채팅 리스트 불러오기 오류 발생");
             e.printStackTrace();
         }
 
+        return dvo;
+    }
+    
+    @GetMapping("/getUnReadMessages")
+    public DataVO getUnReadMessages(
+        @RequestParam("userIdx") String userIdx
+        ) {
+        DataVO dvo = new DataVO();
+        try {
+            // 안 읽은 메시지 수 가져오기
+            int unReadCnt = chatService.getUnReadMessages(userIdx);
+
+            dvo.setData(unReadCnt);
+            dvo.setSuccess(true);
+            dvo.setMessage("안 읽은 메시지 수 조회 성공");
+        } catch (Exception e) {
+            e.printStackTrace();
+            dvo.setSuccess(false);
+            dvo.setMessage("안 읽은 메시지 수 조회 실패!");
+        }
         return dvo;
     }
     

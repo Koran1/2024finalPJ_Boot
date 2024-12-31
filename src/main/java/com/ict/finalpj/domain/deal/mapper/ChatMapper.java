@@ -20,4 +20,7 @@ public interface ChatMapper {
     List<ChatRoomVO> getChatListByUserIdx(String userIdx);
 
     ChatVO getRecentChat(ChatRoomVO chatRoom);
+    int getUnReadMessages(String userIdx);
+
+    void updateLastRead(Map<String, String> map);
 }

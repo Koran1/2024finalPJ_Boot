@@ -36,6 +36,16 @@ public class ChatServiceImpl implements ChatService {
         return chatMapper.getRecentChat(chatRoom);
     }
 
+    @Override
+    public int getUnReadMessages(String userIdx) {
+        return chatMapper.getUnReadMessages(userIdx);
+    }
+
+    @Override
+    public void updateLastRead(Map<String, String> map) {
+        chatMapper.updateLastRead(map);
+    }
+
 
 
 }

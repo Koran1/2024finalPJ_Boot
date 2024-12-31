@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.add.service.AddService;
+import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -82,5 +83,22 @@ public class AddController {
         }
         return dvo;
     }
+    
+    @GetMapping("/faq")
+    public DataVO getFaqs() {
+        DataVO dvo = new DataVO();
+        try {
+            List<FAQVO> faqList = addService.getFaqs();
+            dvo.setData(faqList);
+            dvo.setSuccess(true);
+            dvo.setMessage("FAQ 조회 성공");
+        } catch (Exception e) {
+            dvo.setSuccess(false);
+            dvo.setMessage("FAQ 조회 실패");
+            e.printStackTrace();
+        }
+        return dvo;
+    }
+
     
 }

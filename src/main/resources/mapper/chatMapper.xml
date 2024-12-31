@@ -52,4 +52,17 @@
         order by chatTime desc limit 1;
     </select>
 
+    <select id="getUnReadMessages" parameterType="String" resultType="int" >
+        SELECT COUNT(*) 
+        FROM pjchat c 
+        JOIN pjchatroom r ON c.chatRoom = r.chatRoom
+        WHERE r.userIdx = #{userIdx}
+        AND c.chatTime > r.lastRead
+    </select>
+
+    <update id="updateLastRead" parameterType="map">
+        update pjchatroom set lastRead = NOW() where chatRoom = #{chatRoom} and userIdx = #{userIdx}
+    </update>
+
+
 </mapper>
