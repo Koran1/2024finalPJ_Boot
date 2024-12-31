@@ -17,7 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+// 토스 서버(API)에 저장하는 컨트롤러인데 next.js에서 처리해서 필요없음(미사용 컨트롤러)
 @Slf4j
 @RestController
 @RequestMapping("/api/payments")
@@ -69,4 +72,5 @@ public class PaymentsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("결제 검증 실패");
         }
     }
+    
 }
