@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MyFavCampController {
 
     @Autowired
-    MyFavCampService myFavCampService;
+    private MyFavCampService myFavCampService;
 
     @GetMapping("/favCampList")
     public DataVO getFavCampList(@RequestParam("userIdx") String userIdx) {

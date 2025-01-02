@@ -9,7 +9,8 @@
     <select id="getFavCampList" resultType="CampVO">
         SELECT *
     FROM pjcamp
-    WHERE campIdx IN (SELECT campIdx FROM pjfavcamp WHERE userIdx = #{userIdx});
+    WHERE campIdx IN (SELECT campIdx FROM pjfavcamp WHERE userIdx = #{userIdx} order by campFavorIdx desc) 
+    
     </select>
 
    
