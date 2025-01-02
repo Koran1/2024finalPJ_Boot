@@ -1,10 +1,10 @@
-package com.ict.finalpj.domain.administrator.controller;
+package com.ict.finalpj.domain.admin.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/administrator")
+@RequestMapping("/api/admin")
 public class AdminController {
 
 }

@@ -81,22 +81,7 @@ public class DealServiceImpl implements DealService {
     public int getDealFileUpdate(FileVo fileVo) {
         return dealMapper.getDealFileUpdate(fileVo);
     }
-
-    @Override
-    public int getDealFileDelete(FileVo fileVo) {
-        return dealMapper.getDealFileDelete(fileVo);
-    }
     
-    @Override
-    public List<DealVO> getDealManagement(String userIdx) {
-        return dealMapper.getDealManagement(userIdx);
-    }
-
-    @Override
-    public List<DealFavoriteVO> getDealinterest(String userIdx) {
-        return dealMapper.getDealinterest(userIdx);
-    } 
-
     @Override
     public int getDealFileNameDelete(String fileTableIdx, String fileName) {
         return dealMapper.getDealFileNameDelete(fileTableIdx, fileName);
@@ -123,6 +108,11 @@ public class DealServiceImpl implements DealService {
     @Override
     public int unlikeDeal(String userIdx, String dealIdx) {
         return dealMapper.unlikeDeal(userIdx, dealIdx);
+    }
+    
+    @Override
+    public int getFavoriteCount(String dealIdx) {
+        return dealMapper.getFavoriteCount(dealIdx);
     }
 
     // 조회수 관련 메서드 구현
@@ -167,11 +157,6 @@ public class DealServiceImpl implements DealService {
             }
         }
         return 0;
-    }
-
-    @Override
-    public int getFavoriteCount(String dealIdx) {
-        return dealMapper.getFavoriteCount(dealIdx);
     }
 
     @Override
@@ -235,15 +220,16 @@ public class DealServiceImpl implements DealService {
         return dealMapper.getDealActiveUpdate(dealIdx, dealview);
     }
 
+
+    @Override
+    public List<DealFavoriteVO> getDealinterest(String userIdx) {
+        return dealMapper.getDealinterest(userIdx);
+    } 
+
     @Override
     public List<DealVO> getDealManagement(String userIdx) {
         return dealMapper.getDealManagement(userIdx);
     } 
-
-    @Override
-    public FileVo getFileVO(String dealIdx) {
-        return dealMapper.getFileVO(dealIdx);
-    }
 
     @Override
     public List<DealVO> getDealMainSearch(String searchKeyword) {
