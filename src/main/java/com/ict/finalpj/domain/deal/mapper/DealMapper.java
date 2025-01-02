@@ -57,5 +57,8 @@ public interface DealMapper {
 
     // 판매자의 평점 조회
     String getDealSatisSellerScore(String dealSellerUserIdx);
+
+    // 상품 활성화 상태 업데이트
+    int getDealActiveUpdate(@Param("dealIdx") String dealIdx, @Param("dealview") int dealview);
 }
  

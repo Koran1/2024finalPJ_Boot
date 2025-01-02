@@ -219,4 +219,9 @@ public class DealServiceImpl implements DealService {
         }
     }
 
+    @Override
+    public int getDealActiveUpdate(String dealIdx, int dealview) {
+        return dealMapper.getDealActiveUpdate(dealIdx, dealview);
+    }
+
 }

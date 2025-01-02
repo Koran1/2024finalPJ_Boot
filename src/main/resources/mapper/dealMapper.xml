@@ -21,10 +21,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- 파일 하나 가져오기 --> 
   <select id="getDealFileOne" parameterType="String" resultType="FileVo">
-    SELECT * FROM pjfile 
-    WHERE fileTableIdx = #{fileTableIdx} 
-    AND fileTableType = 2 
-    AND fileOrder = 0 
+    SELECT f.* 
+    FROM pjfile f
+    JOIN pjdeal d ON f.fileTableIdx = d.dealIdx
+    WHERE f.fileTableIdx = #{fileTableIdx} 
+    AND f.fileTableType = 2 
+    AND f.fileOrder = 0 
     LIMIT 1
   </select>
 
@@ -36,10 +38,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- 파일 여러개 가져오기 --> 
   <select id="getDealFileDetail" parameterType="String" resultType="FileVo">
-    SELECT * FROM pjfile 
-    WHERE fileTableIdx = #{fileTableIdx}
-    AND fileTableType = 2
-    ORDER BY fileOrder ASC
+    SELECT f.* 
+    FROM pjfile f
+    JOIN pjdeal d ON f.fileTableIdx = d.dealIdx
+    WHERE f.fileTableIdx = #{fileTableIdx}
+    AND f.fileTableType = 2
+    ORDER BY f.fileOrder ASC
   </select>
 
   <insert id="getDealWrite" parameterType="DealVO">
@@ -109,7 +113,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </select>
 
   <select id="getDealManagement" parameterType="String" resultType="DealVO">
-    select * from pjdeal where dealSellerUserIdx = #{userIdx}
+    SELECT * 
+    FROM pjdeal 
+    WHERE dealSellerUserIdx = #{userIdx}
+    ORDER BY dealRegDate DESC
   </select>
 
 <!-- 좋아요 상태 확인 -->
@@ -212,5 +219,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     AND dealIdx != #{dealIdx}  <!-- 현재 상품 제외 -->
     ORDER BY dealRegDate DESC
 </select>
+
+<!-- 상품 활성화 상태 업데이트 -->
+<update id="getDealActiveUpdate" parameterType="map">
+  UPDATE pjdeal 
+  SET dealview = #{dealview}
+  WHERE dealIdx = #{dealIdx}
+</update>
 
 </mapper>

@@ -505,4 +505,21 @@ public class DealController {
         }
     }
 
+    @PutMapping("/active/{dealIdx}")
+    public ResponseEntity<DataVO> getDealActiveUpdate(
+        @PathVariable("dealIdx") String dealIdx,
+        @RequestParam("dealview") int dealview) {
+        try {
+            int result = dealService.getDealActiveUpdate(dealIdx, dealview);
+            if (result > 0) {
+                return ResponseEntity.ok(new DataVO(true, null, null, "상품 상태가 변경되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "상품 상태 변경에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            log.error("상품 상태 변경 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "상품 상태 변경 중 오류가 발생했습니다.", null));
+        }
+    }
+
 }
