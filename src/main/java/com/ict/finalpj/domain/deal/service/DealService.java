@@ -55,4 +55,7 @@ public interface DealService {
 
     // 판매자의 평점 조회
     String getDealSatisSellerScore(String dealSellerUserIdx);
+
+    // 판매자 평점 업데이트
+    void getDealSatisSellerScoreUpdate(String dealSellerUserIdx);
 } 

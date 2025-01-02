@@ -105,6 +105,7 @@ public class DealController {
         }
     }
 
+    // 메인페이지 조회 API
     @GetMapping("/dealMain")
     public DataVO getDealMainList() {
         try {
@@ -126,6 +127,7 @@ public class DealController {
         }
     }
 
+    // 상품 상세 조회 API
     @GetMapping("/detail/{dealIdx}")
     public DataVO getDealDetail(@PathVariable("dealIdx") String dealIdx) {
         try {
@@ -145,6 +147,7 @@ public class DealController {
         }
     }
 
+    // 상품 등록 API
     @PostMapping("/write")
     public DataVO getDealWrite(
             @ModelAttribute("data") DealVO dealVO,
@@ -172,6 +175,7 @@ public class DealController {
         }
     }
 
+    // 상품 수정 API
     @PutMapping("/update/{dealIdx}")
     public DataVO getDealUpdate(
         @PathVariable("dealIdx") String dealIdx,
@@ -258,6 +262,7 @@ public class DealController {
         }
     }
 
+    // 파일 삭제 API
     @DeleteMapping("/update/{dealIdx}/file")
     public DataVO deleteFile(
         @PathVariable("dealIdx") String dealIdx,
@@ -370,6 +375,7 @@ public class DealController {
         }
     }
 
+    // 파일 순서 재정렬 API
     @PutMapping("/update/{dealIdx}/reorder")
     public DataVO reorderFiles(@PathVariable("dealIdx") String dealIdx) {
         try {
@@ -407,6 +413,7 @@ public class DealController {
         }
     }
 
+    // 판매 상태 변경 API
     @PutMapping("/status/{dealIdx}")
     public ResponseEntity<DataVO> updateDealStatus(
         @PathVariable("dealIdx") String dealIdx,
@@ -452,17 +459,19 @@ public class DealController {
             return createResponse(false, "판매자의 다른 상품 조회 실패", null);
         }
     }
-    
+    // 만족도 평가 등록 API
     @PostMapping("/satisfaction")
     public ResponseEntity<DataVO> getDealSatisfactionInsert(@RequestBody DealSatisfactionVO satisfactionVO) {
         try {
             log.info("만족도 평가 등록 시작 - 평가점수: {}, 내용: {}", 
-                satisfactionVO.getDealSatisBuyerScore(), 
+                satisfactionVO.getDealSatisSellerScore(), 
                 satisfactionVO.getDealSatisBuyerContent());
 
             int result = dealService.getDealSatisfactionInsert(satisfactionVO);
             
             if (result > 0) {
+                // 만족도 평가 등록 성공 시 판매자 평점 업데이트
+                dealService.getDealSatisSellerScoreUpdate(satisfactionVO.getDealSatisSellerUserIdx());
                 return ResponseEntity.ok(new DataVO(true, null, null, "만족도 평가가 등록되었습니다.", null));
             } else {
                 return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록에 실패했습니다.", null));
@@ -480,25 +489,15 @@ public class DealController {
         @PathVariable(name = "dealSellerUserIdx") String dealSellerUserIdx
     ) {
         try {
-            log.info("1. 평점 조회 시작 - 요청된 dealSellerUserIdx: {}", dealSellerUserIdx);
-            
-            // pjuser 테이블에서 해당 사용자가 존재하는지 먼저 확인
             if (dealService.getUserInfoByIdx(dealSellerUserIdx) == null) {
-                log.info("2. 사용자가 존재하지 않음 - dealSellerUserIdx: {}", dealSellerUserIdx);
                 return ResponseEntity.ok(new DataVO(true, 5.0, null, "사용자를 찾을 수 없음", null));
             }
-            
             String averageScore = dealService.getDealSatisSellerScore(dealSellerUserIdx);
-            log.info("2. DB에서 조회된 평점 원본: {}", averageScore);
             
             if (averageScore == null) {
-                log.info("3. 평점이 없음 - 기본값 5.0 반환");
                 return ResponseEntity.ok(new DataVO(true, 5.0, null, "평점 없음", null));
             }
-            
             double score = Double.parseDouble(averageScore);
-            log.info("4. 숫자로 변환된 평점: {}", score);
-            
             return ResponseEntity.ok(new DataVO(true, score, null, "판매자 평점 조회 성공", null));
         } catch (Exception e) {
             log.error("평점 조회 실패 - dealSellerUserIdx: {}, 에러: {}", dealSellerUserIdx, e.getMessage());

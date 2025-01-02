@@ -1,8 +1,11 @@
 package com.ict.finalpj.domain.deal.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -188,6 +191,32 @@ public class DealServiceImpl implements DealService {
     @Override
     public String getDealSatisSellerScore(String dealSellerUserIdx) {
         return dealSatisfactionMapper.getDealSatisSellerScore(dealSellerUserIdx);
+    }
+
+    @Override
+    public void getDealSatisSellerScoreUpdate(String dealSellerUserIdx) {
+        try {
+            // 판매자 평점 통계 조회
+            Map<String, Object> stats = dealSatisfactionMapper.getDealSatisSellerScoreStats(dealSellerUserIdx);
+            
+            long count = ((Number) stats.get("dealSatisSellerCount")).longValue();
+            BigDecimal sum = new BigDecimal(stats.get("dealSatisSellerScoreSum").toString());
+            
+            // 평점이 없는 경우 기본값 5.0 설정
+            BigDecimal average = count > 0 
+                ? sum.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP)
+                : new BigDecimal("5.00");
+                
+            // 평점 업데이트
+            dealSatisfactionMapper.updateDealSatisSellerScore(dealSellerUserIdx, average);
+            
+            log.info("판매자 평점 업데이트 완료 - dealSellerUserIdx: {}, 평균평점: {}", 
+                    dealSellerUserIdx, average);
+                    
+        } catch (Exception e) {
+            log.error("판매자 평점 업데이트 실패 - dealSellerUserIdx: {}", dealSellerUserIdx, e);
+            throw new RuntimeException("판매자 평점 업데이트 실패", e);
+        }
     }
 
 }
