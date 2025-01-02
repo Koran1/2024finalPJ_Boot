@@ -5,7 +5,10 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+
+import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
+import com.ict.finalpj.domain.add.vo.QNAVO;
 
 @Mapper
 public interface AddMapper {
@@ -16,6 +19,9 @@ public interface AddMapper {
     List<NoticeVO> getNoticeDetails(String noticeIdx);
     List<NoticeVO> getNoticeLv1Details(String noticeIdx);
 
+    List<FAQVO> getFaqs();
 
-    
+    List<QNAVO> getQnas(String userIdx);
+    QNAVO getQnaDetail(String qnaIdx);
+    int writeQna(QNAVO qnaVO);
 }

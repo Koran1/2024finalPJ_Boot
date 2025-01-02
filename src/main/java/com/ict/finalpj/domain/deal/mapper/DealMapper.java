@@ -6,14 +6,19 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ict.finalpj.common.vo.FileVo;
+
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
+
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 @Mapper
 public interface DealMapper {
+
     // 기존 Deal 관련 메서드들
     List<DealVO> getDealMainList();
     FileVo getDealFileOne(String fileTableIdx);
@@ -60,5 +65,22 @@ public interface DealMapper {
 
     // 상품 활성화 상태 업데이트
     int getDealActiveUpdate(@Param("dealIdx") String dealIdx, @Param("dealview") int dealview);
+
+  // List<DealVO> getDealMainList();
+  FileVo getFileVO(String dealIdx);
+
+  // DealVO getDealDetail(String dealIdx);
+  List<FileVo> getPjFileByDealIdx(String dealIdx);
+
+  int updateDeal(DealVO dealVO);
+  int getDealWrite(DealVO dealVO);
+  void insertFile(FileVo fileVO);
+  void updateFile(FileVo fileVO);
+  void insertFileInfo(FileVo fileVo);
+  List<DealVO> getDealManagement(String userIdx);
+  List<DealVO> getDealMainSearch(String searchKeyword);
+  void getFavorite(DealFavoriteVO DealFavoriteVO);
+
+  List<DealVO> getFavoriteList(String userIdx);
+  void deleteFavorite(DealFavoriteVO dfvo);
 }
- 

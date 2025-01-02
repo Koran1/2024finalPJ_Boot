@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.corundumstudio.socketio.SocketIOClient;
 import com.ict.finalpj.domain.deal.mapper.ChatMapper;
 import com.ict.finalpj.domain.deal.vo.ChatVO;
 

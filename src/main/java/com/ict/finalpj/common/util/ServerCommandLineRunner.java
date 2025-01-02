@@ -17,5 +17,5 @@ public class ServerCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         server.start();
     }
-    
+
 }

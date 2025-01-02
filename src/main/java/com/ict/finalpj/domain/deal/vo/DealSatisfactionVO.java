@@ -19,4 +19,5 @@ public class DealSatisfactionVO {
   private String dealSatisSellerScore;
   private String dealSatis01;
   private String dealSatis02;
+
 }

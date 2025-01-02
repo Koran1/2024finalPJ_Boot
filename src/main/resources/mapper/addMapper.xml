@@ -47,4 +47,22 @@
     </select>
 
 
+    <select id="getFaqs" resultType="FAQVO" >
+        select * from pjfaq where faqStatus = 'on'
+    </select>
+
+    
+    <select id="getQnas" parameterType="String" resultType="QNAVO" >
+        select * from pjqna where userIdx = ${userIdx}
+    </select>
+
+    <select id="getQnaDetail" parameterType="String" resultType="QNAVO" >
+        select * from pjqna where qnaIdx = ${qnaIdx}
+    </select>
+
+    <insert id="writeQna" parameterType="QNAVO" >
+        insert into pjqna (qnaSubject, qnaContent, userIdx, qnaFile, qnaRegDate) 
+        values (#{qnaSubject}, #{qnaContent}, #{userIdx}, #{qnaFile}, NOW())
+    </insert>
+
 </mapper>

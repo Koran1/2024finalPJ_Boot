@@ -14,6 +14,10 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
+    public UserVO getUserInfoByIdx(String userIdx) {
+       return userMapper.getUserInfoByIdx(userIdx);
+    }
+    @Override
     public UserVO getUserInfoById(String userId) {
         return userMapper.getUserInfoById(userId);
     }
@@ -88,5 +92,7 @@ public class UserServiceImpl implements UserService {
     public int updateConnRegByIdx(String userIdx) {
         return userMapper.updateConnRegByIdx(userIdx);
     }
+
+
 
 }

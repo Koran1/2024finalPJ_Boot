@@ -2,6 +2,7 @@ package com.ict.finalpj.domain.user.vo;
 
 import lombok.Data;
 
+
 @Data
 public class UserVO {
     private String userIdx, userId, n_userId, k_userId, userPw, userName, userNickname,

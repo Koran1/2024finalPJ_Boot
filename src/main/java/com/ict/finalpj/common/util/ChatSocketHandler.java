@@ -3,8 +3,12 @@ package com.ict.finalpj.common.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +17,9 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+
+import com.ict.finalpj.domain.deal.service.ChatService;
+
 import com.ict.finalpj.domain.deal.service.SocketService;
 import com.ict.finalpj.domain.deal.vo.ChatVO;
 import com.ict.finalpj.domain.user.service.MyUserDetailService;
@@ -29,6 +36,9 @@ public class ChatSocketHandler {
     private final JwtUtil jwtUtil;
     private final MyUserDetailService myUserDetailService;
 
+
+    @Autowired
+    private ChatService chatService;
     public ChatSocketHandler(SocketIOServer server, SocketService socketService, JwtUtil jwtUtil, MyUserDetailService myUserDetailService) {
         this.server = server;
         this.socketService = socketService;
@@ -109,8 +119,17 @@ public class ChatSocketHandler {
                     client.joinRoom(room);
                     log.info("Socket ID[{}]  Connected to socket", client.getSessionId().toString());
 
+                    // chatList 정보 가져오기
                     List<ChatVO> chatList = socketService.getChatList(room);
                     client.sendEvent("chatList", chatList);
+
+                    // lastRead 시간 갱신
+                    Map<String, String> map = new HashMap<>();
+                    map.put("chatRoom", room);
+                    map.put("userIdx", userIdx);
+                    
+                    chatService.updateLastRead(map);
+
                     
                 }else {
                     log.info("jwt token is invalid");
@@ -126,9 +145,17 @@ public class ChatSocketHandler {
     
     private DisconnectListener onDisconnected() {
         return client -> {
-            String room = client.getHandshakeData().getSingleUrlParam("room");
+            HandshakeData handshakeData = client.getHandshakeData();
+            String room = handshakeData.getSingleUrlParam("room");
             log.info("user leaves room num : " +room);
+            String userIdx = handshakeData.getSingleUrlParam("userIdx");
+            log.info("user : " + userIdx);
+
             client.leaveRoom(room);
+            Map<String, String> map = new HashMap<>();
+            map.put("chatRoom", room);
+            map.put("userIdx", userIdx);
+            chatService.updateLastRead(map);
             log.info("Client[{}] - Disconnected from socket", client.getSessionId().toString());
         };
     }
@@ -140,4 +167,5 @@ public class ChatSocketHandler {
             server.stop();
         }
     }
+
 }

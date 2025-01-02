@@ -2,7 +2,12 @@ package com.ict.finalpj.domain.deal.controller;
 
 import java.util.List;
 
+
+import javax.xml.crypto.Data;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +19,9 @@ import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Slf4j
 @RestController
@@ -55,8 +63,8 @@ public class DealController2 {
       }
       return dataVO;
   }
-  
 
+  // 일단 보류 (interest 쪽 조사)
   @GetMapping("/interest/{userIdx}")
   public DataVO getDealinterest(@PathVariable("userIdx") String userIdx) {
       DataVO dataVO = new DataVO();
@@ -90,4 +98,92 @@ public class DealController2 {
       return dataVO;
   }
 
+
+  @GetMapping("/dealMainSearch")
+  public DataVO getMethodName(@RequestParam("searchKeyword") String searchKeyword) {
+      DataVO dvo = new DataVO();
+      try {
+        List<DealVO> searchList = dealService.getDealMainSearch(searchKeyword);
+        log.info("searchList : " + searchList);
+        dvo.setData(searchList);
+        dvo.setSuccess(true);
+        dvo.setMessage("검색 성공");
+      } catch (Exception e) {
+        dvo.setSuccess(false);
+        dvo.setMessage("검색 실패");
+        e.printStackTrace();
+      }
+      return dvo;
+  }
+
+  // 찜하기 등록 (Create)
+  @GetMapping("/dealMainfavorite")
+  public DataVO getFavorite(
+    @RequestParam("userIdx") String userIdx , @RequestParam("dealIdx") String dealIdx) {
+      DataVO dvo = new DataVO();
+      try {
+        log.info("userIdx(등록) : " + userIdx);
+        log.info("dealIdx : " + dealIdx);
+
+        DealFavoriteVO dfvo = new DealFavoriteVO();
+        dfvo.setUserIdx(userIdx);
+        dfvo.setDealIdx(dealIdx);
+
+        dealService.getFavorite(dfvo);
+        dvo.setSuccess(true);
+        dvo.setMessage("찜 성공");
+      } catch (Exception e) {
+        dvo.setSuccess(false);
+        dvo.setMessage("찜 실패");
+        e.printStackTrace();
+      }
+      return dvo;
+  }
+ 
+  // 찜한 목록들 불러오기 (Read)
+  @GetMapping("/getFavoriteList")
+  public DataVO getFavoriteList(
+    @RequestParam("userIdx") String userIdx
+    ) {
+      DataVO dvo = new DataVO();
+      try {
+        log.info("userIdx(찜 목록 가져오기) : " + userIdx);
+        List<DealVO> favList = dealService.getFavoriteList(userIdx);
+        dvo.setData(favList);
+        dvo.setSuccess(true);
+        dvo.setMessage("찜 목록 가져오기 성공");
+      } catch (Exception e) {
+        e.printStackTrace();
+        dvo.setSuccess(false);
+        dvo.setMessage("찜 목록 가져오기 실패!");
+      }
+      return dvo;
+  }
+  
+  // 찜한 목록 삭제
+  @DeleteMapping("/deleteFavorite")
+  public DataVO deleteFavorite(
+    @RequestParam("dealIdx") String dealIdx,
+    @RequestParam("userIdx") String userIdx
+  ){
+    DataVO dvo = new DataVO();
+    try {
+      log.info("dealIdx(삭제) : " + dealIdx);
+      log.info("userIdx : " + userIdx);
+      DealFavoriteVO dfvo = new DealFavoriteVO();
+      dfvo.setUserIdx(userIdx);
+      dfvo.setDealIdx(dealIdx);
+      dealService.deleteFavorite(dfvo);
+
+      dvo.setSuccess(true);
+      dvo.setMessage("삭제 성공");
+
+    } catch (Exception e) {
+      e.printStackTrace();
+        dvo.setSuccess(false);
+        dvo.setMessage("삭제 실패!");
+    }
+    return dvo;
+  }
+ 
 }

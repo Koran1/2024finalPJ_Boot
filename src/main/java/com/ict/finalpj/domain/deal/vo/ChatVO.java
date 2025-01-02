@@ -13,12 +13,4 @@ public class ChatVO {
     private String chatSenderIdx;
     private String chatMessage;
     private String chatTime;
-
-    // public ChatVO(String chatSenderIdx, String message) {
-        
-    // }
-
-    public enum MessageType{
-        SERVER, CLIENT;
-    }
 }

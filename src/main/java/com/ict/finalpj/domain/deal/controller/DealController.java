@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -109,7 +109,9 @@ public class DealController {
     @GetMapping("/dealMain")
     public DataVO getDealMainList() {
         try {
+            List<FileVo> file_list = new ArrayList<>();
             List<DealVO> list = dealService.getDealMainList();
+
             List<FileVo> fileList = list.stream()
                 .map(deal -> dealService.getDealFileOne(deal.getDealIdx()))
                 .filter(Objects::nonNull)
@@ -124,14 +126,18 @@ public class DealController {
         } catch (Exception e) {
             log.error("메인페이지 조회 실패", e);
             return createResponse(false, "캠핑마켓 메인페이지 조회 실패", null);
+
         }
     }
 
     // 상품 상세 조회 API
     @GetMapping("/detail/{dealIdx}")
     public DataVO getDealDetail(@PathVariable("dealIdx") String dealIdx) {
+
         try {
+            
             DealVO dealVO = dealService.getDealDetail(dealIdx);
+
             List<FileVo> fileList = getFileList(dealIdx);
             int viewCount = dealService.getTotalViewCount(dealIdx);
 
@@ -162,6 +168,7 @@ public class DealController {
             dealVO.setDealIdx(dealIdx);
             dealVO.setDealSellerUserIdx(dealVO.getDealSellerUserIdx());  // 테스트용 임시 userIdx
             dealVO.setDealSellerNick(dealVO.getDealSellerNick());  // 테스트용 임시 닉네임
+
 
             int result = dealService.getDealWrite(dealVO);
             if (result > 0) {
@@ -286,6 +293,7 @@ public class DealController {
                 // 파일이 없더라도 DB에서는 삭제
                 dealService.getDealFileNameDelete(dealIdx, fileName);
                 return createResponse(true, "DB 파일 정보 삭제 완료", null);
+
             }
         } catch (Exception e) {
             log.error("파일 삭제 중 오류 발생 - fileName: {}", fileName, e);
@@ -301,6 +309,7 @@ public class DealController {
             && dealVO.getDealPrice() != null
             && dealVO.getDealCount() != null;
     }
+
 
 
      // 찜하기 상태 조회 + 조회수 로직 처리 API
@@ -322,6 +331,7 @@ public class DealController {
             } else {
                 // log.info("기존 조회수 업데이트 - 현재 조회수: {}", viewInfo.getViewCount());
                 dealService.updateViewCount(userIdx, dealIdx);
+
             }
             
             String message = isLiked ? "이미 좋아요한 상품입니다." : "아직 좋아요하지 않은 상품입니다.";
@@ -361,6 +371,7 @@ public class DealController {
                 log.info("좋아요 추가 처리 결과 - result: {}, message: {}", result, message);
             }
 
+
             return ResponseEntity.ok(new DataVO(
                     result > 0,
                     result,
@@ -374,6 +385,7 @@ public class DealController {
             return ResponseEntity.ok(new DataVO(false, null, null, errorMessage, null));
         }
     }
+
 
     // 파일 순서 재정렬 API
     @PutMapping("/update/{dealIdx}/reorder")
@@ -482,6 +494,7 @@ public class DealController {
         }
     }
 
+
     // 판매자의 평점 조회
     @GetMapping("/seller-score/{dealSellerUserIdx}")
     @ResponseBody
@@ -519,6 +532,7 @@ public class DealController {
         } catch (Exception e) {
             log.error("상품 상태 변경 중 오류 발생", e);
             return ResponseEntity.ok(new DataVO(false, null, null, "상품 상태 변경 중 오류가 발생했습니다.", null));
+
         }
     }
 

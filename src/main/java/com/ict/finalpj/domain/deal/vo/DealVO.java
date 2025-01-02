@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DealVO {
+
     private String dealIdx;
     private String dealSellerUserIdx;
     private String dealSellerNick;
@@ -43,4 +44,5 @@ public class DealVO {
     // 현재는 이 구조가 더 효율적일 수 있습니다.
     private FileVo mainFile;
     private List<FileVo> fileList;
+
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 는 반드시 mapper 의 위치로 설정해야 된다 -->
+<mapper namespace="com.ict.finalpj.domain.mypage.mapper.MyPageMapper">
+
+    <select id="getNoticeList" parameterType="map" resultType="NoticeVO" >
+        SELECT * FROM pjnotice 
+        WHERE (noticeSubject LIKE CONCAT('%', #{searchKeyword}, '%') 
+        OR noticeContent LIKE CONCAT('%', #{searchKeyword}, '%'))  
+        and noticeStatus = 'on' 
+        ORDER BY noticeIdx DESC limit #{limit} offset #{offset}
+    </select>
+
+    <insert id="writeQna" parameterType="QNAVO" >
+        insert into pjqna (qnaSubject, qnaContent, userIdx, qnaFile, qnaRegDate) 
+        values (#{qnaSubject}, #{qnaContent}, #{userIdx}, #{qnaFile}, NOW())
+    </insert>
+
+</mapper>

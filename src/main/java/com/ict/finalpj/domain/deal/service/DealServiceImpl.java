@@ -13,9 +13,13 @@ import org.springframework.stereotype.Service;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
+
 import com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
+
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -43,7 +47,14 @@ public class DealServiceImpl implements DealService {
 
     @Override
     public DealVO getDealDetail(String dealIdx) {
-        return dealMapper.getDealDetail(dealIdx);
+        log.info("getDealDetail 호출됨: dealIdx={}", dealIdx); // 로그 추가
+        DealVO deal = dealMapper.getDealDetail(dealIdx);
+        if (deal == null) {
+            log.warn("해당 dealIdx에 대한 DealVO를 찾을 수 없습니다: {}", dealIdx);
+        } else {
+            log.info("DealVO 조회 성공: {}", deal);
+        }
+        return deal;
     }
     
     @Override
@@ -223,5 +234,36 @@ public class DealServiceImpl implements DealService {
     public int getDealActiveUpdate(String dealIdx, int dealview) {
         return dealMapper.getDealActiveUpdate(dealIdx, dealview);
     }
+
+    @Override
+    public List<DealVO> getDealManagement(String userIdx) {
+        return dealMapper.getDealManagement(userIdx);
+    } 
+
+    @Override
+    public FileVo getFileVO(String dealIdx) {
+        return dealMapper.getFileVO(dealIdx);
+    }
+
+    @Override
+    public List<DealVO> getDealMainSearch(String searchKeyword) {
+        return dealMapper.getDealMainSearch(searchKeyword);
+    }
+
+    @Override
+    public void getFavorite(DealFavoriteVO DealFavoriteVO) {
+       dealMapper.getFavorite(DealFavoriteVO);
+    }
+
+    @Override
+    public List<DealVO> getFavoriteList(String userIdx) {
+        return dealMapper.getFavoriteList(userIdx);
+    }
+
+    @Override
+    public void deleteFavorite(DealFavoriteVO dfvo) {
+        dealMapper.deleteFavorite(dfvo);
+    }
+
 
 }

@@ -5,6 +5,7 @@ import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 public interface UserService {
+    public UserVO getUserInfoByIdx(String userIdx);
     public UserVO getUserInfoById(String userId);
     public UserVO getUserInfoByPhone(String userPhone);
     public UserVO getUserInfoByNickname(String userNickname);

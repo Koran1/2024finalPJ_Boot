@@ -8,11 +8,15 @@ import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
+
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 @Service
 public interface DealService {
+  
     // 기존 Deal 관련 메서드들
     List<DealVO> getDealMainList();
     FileVo getDealFileOne(String fileTableIdx);
@@ -60,4 +64,22 @@ public interface DealService {
     void getDealSatisSellerScoreUpdate(String dealSellerUserIdx);
 
     int getDealActiveUpdate(String dealIdx, int dealview);
-} 
+
+  List<DealVO> getDealMainList();
+  FileVo getFileVO(String dealIdx);
+  
+  DealVO getDealDetail(String dealIdx);
+  DataVO updateDeal(DealVO dealVO, MultipartFile[] files);
+  @Transactional
+  DataVO getDealWrite(DealVO dealVO, MultipartFile[] files);
+  void insertFileInfo(FileVo fileVo);
+  
+  List<FileVo> getPjFileByDealIdx(String dealIdx);
+  List<DealVO> getDealManagement(String userIdx);
+
+  List<DealVO> getDealMainSearch(String searchKeyword);
+  void getFavorite(DealFavoriteVO DealFavoriteVO);
+
+  List<DealVO> getFavoriteList(String userIdx);
+  void deleteFavorite(DealFavoriteVO dfvo);
+}
