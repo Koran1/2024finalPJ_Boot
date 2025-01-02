@@ -309,23 +309,23 @@ public class DealController {
             @RequestParam("userIdx") String userIdx,
             @RequestParam("dealIdx") String dealIdx) {
         try {
-            log.info("좋아요 상태 조회 시작 - userIdx: {}, dealIdx: {}", userIdx, dealIdx);
+            // log.info("좋아요 상태 조회 시작 - userIdx: {}, dealIdx: {}", userIdx, dealIdx);
             
             boolean isLiked = dealService.isLiked(userIdx, dealIdx);
-            log.info("좋아요 상태 조회 결과 - isLiked: {}", isLiked);
+            // log.info("좋아요 상태 조회 결과 - isLiked: {}", isLiked);
             
             // 조회수 로직 처리
             ViewsVO viewInfo = dealService.getViewCount(userIdx, dealIdx);
             if (viewInfo == null) {
-                log.info("신규 조회 기록 생성");
+                // log.info("신규 조회 기록 생성");
                 dealService.insertViewCount(userIdx, dealIdx);
             } else {
-                log.info("기존 조회수 업데이트 - 현재 조회수: {}", viewInfo.getViewCount());
+                // log.info("기존 조회수 업데이트 - 현재 조회수: {}", viewInfo.getViewCount());
                 dealService.updateViewCount(userIdx, dealIdx);
             }
             
             String message = isLiked ? "이미 좋아요한 상품입니다." : "아직 좋아요하지 않은 상품입니다.";
-            log.info("좋아요 상태 조회 완료 - message: {}", message);
+            // log.info("좋아요 상태 조회 완료 - message: {}", message);
             
             return ResponseEntity.ok(new DataVO(true, isLiked, null, message, null));
         } catch (Exception e) {
@@ -341,8 +341,8 @@ public class DealController {
             @RequestParam("dealIdx") String dealIdx,
             @RequestParam("isLiked") boolean isLiked) {
         try {
-            log.info("좋아요 토글 시작 - userIdx: {}, dealIdx: {}, 현재상태: {}", 
-                    userIdx, dealIdx, isLiked ? "좋아요" : "좋아요 안함");
+            // log.info("좋아요 토글 시작 - userIdx: {}, dealIdx: {}, 현재상태: {}", 
+                    // userIdx, dealIdx, isLiked ? "좋아요" : "좋아요 안함");
 
             // userIdx 유효성 검사
             if (userIdx == null || userIdx.trim().isEmpty()) {
@@ -405,7 +405,7 @@ public class DealController {
     public ResponseEntity<DataVO> getFavoriteCount(@PathVariable("dealIdx") String dealIdx) {
         try {
             int count = dealService.getFavoriteCount(dealIdx);
-            log.info("좋아요 개수 조회 - dealIdx: {}, count: {}", dealIdx, count);
+            // log.info("좋아요 개수 조회 - dealIdx: {}, count: {}", dealIdx, count);
             return ResponseEntity.ok(new DataVO(true, count, null, "좋아요 개수 조회 성공", null));
         } catch (Exception e) {
             log.error("좋아요 개수 조회 중 오류 발생", e);
