@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ict.finalpj.domain.add.mapper.AddMapper;
 import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
+import com.ict.finalpj.domain.add.vo.QNAVO;
 
 @Service
 public class AddServiceImpl implements AddService {
@@ -44,6 +45,21 @@ public class AddServiceImpl implements AddService {
     @Override
     public List<FAQVO> getFaqs() {
         return addMapper.getFaqs();
+    }
+
+    @Override
+    public List<QNAVO> getQnas(String userIdx) {
+        return addMapper.getQnas(userIdx);
+    }
+
+    @Override
+    public QNAVO getQnaDetail(String qnaIdx) {
+        return addMapper.getQnaDetail(qnaIdx);
+    }
+
+    @Override
+    public int writeQna(QNAVO qnaVO) {
+        return addMapper.writeQna(qnaVO);
     }
 
 }
