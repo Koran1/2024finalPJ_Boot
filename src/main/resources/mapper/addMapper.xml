@@ -46,6 +46,7 @@
          and noticeLevel = '1' order by noticeIdx asc limit 1)
     </select>
 
+
     <select id="getFaqs" resultType="FAQVO" >
         select * from pjfaq where faqStatus = 'on'
     </select>

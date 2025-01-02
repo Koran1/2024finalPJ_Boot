@@ -2,10 +2,12 @@ package com.ict.finalpj.domain.deal.controller;
 
 import java.util.List;
 
+
 import javax.xml.crypto.Data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,7 @@ import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -60,7 +63,42 @@ public class DealController2 {
       }
       return dataVO;
   }
+
+  // 일단 보류 (interest 쪽 조사)
+  @GetMapping("/interest/{userIdx}")
+  public DataVO getDealinterest(@PathVariable("userIdx") String userIdx) {
+      DataVO dataVO = new DataVO();
+      try {
+          if (userIdx == null || userIdx.isEmpty()) {
+              dataVO.setSuccess(false);
+              dataVO.setMessage("유효하지 않은 사용자 ID입니다.");
+              return dataVO;
+          }
   
+          // 거래 관리 정보를 가져옵니다.
+          List<DealFavoriteVO> list = dealService.getDealinterest(userIdx);
+          log.info(userIdx);
+          log.info("deal VO 저장");
+
+  
+          if (list == null) {
+              dataVO.setSuccess(false);
+              dataVO.setMessage("거래 관리 정보를 찾을 수 없습니다.");
+          } else {
+              dataVO.setSuccess(true);
+              dataVO.setMessage("거래 관리 정보를 성공적으로 가져왔습니다.");
+              dataVO.setData(list);
+          }
+      } catch (Exception e) {
+          dataVO.setSuccess(false);
+          dataVO.setMessage("거래 관리 정보 조회 중 오류가 발생했습니다.");
+          // 예외 정보 로깅
+          e.printStackTrace(); // 또는 log.error("Error: ", e);
+      }
+      return dataVO;
+  }
+
+
   @GetMapping("/dealMainSearch")
   public DataVO getMethodName(@RequestParam("searchKeyword") String searchKeyword) {
       DataVO dvo = new DataVO();
@@ -147,7 +185,5 @@ public class DealController2 {
     }
     return dvo;
   }
-  
-
-  
+ 
 }

@@ -15,6 +15,7 @@ public interface AddService {
     List<NoticeVO> getNoticeDetails(String noticeIdx);
     List<NoticeVO> getNoticeLv1Details(String noticeIdx);
 
+
     List<FAQVO> getFaqs();
 
     List<QNAVO> getQnas(String userIdx);

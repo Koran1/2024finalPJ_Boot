@@ -1,5 +1,6 @@
 package com.ict.finalpj.domain.deal.controller;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/chat")
 public class ChatController {
     
+
     @Autowired
     private ChatService chatService;
 

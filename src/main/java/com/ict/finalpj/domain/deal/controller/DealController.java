@@ -1,13 +1,19 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +21,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.service.DealService;
+import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,237 +42,497 @@ public class DealController {
     @Autowired
     private DealService dealService;
 
+    // JWT 관련 의존성 제거
+    // @Autowired
+    // private JwtUtil jwtUtil;
+    
+    // @Autowired
+    // private UserService userService;
+
+    // 공통 응답 생성 메서드
+    private DataVO createResponse(boolean success, String message, Object data) {
+        return DataVO.builder()
+            .success(success)
+            .message(message)
+            .data(data)
+            .build();
+    }
+
+    // 파일 처리 공통 메서드
+    private void handleFileUpload(String dealIdx, MultipartFile[] files) throws Exception {
+        if (files == null || files.length == 0) return;
+
+        int maxFiles = 5;
+        int storedFiles = 0;
+        String path = "D:\\upload\\deal";
+        
+        for (MultipartFile file : files) {
+            if (storedFiles >= maxFiles || file.isEmpty()) continue;
+
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            
+            FileVo fileVo = FileVo.builder()
+                .fileTableType("2")
+                .fileTableIdx(dealIdx)
+                .fileName(fileName)
+                .fileOrder(storedFiles)
+                .build();
+
+            File upLoadDir = new File(path);
+            if (!upLoadDir.exists()) {
+                upLoadDir.mkdirs();
+            }
+
+            try {
+                file.transferTo(new File(upLoadDir, fileName));
+                dealService.getIDealFileInsert(fileVo);
+                storedFiles++;
+                log.info("파일 업로드 완료: {}", fileName);
+            } catch (Exception e) {
+                log.error("파일 업로드 실패: {}", e.getMessage());
+            }
+        }
+    }
+    
+    // 파일 조회 공통 메서드
+    private List<FileVo> getFileList(String fileTableIdx) {
+        try {
+            List<FileVo> fileList = dealService.getDealFileDetail(fileTableIdx);
+            return fileList != null ? fileList : new ArrayList<>();
+        } catch (Exception e) {
+            log.error("파일 조회 중 오류 발생: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    // 메인페이지 조회 API
     @GetMapping("/dealMain")
     public DataVO getDealMainList() {
-        DataVO dataVO = new DataVO();
         try {
             List<FileVo> file_list = new ArrayList<>();
             List<DealVO> list = dealService.getDealMainList();
 
-            for(DealVO k : list){
-                FileVo fvo =  dealService.getFileVO(k.getDealIdx());
-                if(fvo == null) continue;
-                file_list.add(fvo);
-            }  
+            List<FileVo> fileList = list.stream()
+                .map(deal -> dealService.getDealFileOne(deal.getDealIdx()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("list", list);
-            resultMap.put("file_list", file_list);
+            Map<String, Object> resultMap = Map.of(
+                "list", list,
+                "file_list", fileList
+            );
 
-
-            dataVO.setSuccess(true);
-            dataVO.setMessage("캠핑마켓 메인페이지 조회 완료");
-            dataVO.setData(resultMap);
+            return createResponse(true, "캠핑마켓 메인페이지 조회 완료", resultMap);
         } catch (Exception e) {
-            dataVO.setSuccess(false);
-            dataVO.setMessage("캠핑마켓 메인페이지 조회 실패");
-            e.printStackTrace();
+            log.error("메인페이지 조회 실패", e);
+            return createResponse(false, "캠핑마켓 메인페이지 조회 실패", null);
+
         }
-        return dataVO;
     }
 
+    // 상품 상세 조회 API
     @GetMapping("/detail/{dealIdx}")
     public DataVO getDealDetail(@PathVariable("dealIdx") String dealIdx) {
-        DataVO dataVO = new DataVO();
-        
+
         try {
             
             DealVO dealVO = dealService.getDealDetail(dealIdx);
-            List<FileVo> files = dealService.getPjFileByDealIdx(dealIdx);
-            
-            dataVO.setSuccess(true);
-            dataVO.setMessage("상품 정보 조회 성공");
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("deal", dealVO);
-            response.put("files", files);
-            dataVO.setData(response);
-            
+            List<FileVo> fileList = getFileList(dealIdx);
+            int viewCount = dealService.getTotalViewCount(dealIdx);
+
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("deal", dealVO);
+            resultMap.put("files", fileList);
+            resultMap.put("viewCount", viewCount);
+
+            return createResponse(true, "상품 정보 조회 성공", resultMap);
         } catch (Exception e) {
-            e.printStackTrace();
-            dataVO.setSuccess(false);
-            dataVO.setMessage("상품 정보 조회 실패");
+            log.error("상품 상세 조회 오류", e);
+            return createResponse(false, "상품 정보 조회 실패", null);
         }
-        return dataVO;
     }
 
+    // 상품 등록 API
     @PostMapping("/write")
     public DataVO getDealWrite(
             @ModelAttribute("data") DealVO dealVO,
             @RequestParam(value = "file", required = false) MultipartFile[] files) {
-
-        // UUID 생성
-        String dealIdx = UUID.randomUUID().toString();
-        dealVO.setDealIdx(dealIdx); // DealVO에 dealIdx 설정
-        log.info("Generated dealIdx: " + dealIdx); // 로그 추가
-
-        // Deal 저장을 서비스 레이어로 위임
-        DataVO dataVO = dealService.getDealWrite(dealVO, files); // files 파라미터 제거
-
-        log.info("After service call, dealIdx: " + dealVO.getDealIdx()); // 로그 추가
-
-        // 파일 업로드 및 DB 저장 처리
-        if (files != null && files.length > 0) {
-            log.info("첨부된 파일 개수: " + files.length);
-
-            int maxFiles = 5; // 최대 파일 개수 설정
-            int storedFiles = 0; // 저장된 파일 개수 추적
-
-            for (MultipartFile file : files) {
-                if (storedFiles >= maxFiles) {
-                    break; // 최대 파일 수 도달 시 루프 종료
-                }
-
-                if (!file.isEmpty()) {
-                    // 파일명 생성 (UUID는 여기서 한 번만 생성됩니다.)
-                    String uuid = UUID.randomUUID().toString();
-                    String fileName = uuid + "_" + file.getOriginalFilename();
-                    log.info("생성된 파일명: " + fileName);
-
-                    // FileVo 설정
-                    FileVo fileVo = FileVo.builder()
-                        .fileTableType("2")
-                        .fileTableIdx(dealVO.getDealIdx())
-                        .fileName(fileName)
-                        .fileOrder(storedFiles)
-                        .build();
-
-                    // 파일 업로드 경로
-                    String path = "D:\\upload\\deal";
-                    File upLoadDir = new File(path);
-
-                    if (!upLoadDir.exists()) {
-                        upLoadDir.mkdirs();
-                    }
-
-                    // 파일 업로드
-                    try {
-                        file.transferTo(new File(upLoadDir, fileName));
-                        log.info("파일 업로드 완료: " + fileName);
-                    } catch (Exception e) {
-                        log.error("파일 업로드 중 오류 발생: " + e.getMessage());
-                        continue; // 다음 파일로 이동
-                    }
-
-                    // DB에 파일 정보 저장 (insertFileInfo은 여기서 한 번만 호출됩니다.)
-                    dealService.insertFileInfo(fileVo);
-
-                    storedFiles++; // 저장된 파일 개수 증가
-                }
+        try {
+            if (!isValidDealVO(dealVO)) {
+                return createResponse(false, "필수 입력값이 누락되었습니다", null);
             }
 
-            // 만약 업로드된 파일이 최대 개수를 초과한다면 로그 또는 메시지 추가
-            if (files.length > maxFiles) {
-                log.warn("최대 " + maxFiles + "개의 파일만 업로드됩니다. 초과된 파일은 무시됩니다.");
-                // 필요 시 사용자에게 메시지를 반환하도록 구현
+            // 임시로 하드코딩된 사용자 정보 설정
+            String dealIdx = UUID.randomUUID().toString();
+            dealVO.setDealIdx(dealIdx);
+            dealVO.setDealSellerUserIdx(dealVO.getDealSellerUserIdx());  // 테스트용 임시 userIdx
+            dealVO.setDealSellerNick(dealVO.getDealSellerNick());  // 테스트용 임시 닉네임
+
+
+            int result = dealService.getDealWrite(dealVO);
+            if (result > 0) {
+                handleFileUpload(dealIdx, files);
+                return createResponse(true, "상품등록 완료", dealIdx);
             }
-        } else {
-            log.info("첨부된 파일 없음");
+            return createResponse(false, "상품등록 실패", null);
+        } catch (Exception e) {
+            log.error("상품등록 오류", e);
+            return createResponse(false, "상품등록 중 오류가 발생했습니다", null);
         }
-
-        return dataVO;
     }
 
+    // 상품 수정 API
     @PutMapping("/update/{dealIdx}")
-    public DataVO updateDeal(
+    public DataVO getDealUpdate(
         @PathVariable("dealIdx") String dealIdx,
         @ModelAttribute DealVO dealVO,
-        @RequestParam(value = "file", required = false) MultipartFile[] files) 
+        @RequestParam(value = "file", required = false) MultipartFile[] files,
+        @RequestParam(value = "fileName", required = false) List<String> fileNames)
     {
-        // dealIdx를 DealVO에 설정
-        dealVO.setDealIdx(dealIdx);
-        DataVO dataVO = new DataVO();
-
         try {
-            // 유효성 검사
-            if (dealVO.getDealTitle() == null || dealVO.getDealCategory() == null || 
-                dealVO.getDealStatus() == null || dealVO.getDealDescription() == null || 
-                dealVO.getDealPrice() == null || dealVO.getDealPackage() == null || 
-                dealVO.getDealDirect() == null || dealVO.getDealDirectContent() == null || 
-                dealVO.getDealCount() == null) 
-            {
-                dataVO.setSuccess(false);
-                dataVO.setMessage("필수 항목이 누락되었습니다.");
-                return dataVO;
-            }
-
-            DataVO result = dealService.updateDeal(dealVO, files); // files 파라미터 제거
-            log.info("updateDeal 결과: " + result);
-
-            if (result == null || !result.isSuccess()) { // 업데이트 실패 시
-                dataVO.setSuccess(false);
-                dataVO.setMessage("상품 수정 실패");
-                return dataVO;
-            }
+            dealVO.setDealIdx(dealIdx);
+            log.info("상품 수정 시작 - dealIdx: {}", dealIdx);
             
-            // 파일 업로드 및 DB 저장 처리
-            if (files != null && files.length > 0) {
-                log.info("첨부된 파일 개수: " + files.length);
+            // 삭제할 파일 처리
+            if (fileNames != null && !fileNames.isEmpty()) {
+                log.info("삭제할 파일 개수: {}", fileNames.size());
+                for (String fileName : fileNames) {
+                    try {
+                        // 실제 파일 삭제
+                        String filePath = "D:\\upload\\deal\\" + fileName;
+                        File file = new File(filePath);
+                        if (file.exists()) {
+                            boolean isDeleted = file.delete();
+                            if (isDeleted) {
+                                log.info("물리적 파일 삭제 성공 - fileName: {}", fileName);
+                                dealService.getDealFileNameDelete(dealIdx, fileName);
+                                log.info("DB 파일 정보 삭제 완료 - fileName: {}", fileName);
+                            } else {
+                                log.error("물리적 파일 삭제 실패 - fileName: {}", fileName);
+                            }
+                        } else {
+                            log.warn("삭제할 파일이 존재하지 않음 - fileName: {}", fileName);
+                            dealService.getDealFileNameDelete(dealIdx, fileName);
+                            log.info("DB 파일 정보만 삭제 완료 - fileName: {}", fileName);
+                        }
+                    } catch (Exception e) {
+                        log.error("파일 삭제 중 오류 발생 - fileName: {}", fileName, e);
+                    }
+                }
+            }
 
-                int maxFiles = 5; // 최대 파일 개수 설정
-                int storedFiles = 0; // 저장된 파일 개수 추적
+            // 새 파일 업로드
+            if (files != null && files.length > 0) {
+                log.info("업로드할 새 파일 개수: {}", files.length);
+                List<FileVo> existingFiles = dealService.getDealFileDetail(dealIdx);
+                int nextOrder = existingFiles != null ? existingFiles.size() : 0;
 
                 for (MultipartFile file : files) {
-                    if (storedFiles >= maxFiles) {
-                        break; // 최대 파일 수 도달 시 루프 종료
-                    }
-
-                    if (!file.isEmpty()) {
-                        // 파일명 생성 (UUID는 여기서 한 번만 생성됩니다.)
-                        String uuid = UUID.randomUUID().toString();
-                        String fileName = uuid + "_" + file.getOriginalFilename();
-                        log.info("생성된 파일명: " + fileName);
-
-                        // FileVO 설정
+                    if (file != null && !file.isEmpty()) {
+                        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                        log.info("새 파일 업로드 시작 - originalName: {}, newFileName: {}", 
+                                file.getOriginalFilename(), fileName);
+                        
                         FileVo fileVo = FileVo.builder()
                             .fileTableType("2")
-                            .fileTableIdx(dealVO.getDealIdx())
+                            .fileTableIdx(dealIdx)
                             .fileName(fileName)
-                            .fileOrder(storedFiles)
+                            .fileOrder(nextOrder++)
                             .build();
 
-                        // 파일 업로드 경로
-                        String path = "D:\\upload\\deal";
-                        File upLoadDir = new File(path);
-
-                        if (!upLoadDir.exists()) {
-                            upLoadDir.mkdirs();
+                        File uploadDir = new File("D:\\upload\\deal");
+                        if (!uploadDir.exists()) {
+                            uploadDir.mkdirs();
                         }
 
-                        // 파일 업로드
-                        try {
-                            file.transferTo(new File(upLoadDir, fileName));
-                            log.info("파일 업로드 완료: " + fileName);
-                        } catch (Exception e) {
-                            log.error("파일 업로드 중 오류 발생: " + e.getMessage());
-                            continue; // 다음 파일로 이동
-                        }
-
-                        // DB에 파일 정보 저장 (insertFileInfo은 여기서 한 번만 호출됩니다.)
-                        dealService.insertFileInfo(fileVo);
-
-                        storedFiles++; // 저장된 파일 개수 증가
+                        file.transferTo(new File(uploadDir, fileName));
+                        dealService.getIDealFileInsert(fileVo);
+                        log.info("새 파일 업로드 완료 - fileName: {}", fileName);
                     }
                 }
-
-                // 만약 업로드된 파일이 최대 개수를 초과한다면 로그 또는 메시지 추가
-                if (files.length > maxFiles) {
-                    log.warn("최대 " + maxFiles + "개의 파일만 업로드됩니다. 초과된 파일은 무시됩니다.");
-                    // 필요 시 사용자에게 메시지를 반환하도록 구현
-                }
-            } else {
-                log.info("첨부된 파일 없음");
             }
 
-            // 수정이 성공하면 /api/deal/detail/{dealIdx}로 리다이렉트
-            dataVO.setSuccess(true);
-            dataVO.setMessage("상품 수정 완료");
-            return dataVO;            
-        } catch (Exception e) { 
-            log.error("캠핑마켓 수정 오류: ", e);
-            dataVO.setSuccess(false);
-            dataVO.setMessage("상품 수정 오류");
-            return dataVO;
+            // 상품 정보 업데이트
+            int result = dealService.getDealUpdate(dealVO);
+            log.info("상품 정보 업데이트 결과 - dealIdx: {}, result: {}", dealIdx, result);
+            
+            return createResponse(result > 0, 
+                "상품 수정 " + (result > 0 ? "완료" : "실패"), null);
+            
+        } catch (IOException e) {
+            log.error("파일 처리 오류 - dealIdx: {}", dealIdx, e);
+            return createResponse(false, "파일 처리 중 오류가 발생했습니다", null);
+        } catch (Exception e) {
+            log.error("상품 수정 오류 - dealIdx: {}", dealIdx, e);
+            return createResponse(false, "상품 수정 실패", null);
+        }
+    }
+
+    // 파일 삭제 API
+    @DeleteMapping("/update/{dealIdx}/file")
+    public DataVO deleteFile(
+        @PathVariable("dealIdx") String dealIdx,
+        @RequestParam("fileName") String fileName) 
+    {
+        try {
+            // 실제 파일 삭제
+            String filePath = "D:\\upload\\deal\\" + fileName;
+            File file = new File(filePath);
+            if (file.exists()) {
+                boolean isDeleted = file.delete();
+                if (isDeleted) {
+                    log.info("물리적 파일 삭제 성공 - fileName: {}", fileName);
+                    dealService.getDealFileNameDelete(dealIdx, fileName);
+                    log.info("DB 파일 정보 삭제 완료 - fileName: {}", fileName);
+                    return createResponse(true, "파일 삭제 성공", null);
+                } else {
+                    return createResponse(false, "파일 삭제 실패", null);
+                }
+            } else {
+                // 파일이 없더라도 DB에서는 삭제
+                dealService.getDealFileNameDelete(dealIdx, fileName);
+                return createResponse(true, "DB 파일 정보 삭제 완료", null);
+
+            }
+        } catch (Exception e) {
+            log.error("파일 삭제 중 오류 발생 - fileName: {}", fileName, e);
+            return createResponse(false, "파일 삭제 중 오류 발생", null);
+        }
+    }
+
+    // 유효성 검사 메서드
+    private boolean isValidDealVO(DealVO dealVO) {
+        return dealVO != null 
+            && dealVO.getDealTitle() != null && !dealVO.getDealTitle().trim().isEmpty()
+            && dealVO.getDealDescription() != null && !dealVO.getDealDescription().trim().isEmpty()
+            && dealVO.getDealPrice() != null
+            && dealVO.getDealCount() != null;
+    }
+
+
+
+     // 찜하기 상태 조회 + 조회수 로직 처리 API
+    @GetMapping("/like-status")
+    public ResponseEntity<DataVO> getLikeStatus(
+            @RequestParam("userIdx") String userIdx,
+            @RequestParam("dealIdx") String dealIdx) {
+        try {
+            // log.info("좋아요 상태 조회 시작 - userIdx: {}, dealIdx: {}", userIdx, dealIdx);
+            
+            boolean isLiked = dealService.isLiked(userIdx, dealIdx);
+            // log.info("좋아요 상태 조회 결과 - isLiked: {}", isLiked);
+            
+            // 조회수 로직 처리
+            ViewsVO viewInfo = dealService.getViewCount(userIdx, dealIdx);
+            if (viewInfo == null) {
+                // log.info("신규 조회 기록 생성");
+                dealService.insertViewCount(userIdx, dealIdx);
+            } else {
+                // log.info("기존 조회수 업데이트 - 현재 조회수: {}", viewInfo.getViewCount());
+                dealService.updateViewCount(userIdx, dealIdx);
+
+            }
+            
+            String message = isLiked ? "이미 좋아요한 상품입니다." : "아직 좋아요하지 않은 상품입니다.";
+            // log.info("좋아요 상태 조회 완료 - message: {}", message);
+            
+            return ResponseEntity.ok(new DataVO(true, isLiked, null, message, null));
+        } catch (Exception e) {
+            log.error("좋아요 상태 확인 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "오류가 발생했습니다.", null));
+        }
+    }
+
+    // 좋아요 추가/삭제 API
+    @RequestMapping("/like")
+    public ResponseEntity<DataVO> toggleLike(
+            @RequestParam("userIdx") String userIdx,
+            @RequestParam("dealIdx") String dealIdx,
+            @RequestParam("isLiked") boolean isLiked) {
+        try {
+            // log.info("좋아요 토글 시작 - userIdx: {}, dealIdx: {}, 현재상태: {}", 
+                    // userIdx, dealIdx, isLiked ? "좋아요" : "좋아요 안함");
+
+            // userIdx 유효성 검사
+            if (userIdx == null || userIdx.trim().isEmpty()) {
+                return ResponseEntity.ok(new DataVO(false, null, null, "유효하지 않은 사용자입니다.", null));
+            }
+
+            int result;
+            String message;
+            if (isLiked) {
+                result = dealService.unlikeDeal(userIdx, dealIdx);
+                message = result > 0 ? "좋아요가 취소되었습니다." : "좋아요 취소에 실패했습니다.";
+                log.info("좋아요 취소 처리 결과 - result: {}, message: {}", result, message);
+            } else {
+                result = dealService.likeDeal(userIdx, dealIdx);
+                message = result > 0 ? "좋아요가 추가되었습니다." : "좋아요 추가에 실패했습니다.";
+                log.info("좋아요 추가 처리 결과 - result: {}, message: {}", result, message);
+            }
+
+
+            return ResponseEntity.ok(new DataVO(
+                    result > 0,
+                    result,
+                    null,
+                    message,  // 항상 메시지 포함
+                    null
+            ));
+        } catch (Exception e) {
+            String errorMessage = "좋아요 처리 중 오류가 발생했습니다: " + e.getMessage();
+            log.error(errorMessage);
+            return ResponseEntity.ok(new DataVO(false, null, null, errorMessage, null));
+        }
+    }
+
+
+    // 파일 순서 재정렬 API
+    @PutMapping("/update/{dealIdx}/reorder")
+    public DataVO reorderFiles(@PathVariable("dealIdx") String dealIdx) {
+        try {
+            log.info("파일 순서 재정렬 시작 - dealIdx: {}", dealIdx);
+            
+            // 현재 파일 목록 조회
+            List<FileVo> files = dealService.getDealFileDetail(dealIdx);
+            
+            // 파일 순서 재정렬
+            for (int i = 0; i < files.size(); i++) {
+                FileVo file = files.get(i);
+                file.setFileOrder(i);
+                dealService.getDealFileOrder(file);
+            }
+            
+            log.info("파일 순서 재정렬 완료 - dealIdx: {}", dealIdx);
+            return createResponse(true, "파일 순서 재정렬 완료", null);
+            
+        } catch (Exception e) {
+            log.error("파일 순서 재정렬 중 오류 발생 - dealIdx: {}", dealIdx, e);
+            return createResponse(false, "파일 순서 재정렬 실패", null);
+        }
+    }
+
+    // 좋아요 개수 조회 API 추가
+    @GetMapping("/favorite-count/{dealIdx}")
+    public ResponseEntity<DataVO> getFavoriteCount(@PathVariable("dealIdx") String dealIdx) {
+        try {
+            int count = dealService.getFavoriteCount(dealIdx);
+            // log.info("좋아요 개수 조회 - dealIdx: {}, count: {}", dealIdx, count);
+            return ResponseEntity.ok(new DataVO(true, count, null, "좋아요 개수 조회 성공", null));
+        } catch (Exception e) {
+            log.error("좋아요 개수 조회 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, 0, null, "좋아요 개수 조회 실패", null));
+        }
+    }
+
+    // 판매 상태 변경 API
+    @PutMapping("/status/{dealIdx}")
+    public ResponseEntity<DataVO> updateDealStatus(
+        @PathVariable("dealIdx") String dealIdx,
+        @RequestParam("status") String status) {
+        try {
+            log.info("판매 상태 변경 시작 - dealIdx: {}, status: {}", dealIdx, status);
+            int result = dealService.getDealStatusUpdate(dealIdx, status);
+            
+            if (result > 0) {
+                return ResponseEntity.ok(new DataVO(true, null, null, "판매 상태가 변경되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "판매 상태 변경에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            log.error("판매 상태 변경 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "판매 상태 변경 중 오류가 발생했습니다.", null));
+        }
+    }
+
+    // 판매자의 다른 상품 조회
+    @GetMapping("/seller-other-deals/{dealIdx}")
+    public DataVO getSellerOtherDeals(@PathVariable("dealIdx") String dealIdx) {
+        try {
+            DealVO currentDeal = dealService.getDealDetail(dealIdx);
+            if (currentDeal == null) {
+                return createResponse(false, "상품 정보를 찾을 수 없습니다.", null);
+            }
+
+            List<DealVO> otherDeals = dealService.getSellerOtherDeals(currentDeal.getDealSellerUserIdx(), dealIdx);
+            List<FileVo> fileList = otherDeals.stream()
+                .map(deal -> dealService.getDealFileOne(deal.getDealIdx()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+            Map<String, Object> resultMap = Map.of(
+                "deals", otherDeals,
+                "files", fileList
+            );
+
+            return createResponse(true, "판매자의 다른 상품 조회 성공", resultMap);
+        } catch (Exception e) {
+            log.error("판매자의 다른 상품 조회 실패", e);
+            return createResponse(false, "판매자의 다른 상품 조회 실패", null);
+        }
+    }
+    // 만족도 평가 등록 API
+    @PostMapping("/satisfaction")
+    public ResponseEntity<DataVO> getDealSatisfactionInsert(@RequestBody DealSatisfactionVO satisfactionVO) {
+        try {
+            log.info("만족도 평가 등록 시작 - 평가점수: {}, 내용: {}", 
+                satisfactionVO.getDealSatisSellerScore(), 
+                satisfactionVO.getDealSatisBuyerContent());
+
+            int result = dealService.getDealSatisfactionInsert(satisfactionVO);
+            
+            if (result > 0) {
+                // 만족도 평가 등록 성공 시 판매자 평점 업데이트
+                dealService.getDealSatisSellerScoreUpdate(satisfactionVO.getDealSatisSellerUserIdx());
+                return ResponseEntity.ok(new DataVO(true, null, null, "만족도 평가가 등록되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            log.error("만족도 평가 등록 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록 중 오류가 발생했습니다.", null));
+        }
+    }
+
+
+    // 판매자의 평점 조회
+    @GetMapping("/seller-score/{dealSellerUserIdx}")
+    @ResponseBody
+    public ResponseEntity<DataVO> getDealSatisSellerScore(
+        @PathVariable(name = "dealSellerUserIdx") String dealSellerUserIdx
+    ) {
+        try {
+            if (dealService.getUserInfoByIdx(dealSellerUserIdx) == null) {
+                return ResponseEntity.ok(new DataVO(true, 5.0, null, "사용자를 찾을 수 없음", null));
+            }
+            String averageScore = dealService.getDealSatisSellerScore(dealSellerUserIdx);
+            
+            if (averageScore == null) {
+                return ResponseEntity.ok(new DataVO(true, 5.0, null, "평점 없음", null));
+            }
+            double score = Double.parseDouble(averageScore);
+            return ResponseEntity.ok(new DataVO(true, score, null, "판매자 평점 조회 성공", null));
+        } catch (Exception e) {
+            log.error("평점 조회 실패 - dealSellerUserIdx: {}, 에러: {}", dealSellerUserIdx, e.getMessage());
+            return ResponseEntity.ok(new DataVO(true, 5.0, null, "평점 조회 실패", null));
+        }
+    }
+
+    @PutMapping("/active/{dealIdx}")
+    public ResponseEntity<DataVO> getDealActiveUpdate(
+        @PathVariable("dealIdx") String dealIdx,
+        @RequestParam("dealview") int dealview) {
+        try {
+            int result = dealService.getDealActiveUpdate(dealIdx, dealview);
+            if (result > 0) {
+                return ResponseEntity.ok(new DataVO(true, null, null, "상품 상태가 변경되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "상품 상태 변경에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            log.error("상품 상태 변경 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "상품 상태 변경 중 오류가 발생했습니다.", null));
+
         }
     }
 

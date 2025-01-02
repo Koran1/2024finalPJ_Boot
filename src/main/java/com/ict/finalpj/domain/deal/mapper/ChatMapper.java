@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.mapper;
 
 import java.util.List;
+
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -14,6 +15,7 @@ public interface ChatMapper {
     
     List<ChatVO> getChatList(String chatRoom);
 
+
     ChatRoomVO chkByUserIdx(Map<String, String> map);
     int insertNewChat(Map<String, String> map);
     
@@ -23,4 +25,5 @@ public interface ChatMapper {
     int getUnReadMessages(String userIdx);
 
     void updateLastRead(Map<String, String> map);
+
 }

@@ -88,6 +88,6 @@ mybatis:
 
 # 비밀키 사용 (길이 : 32byte)
 jwt:
-    secret: "abcdABCD1234qwerQWER5678zxcvZXCV"
-    expiration: 3600000 # 1시간 (3600 s * 1000ms)
+    secret: "abcdABCD1234qwerQWER5678zxcvZXCV9876asdfASDF4321poiuPOIU"  # Base64로 인코딩된 32바이트 이상의 문자열
+    expiration: 86400000  # 24시간
 

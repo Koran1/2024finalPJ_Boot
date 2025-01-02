@@ -1,18 +1,27 @@
 package com.ict.finalpj.domain.deal.service;
 
-import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
+
+import com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
+
+import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
+
 import com.ict.finalpj.domain.deal.vo.DealVO;
+import com.ict.finalpj.domain.user.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,9 +32,17 @@ public class DealServiceImpl implements DealService {
     @Autowired
     private DealMapper dealMapper;
 
+    @Autowired
+    private DealSatisfactionMapper dealSatisfactionMapper;
+
     @Override
     public List<DealVO> getDealMainList() {
         return dealMapper.getDealMainList();
+    }
+    
+    @Override
+    public FileVo getDealFileOne(String fileTableIdx) {
+        return dealMapper.getDealFileOne(fileTableIdx);
     }
 
     @Override
@@ -39,82 +56,183 @@ public class DealServiceImpl implements DealService {
         }
         return deal;
     }
+    
+    @Override
+    public List<FileVo> getDealFileDetail(String fileTableIdx) {
+        return dealMapper.getDealFileDetail(fileTableIdx);
+    }
 
     @Override
-    @Transactional
-    public DataVO getDealWrite(DealVO dealVO, MultipartFile[] files) {
-        DataVO dataVO = new DataVO();
-        
-        // Deal 저장
-        int result = dealMapper.getDealWrite(dealVO);
-        
-        // dealIdx가 설정된 후에 로그 출력
-        log.info("dealIdx: " + dealVO.getDealIdx()); // 로그 추가
+    public int getDealWrite(DealVO dealVO) {
+        return dealMapper.getDealWrite(dealVO);
+    }
 
-        if (result > 0) {
-            dataVO.setSuccess(true);
-            dataVO.setMessage("상품등록 완료");
-            dataVO.setData(dealVO.getDealIdx()); // dealIdx를 응답 데이터에 설정
+    @Override
+    public int getIDealFileInsert(FileVo fileVo) {
+        return dealMapper.getIDealFileInsert(fileVo);
+    }
 
-            // 파일 업로드 및 DB 저장 처리는 이제 컨트롤러에서 처리됩니다.
-            // ... existing code ...
+    @Override
+    public int getDealUpdate(DealVO dealVO) {
+        return dealMapper.getDealUpdate(dealVO);
+    }
+
+    @Override
+    public int getDealFileUpdate(FileVo fileVo) {
+        return dealMapper.getDealFileUpdate(fileVo);
+    }
+
+    @Override
+    public int getDealFileDelete(FileVo fileVo) {
+        return dealMapper.getDealFileDelete(fileVo);
+    }
+    
+    @Override
+    public List<DealVO> getDealManagement(String userIdx) {
+        return dealMapper.getDealManagement(userIdx);
+    }
+
+    @Override
+    public List<DealFavoriteVO> getDealinterest(String userIdx) {
+        return dealMapper.getDealinterest(userIdx);
+    } 
+
+    @Override
+    public int getDealFileNameDelete(String fileTableIdx, String fileName) {
+        return dealMapper.getDealFileNameDelete(fileTableIdx, fileName);
+    }
+
+    @Override
+    public int getDealFileOrder(FileVo fileVo) {
+        return dealMapper.getDealFileOrder(fileVo);
+    }
+
+    // 좋아요 상태 확인
+    @Override
+    public boolean isLiked(String userIdx, String dealIdx) {
+        return dealMapper.isLiked(userIdx, dealIdx);
+    }
+
+    // 좋아요 추가
+    @Override
+    public int likeDeal(String userIdx, String dealIdx) {
+        return dealMapper.likeDeal(userIdx, dealIdx);
+    }
+
+    // 좋아요 삭제
+    @Override
+    public int unlikeDeal(String userIdx, String dealIdx) {
+        return dealMapper.unlikeDeal(userIdx, dealIdx);
+    }
+
+    // 조회수 관련 메서드 구현
+    @Override
+    public ViewsVO getViewCount(String userIdx, String dealIdx) {
+        return dealMapper.getViewCount(userIdx, dealIdx);
+    }
+
+    @Override
+    public int insertViewCount(String userIdx, String dealIdx) {
+        return dealMapper.insertViewCount(userIdx, dealIdx);
+    }
+
+    @Override
+    public int updateViewCount(String userIdx, String dealIdx) {
+        // 조회수 정보 확인
+        ViewsVO viewTable = dealMapper.getViewCount(userIdx, dealIdx);
+
+        if (viewTable == null) {
+            // 조회수 정보가 없으면 새로 추가
+            return dealMapper.insertViewCount(userIdx, dealIdx);
         } else {
-            dataVO.setSuccess(false);
-            dataVO.setMessage("상품등록 실패");
-        }
-
-        return dataVO;
-    }
-
-    @Override
-    public void insertFileInfo(FileVo fileVo) {
-        log.info("파일 정보 삽입: " + fileVo.toString()); // 로그 추가
-        dealMapper.insertFileInfo(fileVo);
-    }
-
-    @Override
-    public List<FileVo> getPjFileByDealIdx(String dealIdx) {
-        return dealMapper.getPjFileByDealIdx(dealIdx);
-    }
-
-    @Override
-    @Transactional
-    public DataVO updateDeal(DealVO dealVO, MultipartFile[] files) {
-        DataVO dataVO = new DataVO();
-        try {
-            log.info("Updating deal with dealIdx: {}", dealVO.getDealIdx());
-            int result = dealMapper.updateDeal(dealVO);
-            if (result > 0) {
-                // 기존 파일 삭제 로직만 유지
-                if (files != null && files.length > 0) {
-                    // 기존 파일 삭제
-                    List<FileVo> existingFiles = dealMapper.getPjFileByDealIdx(dealVO.getDealIdx());
-                    for (FileVo file : existingFiles) {
-                        // 파일 시스템에서 삭제
-                        File deleteFile = new File("D:\\upload\\deal", file.getFileName());
-                        if (deleteFile.exists()) {
-                            deleteFile.delete();
-                        }
-                        // DB에서 파일 정보 삭제 (필요 시 추가)
-                        // dealMapper.deleteFileInfo(file.getFileIdx());
-                    }
-
-                    // 파일 업로드 및 DB 저장은 컨트롤러에서 처리
-                } else {
-                    log.info("첨부된 파일 없음");
-                }
-                dataVO.setSuccess(true);
-                dataVO.setMessage("상품 수정 완료");
-            } else {
-                dataVO.setSuccess(false);
-                dataVO.setMessage("상품 수정 실패");
+            // viewRegTime을 String에서 Date로 변환
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date viewRegTime = null;
+            try {
+                viewRegTime = sdf.parse(viewTable.getViewRegTime());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
             }
-        } catch (Exception e) {
-            dataVO.setSuccess(false);
-            dataVO.setMessage("상품 수정 중 오류 발생");
-            log.error("상품 수정 오류: ", e);
+
+            // 24시간 경과 체크
+            if (viewRegTime != null) {
+                long diffInMillis = System.currentTimeMillis() - viewRegTime.getTime();
+                long diffInHours = diffInMillis / (60 * 60 * 1000);
+
+                if (diffInHours >= 24) {
+                    // 24시간 이상 경과시 조회수 증가 및 시간 업데이트
+                    return dealMapper.updateViewCount(userIdx, dealIdx);
+                }
+            }
         }
-        return dataVO;
+        return 0;
+    }
+
+    @Override
+    public int getFavoriteCount(String dealIdx) {
+        return dealMapper.getFavoriteCount(dealIdx);
+    }
+
+    @Override
+    public UserVO getUserInfoByIdx(String userIdx) {
+        return dealMapper.getUserInfoByIdx(userIdx);
+    }
+
+    @Override
+    public int getTotalViewCount(String dealIdx) {
+        return dealMapper.getTotalViewCount(dealIdx);
+    }
+
+    @Override
+    public int getDealStatusUpdate(String dealIdx, String status) {
+        return dealMapper.getDealStatusUpdate(dealIdx, status);
+    }
+
+    @Override
+    public List<DealVO> getSellerOtherDeals(String dealSellerUserIdx, String dealIdx) {
+        return dealMapper.getSellerOtherDeals(dealSellerUserIdx, dealIdx);
+    }
+    
+    @Override
+    public int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO) {
+        return dealMapper.getDealSatisfactionInsert(satisfactionVO);
+    }
+
+    @Override
+    public String getDealSatisSellerScore(String dealSellerUserIdx) {
+        return dealSatisfactionMapper.getDealSatisSellerScore(dealSellerUserIdx);
+    }
+
+    @Override
+    public void getDealSatisSellerScoreUpdate(String dealSellerUserIdx) {
+        try {
+            // 판매자 평점 통계 조회
+            Map<String, Object> stats = dealSatisfactionMapper.getDealSatisSellerScoreStats(dealSellerUserIdx);
+            
+            long count = ((Number) stats.get("dealSatisSellerCount")).longValue();
+            BigDecimal sum = new BigDecimal(stats.get("dealSatisSellerScoreSum").toString());
+            
+            // 평점이 없는 경우 기본값 5.0 설정
+            BigDecimal average = count > 0 
+                ? sum.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP)
+                : new BigDecimal("5.00");
+                
+            // 평점 업데이트
+            dealSatisfactionMapper.updateDealSatisSellerScore(dealSellerUserIdx, average);
+            
+            log.info("판매자 평점 업데이트 완료 - dealSellerUserIdx: {}, 평균평점: {}", 
+                    dealSellerUserIdx, average);
+                    
+        } catch (Exception e) {
+            log.error("판매자 평점 업데이트 실패 - dealSellerUserIdx: {}", dealSellerUserIdx, e);
+            throw new RuntimeException("판매자 평점 업데이트 실패", e);
+        }
+    }
+
+    @Override
+    public int getDealActiveUpdate(String dealIdx, int dealview) {
+        return dealMapper.getDealActiveUpdate(dealIdx, dealview);
     }
 
     @Override
@@ -146,8 +264,6 @@ public class DealServiceImpl implements DealService {
     public void deleteFavorite(DealFavoriteVO dfvo) {
         dealMapper.deleteFavorite(dfvo);
     }
-
-  
 
 
 }

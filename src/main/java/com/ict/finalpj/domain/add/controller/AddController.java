@@ -92,6 +92,7 @@ public class AddController {
         return dvo;
     }
     
+
     @GetMapping("/faq")
     public DataVO getFaqs() {
         DataVO dvo = new DataVO();
@@ -197,6 +198,5 @@ public class AddController {
         }
         return dvo;
     }
-    
     
 }
