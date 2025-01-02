@@ -426,27 +426,7 @@ public class DealController {
         }
     }
 
-    @PostMapping("/satisfaction")
-    public ResponseEntity<DataVO> getDealSatisfactionInsert(@RequestBody DealSatisfactionVO satisfactionVO) {
-        try {
-            log.info("만족도 평가 등록 시작 - 평가점수: {}, 내용: {}", 
-                satisfactionVO.getDealSatisBuyerScore(), 
-                satisfactionVO.getDealSatisBuyerContent());
-
-            int result = dealService.getDealSatisfactionInsert(satisfactionVO);
-            
-            if (result > 0) {
-                return ResponseEntity.ok(new DataVO(true, null, null, "만족도 평가가 등록되었습니다.", null));
-            } else {
-                return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록에 실패했습니다.", null));
-            }
-        } catch (Exception e) {
-            log.error("만족도 평가 등록 중 오류 발생", e);
-            return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록 중 오류가 발생했습니다.", null));
-        }
-    }
-
-    //
+    // 판매자의 다른 상품 조회
     @GetMapping("/seller-other-deals/{dealIdx}")
     public DataVO getSellerOtherDeals(@PathVariable("dealIdx") String dealIdx) {
         try {
@@ -472,36 +452,57 @@ public class DealController {
             return createResponse(false, "판매자의 다른 상품 조회 실패", null);
         }
     }
-
-    // 판매자의 평점 조회
-    @GetMapping("/seller-score/{sellerIdx}")
-    @ResponseBody
-    public ResponseEntity<DataVO> getDealSatisSellerScore(
-        @PathVariable(name = "sellerIdx") String sellerIdx
-    ) {
+    
+    @PostMapping("/satisfaction")
+    public ResponseEntity<DataVO> getDealSatisfactionInsert(@RequestBody DealSatisfactionVO satisfactionVO) {
         try {
-            log.info("판매자 평점 조회 시작 - sellerIdx: {}", sellerIdx);
-            String averageScore = dealService.getDealSatisSellerScore(sellerIdx);
-            log.info("조회된 평점: {}", averageScore);
+            log.info("만족도 평가 등록 시작 - 평가점수: {}, 내용: {}", 
+                satisfactionVO.getDealSatisBuyerScore(), 
+                satisfactionVO.getDealSatisBuyerContent());
+
+            int result = dealService.getDealSatisfactionInsert(satisfactionVO);
             
-            return ResponseEntity.ok(new DataVO(true, averageScore, null, "판매자 평점 조회 성공", null));
+            if (result > 0) {
+                return ResponseEntity.ok(new DataVO(true, null, null, "만족도 평가가 등록되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록에 실패했습니다.", null));
+            }
         } catch (Exception e) {
-            log.error("판매자 평점 조회 실패", e);
-            return ResponseEntity.ok(new DataVO(false, null, null, "판매자 평점 조회 중 오류가 발생했습니다.", null));
+            log.error("만족도 평가 등록 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "만족도 평가 등록 중 오류가 발생했습니다.", null));
         }
     }
 
-    // 판매자별 만족도 조회
-    @GetMapping("/seller-satisfaction/{sellerIdx}")
-    public ResponseEntity<DataVO> getDealSellerSatisfaction(
-        @PathVariable(name = "sellerIdx") String sellerIdx
+    // 판매자의 평점 조회
+    @GetMapping("/seller-score/{dealSellerUserIdx}")
+    @ResponseBody
+    public ResponseEntity<DataVO> getDealSatisSellerScore(
+        @PathVariable(name = "dealSellerUserIdx") String dealSellerUserIdx
     ) {
         try {
-            List<DealSatisfactionVO> satisfactions = dealService.getDealSellerSatisfaction(sellerIdx);
-            return ResponseEntity.ok(new DataVO(true, satisfactions, null, "판매자 만족도 조회 성공", null));
+            log.info("1. 평점 조회 시작 - 요청된 dealSellerUserIdx: {}", dealSellerUserIdx);
+            
+            // pjuser 테이블에서 해당 사용자가 존재하는지 먼저 확인
+            if (dealService.getUserInfoByIdx(dealSellerUserIdx) == null) {
+                log.info("2. 사용자가 존재하지 않음 - dealSellerUserIdx: {}", dealSellerUserIdx);
+                return ResponseEntity.ok(new DataVO(true, 5.0, null, "사용자를 찾을 수 없음", null));
+            }
+            
+            String averageScore = dealService.getDealSatisSellerScore(dealSellerUserIdx);
+            log.info("2. DB에서 조회된 평점 원본: {}", averageScore);
+            
+            if (averageScore == null) {
+                log.info("3. 평점이 없음 - 기본값 5.0 반환");
+                return ResponseEntity.ok(new DataVO(true, 5.0, null, "평점 없음", null));
+            }
+            
+            double score = Double.parseDouble(averageScore);
+            log.info("4. 숫자로 변환된 평점: {}", score);
+            
+            return ResponseEntity.ok(new DataVO(true, score, null, "판매자 평점 조회 성공", null));
         } catch (Exception e) {
-            log.error("판매자 만족도 조회 실패", e);
-            return ResponseEntity.ok(new DataVO(false, null, null, "판매자 만족도 조회 중 오류가 발생했습니다.", null));
+            log.error("평점 조회 실패 - dealSellerUserIdx: {}, 에러: {}", dealSellerUserIdx, e.getMessage());
+            return ResponseEntity.ok(new DataVO(true, 5.0, null, "평점 조회 실패", null));
         }
     }
 

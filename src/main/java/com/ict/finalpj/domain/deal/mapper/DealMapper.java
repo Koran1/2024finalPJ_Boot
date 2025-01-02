@@ -42,24 +42,20 @@ public interface DealMapper {
 
     // 판매자 정보 조회 
     UserVO getUserInfoByIdx(String userIdx);
+    
+    // 판매자의 다른 상품 조회
+    List<DealVO> getSellerOtherDeals(@Param("dealSellerUserIdx") String dealSellerUserIdx, @Param("dealIdx") String dealIdx);
 
     // 총 조회수 조회
     int getTotalViewCount(String dealIdx);
 
+    // 판매 상태 변경
     int getDealStatusUpdate(@Param("dealIdx") String dealIdx, @Param("status") String status);
 
+    // 만족도 평가 저장
     int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO);
 
-    // 판매자의 다른 상품 조회
-    List<DealVO> getSellerOtherDeals(@Param("dealSellerUserIdx") String dealSellerUserIdx, @Param("dealIdx") String dealIdx);
-
-    // 판매자의 평균 평점 계산 및 업데이트
-    void getDealSatisSellerScoreUpdate(String sellerIdx, String averageScore);
-
     // 판매자의 평점 조회
-    String getDealSatisSellerScore(String sellerIdx);
-
-    // 판매자별 만족도 조회
-    List<DealSatisfactionVO> getDealSellerSatisfaction(String sellerIdx);
+    String getDealSatisSellerScore(String dealSellerUserIdx);
 }
  

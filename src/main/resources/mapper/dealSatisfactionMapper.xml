@@ -27,42 +27,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     )
   </insert>
 
-  <!-- 판매자의 평균 평점 계산 및 업데이트 -->
-  <update id="getDealSatisSellerScoreUpdate" parameterType="map">
-    UPDATE pjdealSatisfaction
-    SET dealSatisSellerScore = (
-      SELECT COALESCE(
-        CAST(
-          ROUND(
-            AVG(CAST(dealSatisBuyerScore AS DECIMAL(10,2))),
-            1
-          ) AS VARCHAR
-        ),
-        '0'
-      )
-      FROM pjuser
-      WHERE dealSatisSellerUserIdx = #{sellerIdx}
-    )
-    WHERE userIdx = #{sellerIdx}
-  </update>
-
   <!-- 판매자의 평점 조회 -->
   <select id="getDealSatisSellerScore" parameterType="String" resultType="String">
-    SELECT COALESCE(dealSatisSellerScore, '0') 
+    SELECT dealSatisSellerScore 
     FROM pjuser 
-    WHERE userIdx = #{sellerIdx}
-  </select>
-
-  <!-- 만족도 상세 조회 -->
-  <select id="getDealSatisfactionDetail" parameterType="String" resultType="DealSatisfactionVO">
-    SELECT * FROM pjdealSatisfaction 
-    WHERE dealSatisSellerIdx = #{dealSatisSellerIdx}
-  </select>
-
-  <!-- 판매자별 만족도 조회 -->
-  <select id="getDealSellerSatisfaction" parameterType="String" resultType="DealSatisfactionVO">
-    SELECT * FROM pjdealSatisfaction 
-    WHERE dealSatisSellerUserIdx = #{sellerIdx}
+    WHERE userIdx = #{dealSellerUserIdx}
   </select>
 
 </mapper>

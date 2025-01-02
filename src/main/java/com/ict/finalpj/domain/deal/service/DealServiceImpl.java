@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
+import com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper;
 import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
@@ -23,6 +24,9 @@ public class DealServiceImpl implements DealService {
 
     @Autowired
     private DealMapper dealMapper;
+
+    @Autowired
+    private DealSatisfactionMapper dealSatisfactionMapper;
 
     @Override
     public List<DealVO> getDealMainList() {
@@ -172,28 +176,18 @@ public class DealServiceImpl implements DealService {
     }
 
     @Override
+    public List<DealVO> getSellerOtherDeals(String dealSellerUserIdx, String dealIdx) {
+        return dealMapper.getSellerOtherDeals(dealSellerUserIdx, dealIdx);
+    }
+    
+    @Override
     public int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO) {
         return dealMapper.getDealSatisfactionInsert(satisfactionVO);
     }
 
     @Override
-    public List<DealVO> getSellerOtherDeals(String dealSellerUserIdx, String dealIdx) {
-        return dealMapper.getSellerOtherDeals(dealSellerUserIdx, dealIdx);
-    }
-
-    @Override
-    public String getDealSatisSellerScore(String sellerIdx) {
-        return dealMapper.getDealSatisSellerScore(sellerIdx);
-    }
-
-    @Override
-    public void getDealSatisSellerScoreUpdate(String sellerIdx, String averageScore) {
-        dealMapper.getDealSatisSellerScoreUpdate(sellerIdx, averageScore);
-    }
-
-    @Override
-    public List<DealSatisfactionVO> getDealSellerSatisfaction(String sellerIdx) {
-        return dealMapper.getDealSellerSatisfaction(sellerIdx);
+    public String getDealSatisSellerScore(String dealSellerUserIdx) {
+        return dealSatisfactionMapper.getDealSatisSellerScore(dealSellerUserIdx);
     }
 
 }

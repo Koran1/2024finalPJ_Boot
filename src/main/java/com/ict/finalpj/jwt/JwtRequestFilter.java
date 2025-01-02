@@ -55,7 +55,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }else{
             System.out.println("JWT 없음");
-            logger.warn("JWT does not exist!");
+            // logger.warn("JWT does not exist!");
         }
 
         // username 추출 성공 시, 현재 Security Context에 인증정보가 없는 경우
