@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.deal.service.DealService;
-import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +25,7 @@ public class DealController2 {
   @Autowired
   private DealService dealService;
 
+  // 나의 거래 관리 정보
   @GetMapping("/management/{userIdx}")
   public DataVO getDealManagement(@PathVariable("userIdx") String userIdx) {
       DataVO dataVO = new DataVO();
@@ -59,40 +59,22 @@ public class DealController2 {
       return dataVO;
   }
 
-  // 일단 보류 (interest 쪽 조사)
-  @GetMapping("/interest/{userIdx}")
-  public DataVO getDealinterest(@PathVariable("userIdx") String userIdx) {
-      DataVO dataVO = new DataVO();
+  // 나의 구매 내역 정보
+  @GetMapping("/purchase/{userIdx}")
+  public DataVO getPurchase(@PathVariable("userIdx") String userIdx) {
+      DataVO dvo = new DataVO();
       try {
-          if (userIdx == null || userIdx.isEmpty()) {
-              dataVO.setSuccess(false);
-              dataVO.setMessage("유효하지 않은 사용자 ID입니다.");
-              return dataVO;
-          }
-  
-          // 거래 관리 정보를 가져옵니다.
-          List<DealFavoriteVO> list = dealService.getDealinterest(userIdx);
-          log.info(userIdx);
-          log.info("deal VO 저장");
-
-  
-          if (list == null) {
-              dataVO.setSuccess(false);
-              dataVO.setMessage("거래 관리 정보를 찾을 수 없습니다.");
-          } else {
-              dataVO.setSuccess(true);
-              dataVO.setMessage("거래 관리 정보를 성공적으로 가져왔습니다.");
-              dataVO.setData(list);
-          }
+        List<DealVO> purchaseList = dealService.getPurchaseList(userIdx);
+        dvo.setData(purchaseList);
+        dvo.setSuccess(true);
+        dvo.setMessage("구매 내역 조회 성공");
       } catch (Exception e) {
-          dataVO.setSuccess(false);
-          dataVO.setMessage("거래 관리 정보 조회 중 오류가 발생했습니다.");
-          // 예외 정보 로깅
-          e.printStackTrace(); // 또는 log.error("Error: ", e);
+        dvo.setSuccess(false);
+        dvo.setMessage("구매 내역 조회 오류");
+        e.printStackTrace(); // 또는 log.error("Error: ", e);
       }
-      return dataVO;
+      return dvo;
   }
-
 
   @GetMapping("/dealMainSearch")
   public DataVO getMethodName(@RequestParam("searchKeyword") String searchKeyword) {

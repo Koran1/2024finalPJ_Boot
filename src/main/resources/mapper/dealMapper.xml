@@ -63,8 +63,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
     VALUES 
     (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
-    (dealIdx, dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealDirectContent, dealCount, dealRegDate)
-    VALUES (#{dealIdx},#{dealTitle},#{dealCategory},#{dealStatus},#{dealDescription},#{dealPrice},#{dealPackage},#{dealDirect},#{dealDirectContent},#{dealCount},NOW())
   </insert>
 
 <!-- 파일 하나 수정 -->
@@ -217,13 +215,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   WHERE dealIdx = #{dealIdx}
 </update>
 
- <!-- 기존 쿼리 -->
-  <select id="getDealinterest" parameterType="String" resultType="DealFavoriteVO">
-      SELECT * FROM pjdealfavorite WHERE userIdx = #{userIdx}
-  </select>
-  
+ <!-- 기존 쿼리 -->  
  <select id="getDealManagement" parameterType="String" resultType="DealVO">
-    select * from pjdeal where dealSellerUserIdx = #{userIdx}
+    select coalesce(pjfile.fileName, 'noimg') as deal01 ,pjdeal.* from pjdeal join pjfile on pjdeal.dealIdx = pjfile.fileTableIdx 
+    WHERE pjdeal.dealSellerUserIdx = #{userIdx}
   </select>
 
  <select id="getDealMainSearch" parameterType="String" resultType="DealVO">
@@ -250,5 +245,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE 
         pjdealfavorite.userIdx = #{userIdx} and pjfile.fileOrder = 0
   </select>
+
+  <select id="getPurchaseList" parameterType="String" resultType="DealVO">
+    select coalesce(pjfile.fileName, 'noimg') as deal01, pjdeal.* from pjdeal join pjfile on pjdeal.dealIdx = pjfile.fileTableIdx 
+    WHERE pjdeal.dealBuyerUserIdx = #{userIdx} and pjfile.fileOrder = 0
+  </select>
+
 
 </mapper>

@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
-import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
@@ -64,11 +63,10 @@ public interface DealMapper {
   // 상품 활성화 상태 업데이트
   int getDealActiveUpdate(@Param("dealIdx") String dealIdx, @Param("dealview") int dealview);
 
-
-
-  List<DealFavoriteVO> getDealinterest(String userIdx);
   List<DealVO> getDealManagement(String userIdx);
   List<DealVO> getDealMainSearch(String searchKeyword);
 
   List<DealVO> getFavoriteList(String userIdx);
+
+  List<DealVO> getPurchaseList(String userIdx);
 }

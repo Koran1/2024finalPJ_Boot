@@ -13,13 +13,8 @@ import org.springframework.stereotype.Service;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
-
 import com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper;
-import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
-
-import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
-
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -220,12 +215,6 @@ public class DealServiceImpl implements DealService {
         return dealMapper.getDealActiveUpdate(dealIdx, dealview);
     }
 
-
-    @Override
-    public List<DealFavoriteVO> getDealinterest(String userIdx) {
-        return dealMapper.getDealinterest(userIdx);
-    } 
-
     @Override
     public List<DealVO> getDealManagement(String userIdx) {
         return dealMapper.getDealManagement(userIdx);
@@ -239,6 +228,11 @@ public class DealServiceImpl implements DealService {
     @Override
     public List<DealVO> getFavoriteList(String userIdx) {
         return dealMapper.getFavoriteList(userIdx);
+    }
+
+    @Override
+    public List<DealVO> getPurchaseList(String userIdx) {
+        return dealMapper.getPurchaseList(userIdx);
     }
 
 

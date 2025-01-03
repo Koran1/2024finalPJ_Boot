@@ -42,13 +42,6 @@ public class DealController {
     @Autowired
     private DealService dealService;
 
-    // JWT 관련 의존성 제거
-    // @Autowired
-    // private JwtUtil jwtUtil;
-    
-    // @Autowired
-    // private UserService userService;
-
     // 공통 응답 생성 메서드
     private DataVO createResponse(boolean success, String message, Object data) {
         return DataVO.builder()
