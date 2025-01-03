@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
+<mapper namespace="com.ict.finalpj.domain.mycamp.mapper.MyBookMapper">
+	<select id="getMyBookList" parameterType="MyBookVO" resultType="MyBookVO">
+		select 
+			u.userIdx, c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, 
+			b.bookIdx, b.bookCheckInDate, b.bookCheckOutDate, b.bookSelectedZone, 
+			b.bookAdultCount, b.bookYouthCount, b.bookChildCount, b.bookCarCount
+		from pjbook b
+		left join pjcamp c on b.campIdx = c.campIdx 
+		left join pjuser u on b.userIdx = u.userIdx 
+		where u.userIdx = #{userIdx} 
+	</select>
+</mapper>
