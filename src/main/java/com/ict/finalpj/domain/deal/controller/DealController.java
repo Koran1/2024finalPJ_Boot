@@ -419,23 +419,41 @@ public class DealController {
     }
 
     // 판매 상태 변경 API
-    @PutMapping("/status/{dealIdx}")
-    public ResponseEntity<DataVO> updateDealStatus(
-        @PathVariable("dealIdx") String dealIdx,
-        @RequestParam("status") String status) {
-        try {
-            log.info("판매 상태 변경 시작 - dealIdx: {}, status: {}", dealIdx, status);
-            int result = dealService.getDealStatusUpdate(dealIdx, status);
-            
-            if (result > 0) {
-                return ResponseEntity.ok(new DataVO(true, null, null, "판매 상태가 변경되었습니다.", null));
-            } else {
-                return ResponseEntity.ok(new DataVO(false, null, null, "판매 상태 변경에 실패했습니다.", null));
+    @PutMapping("/status")
+    public DataVO updateDealStatus(
+        @RequestParam("dealIdx") String dealIdx,
+        @RequestParam("senderIdx") String senderIdx,
+        @RequestParam("senderNick") String senderNick
+        ) {
+        DataVO dvo = new DataVO();
+            try {
+                log.info("dealIdx : " + dealIdx);
+                log.info("senderIdx : " + senderIdx);
+                log.info("senderNick : " + senderNick);
+
+                DealVO dealvo = new DealVO();
+                dealvo.setDealIdx(dealIdx);
+                dealvo.setDealBuyerNick(senderNick);
+                dealvo.setDealBuyerUserIdx(senderIdx);
+
+                int result = dealService.getDealStatusUpdate(dealvo);
+                if(result > 0){
+                    dvo.setSuccess(true);
+                    dvo.setMessage("판매 완료 상태 변경");
+                }else{
+                    dvo.setSuccess(false);
+                    dvo.setMessage("판매 완료 상태 변경 실패");
+
+                }
+
+
+
+            } catch (Exception e) {
+                dvo.setSuccess(false);
+                dvo.setMessage("판매 상태 변경 오류");
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            log.error("판매 상태 변경 중 오류 발생", e);
-            return ResponseEntity.ok(new DataVO(false, null, null, "판매 상태 변경 중 오류가 발생했습니다.", null));
-        }
+        return dvo;
     }
 
     // 판매자의 다른 상품 조회
@@ -464,6 +482,7 @@ public class DealController {
             return createResponse(false, "판매자의 다른 상품 조회 실패", null);
         }
     }
+    
     // 만족도 평가 등록 API
     @PostMapping("/satisfaction")
     public ResponseEntity<DataVO> getDealSatisfactionInsert(@RequestBody DealSatisfactionVO satisfactionVO) {

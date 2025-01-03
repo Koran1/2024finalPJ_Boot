@@ -25,13 +25,13 @@
     </select>
 
     <insert id="insertNewChat" parameterType="map">
-        INSERT INTO pjchatroom (chatRoom, userIdx, lastRead) 
-        VALUES (#{chatRoom}, #{userIdx}, NOW()), 
-        (#{chatRoom}, #{sellerIdx}, NOW())
+        INSERT INTO pjchatroom (chatRoom, dealIdx, userIdx, lastRead) 
+        VALUES (#{chatRoom}, #{dealIdx}, #{userIdx}, NOW()), 
+        (#{chatRoom}, #{dealIdx}, #{sellerIdx}, NOW())
     </insert>
 
     <select id="getChatListByUserIdx" parameterType="String" resultType="ChatRoomVO" >
-            select distinct c1.chatRoom, c1.userIdx, c1.lastRead, 
+            select distinct c1.chatRoom, c1.dealIdx, c1.userIdx, c1.lastRead, 
             COALESCE(unread.unReadCount, 0) AS unReadCount 
             from pjchatroom c1 
             join pjchatroom c2 on c1.chatRoom = c2.chatRoom 

@@ -18,7 +18,7 @@ public class EmailService {
 	public void sendMail(String randomNumber, String toMail){
 		try {
 			MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-
+			log.info("randomNumber : " + randomNumber);
 			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 
             // 메일을 받을 수신자 설정

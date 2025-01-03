@@ -41,12 +41,21 @@ public class ChatController {
     @GetMapping("/getChatList")
     public DataVO getChatList(
         @RequestParam("sellerIdx") String sellerIdx,
-        @RequestParam("userIdx") String userIdx) {
+        @RequestParam("userIdx") String userIdx,
+        @RequestParam("dealIdx") String dealIdx
+        ) {
         DataVO dvo = new DataVO();
         try {
             log.info("userIdx : "+userIdx);
             log.info("sellerIdx : "+sellerIdx);
+            log.info("dealIdx : "+dealIdx);
             
+            if(sellerIdx.equals(userIdx)){
+                dvo.setSuccess(false);
+                dvo.setMessage("자신과의 채팅은 불가능합니다.");
+                return dvo;
+            }
+
             List<ChatRoomVO> chatList = chatService.getChatListByUserIdx(userIdx);
 
             List<UserVO> userList = new ArrayList<>();
@@ -54,12 +63,13 @@ public class ChatController {
             List<ChatVO> recentChat = new ArrayList<>();
             
             for (ChatRoomVO k : chatList) {
-                // 사용자 Idx, nickname, 평점 가져오기
+                // 사용자 Idx, nickname, 평점, 프로필 사진 가져오기
                 UserVO uvo = userService.getUserInfoByIdx(k.getUserIdx());
                 UserVO setUvo = new UserVO();
                 setUvo.setUserNickname(uvo.getUserNickname());
                 setUvo.setUserIdx(uvo.getUserIdx());
                 setUvo.setDealSatisSellerScore(uvo.getDealSatisSellerScore());
+                setUvo.setUserEtc01(uvo.getUserEtc01());
                 userList.add(setUvo);
 
                 ChatVO chatvo = new ChatVO();
@@ -78,6 +88,7 @@ public class ChatController {
 
                 // 신규 채팅인지 확인하기
                 Map<String, String> map = new HashMap<>();
+                map.put("dealIdx", dealIdx);
                 map.put("userIdx", userIdx);
                 map.put("sellerIdx", sellerIdx);
                 ChatRoomVO chkRoom = chatService.chkByUserIdx(map);
@@ -85,7 +96,7 @@ public class ChatController {
                 
                 if(chkRoom == null){
                     log.info("User is new");
-                    // add chats
+                    // 신규 채팅 등록
                     String chatRoom = UUID.randomUUID().toString();
                     map.put("chatRoom", chatRoom);
                     int result = chatService.insertNewChat(map);
@@ -94,13 +105,14 @@ public class ChatController {
                         dvo.setMessage("채팅 생성 실패!");
                         return dvo;
                     }else{
-                        chkRoom.setChatRoom(chatRoom);
-                        chkRoom.setUserIdx(sellerIdx);
-                        chatList.add(chkRoom);
+                        ChatRoomVO chkRoom_new = new ChatRoomVO();
+                        chkRoom_new.setChatRoom(chatRoom);
+                        chkRoom_new.setDealIdx(dealIdx);
+                        chkRoom_new.setUserIdx(sellerIdx);
+                        chatList.add(chkRoom_new);
                     }
                 }else{
                     log.info("User is already in that chatting");
-                    // load chats
                 }
             }
 
@@ -117,7 +129,6 @@ public class ChatController {
             dvo.setSuccess(true);
             dvo.setMessage("채팅 정보 가져오기 성공");
 
-            // lastRead 시간 업데이트 하기
             
         } catch (Exception e) {
             dvo.setSuccess(false);

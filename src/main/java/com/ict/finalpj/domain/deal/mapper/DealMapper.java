@@ -49,7 +49,7 @@ public interface DealMapper {
   int getTotalViewCount(String dealIdx);
   
   // 판매 상태 변경
-  int getDealStatusUpdate(@Param("dealIdx") String dealIdx, @Param("status") String status);
+  int getDealStatusUpdate(DealVO dealvo);
   
   // 판매자의 다른 상품 조회
   List<DealVO> getSellerOtherDeals(@Param("dealSellerUserIdx") String dealSellerUserIdx, @Param("dealIdx") String dealIdx);
