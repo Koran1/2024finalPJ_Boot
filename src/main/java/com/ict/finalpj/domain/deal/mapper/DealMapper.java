@@ -69,8 +69,6 @@ public interface DealMapper {
   List<DealFavoriteVO> getDealinterest(String userIdx);
   List<DealVO> getDealManagement(String userIdx);
   List<DealVO> getDealMainSearch(String searchKeyword);
-  
-  void getFavorite(DealFavoriteVO DealFavoriteVO);
+
   List<DealVO> getFavoriteList(String userIdx);
-  void deleteFavorite(DealFavoriteVO dfvo);
 }

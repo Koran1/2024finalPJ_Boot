@@ -2,15 +2,12 @@ package com.ict.finalpj.domain.deal.controller;
 
 import java.util.List;
 
-
-import javax.xml.crypto.Data;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.finalpj.common.vo.DataVO;
@@ -19,8 +16,6 @@ import com.ict.finalpj.domain.deal.vo.DealFavoriteVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Slf4j
@@ -125,11 +120,7 @@ public class DealController2 {
         log.info("userIdx(등록) : " + userIdx);
         log.info("dealIdx : " + dealIdx);
 
-        DealFavoriteVO dfvo = new DealFavoriteVO();
-        dfvo.setUserIdx(userIdx);
-        dfvo.setDealIdx(dealIdx);
-
-        dealService.getFavorite(dfvo);
+        dealService.likeDeal(userIdx, dealIdx);
         dvo.setSuccess(true);
         dvo.setMessage("찜 성공");
       } catch (Exception e) {
@@ -170,10 +161,7 @@ public class DealController2 {
     try {
       log.info("dealIdx(삭제) : " + dealIdx);
       log.info("userIdx : " + userIdx);
-      DealFavoriteVO dfvo = new DealFavoriteVO();
-      dfvo.setUserIdx(userIdx);
-      dfvo.setDealIdx(dealIdx);
-      dealService.deleteFavorite(dfvo);
+      dealService.unlikeDeal(userIdx, dealIdx);
 
       dvo.setSuccess(true);
       dvo.setMessage("삭제 성공");

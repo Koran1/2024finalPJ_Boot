@@ -71,7 +71,5 @@ public interface DealService {
   List<DealVO> getDealManagement(String userIdx);
   List<DealVO> getDealMainSearch(String searchKeyword);
 
-  void getFavorite(DealFavoriteVO DealFavoriteVO);
   List<DealVO> getFavoriteList(String userIdx);
-  void deleteFavorite(DealFavoriteVO dfvo);
 }

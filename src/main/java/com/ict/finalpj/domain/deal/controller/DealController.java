@@ -1,7 +1,6 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.io.File;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -319,10 +318,10 @@ public class DealController {
             @RequestParam("userIdx") String userIdx,
             @RequestParam("dealIdx") String dealIdx) {
         try {
-            // log.info("좋아요 상태 조회 시작 - userIdx: {}, dealIdx: {}", userIdx, dealIdx);
+            log.info("좋아요 상태 조회 시작 - userIdx: {}, dealIdx: {}", userIdx, dealIdx);
             
             boolean isLiked = dealService.isLiked(userIdx, dealIdx);
-            // log.info("좋아요 상태 조회 결과 - isLiked: {}", isLiked);
+            log.info("좋아요 상태 조회 결과 - isLiked: {}", isLiked);
             
             // 조회수 로직 처리
             ViewsVO viewInfo = dealService.getViewCount(userIdx, dealIdx);
