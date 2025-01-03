@@ -227,9 +227,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </select>
 
  <select id="getDealMainSearch" parameterType="String" resultType="DealVO">
-    select * from pjdeal 
-    WHERE (dealTitle LIKE CONCAT('%', #{searchKeyword}, '%') 
-        OR dealDescription LIKE CONCAT('%', #{searchKeyword}, '%'))  
+    select coalesce(pjfile.fileName, 'noimg') as deal01 ,pjdeal.* from pjdeal join pjfile on pjdeal.dealIdx = pjfile.fileTableIdx 
+    WHERE (pjdeal.dealTitle LIKE CONCAT('%', #{searchKeyword}, '%') 
+        OR pjdeal.dealDescription LIKE CONCAT('%', #{searchKeyword}, '%'))  and pjfile.fileOrder = 0
     order by dealIdx desc
   </select>
 
