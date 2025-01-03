@@ -1,4 +1,4 @@
-package com.ict.finalpj.domain.administrator.service;
+package com.ict.finalpj.domain.admin.service;
 
 public interface AdminService {
 
