@@ -8,8 +8,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
   <!-- 공통 컬럼 -->
   <sql id="dealColumns">
-    dealIdx, dealSellerUserIdx, dealSellerNick, dealTitle, dealCategory, 
-    dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
+    dealIdx, dealSellerUserIdx, dealSellerNick, dealBuyerUserIdx, dealBuyerNick, 
+    dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
     dealDirectContent, dealCount, dealRegDate, deal02
   </sql>
 
@@ -197,7 +197,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         dealSatisBuyerNick,
         dealSatisBuyerContent,
         dealSatisSellerScore,
-        dealSatisBuyerRegDate
+        dealSatisBuyerRegDate,
+        dealSatis01
     ) VALUES (
         #{dealSatisSellerUserIdx},
         #{dealSatisSellerNick},
@@ -205,9 +206,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         #{dealSatisBuyerNick},
         #{dealSatisBuyerContent},
         #{dealSatisSellerScore},
-        NOW()
+        NOW(),
+        #{dealSatis01}
     )
 </insert>
+
+<!-- 후기 등록 여부 확인 -->
+<select id="chkSatisfaction" parameterType="String" resultType="boolean">
+    SELECT COUNT(*) <![CDATA[>]]> 0
+    FROM pjdealsatisfaction
+    WHERE dealSatis01 = #{dealSatis01}
+</select>
 
 <!-- 상품 활성화 상태 업데이트 -->
 <update id="getDealActiveUpdate" parameterType="map">

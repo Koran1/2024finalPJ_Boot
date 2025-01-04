@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DealSatisfactionVO {
+  private String dealSatisSellerIdx;
   private String dealSatisSellerUserIdx;
   private String dealSatisSellerNick;
   private String dealSatisBuyerUserIdx;

@@ -548,4 +548,23 @@ public class DealController {
         }
     }
 
+    // 후기 등록 여부 확인
+    @GetMapping("/check-satisfaction")
+    public DataVO chkSatisfaction(
+        @RequestParam("dealIdx") String dealSatis01
+        ) {
+        DataVO dvo = new DataVO();
+        try {
+            boolean result = dealService.chkSatisfaction(dealSatis01);
+            dvo.setData(result);
+            dvo.setSuccess(true);
+            dvo.setMessage("후기 등록 여부");
+        } catch (Exception e) {
+            dvo.setSuccess(false);
+            dvo.setMessage("후기 등록 여부 확인 오류");
+            e.printStackTrace();
+        }
+        return dvo;
+    }
+    
 }

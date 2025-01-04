@@ -54,4 +54,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE userIdx = #{dealSellerUserIdx}
   </update>
 
+  <select id="getDealSatisfactionList" parameterType="String" resultType="DealSatisfactionVO">
+    select coalesce(pjfile.fileName, 'noimg') as dealSatis02 ,pjdealsatisfaction.* from pjdealsatisfaction 
+    join pjfile on pjdealsatisfaction.dealSatis01 = pjfile.fileTableIdx 
+    WHERE pjdealsatisfaction.dealSatisSellerUserIdx = #{userIdx}  and pjfile.fileOrder = 0
+  </select>
+
+
 </mapper>

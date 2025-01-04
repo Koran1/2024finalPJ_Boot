@@ -57,6 +57,9 @@ public interface DealMapper {
   // 만족도 평가 저장
   int getDealSatisfactionInsert(DealSatisfactionVO satisfactionVO);
 
+  // 후기 등록 여부 확인
+  boolean chkSatisfaction(String dealSatis01);
+
   // 판매자의 평점 조회
   String getDealSatisSellerScore(String dealSellerUserIdx);
   
@@ -69,4 +72,5 @@ public interface DealMapper {
   List<DealVO> getFavoriteList(String userIdx);
 
   List<DealVO> getPurchaseList(String userIdx);
+
 }

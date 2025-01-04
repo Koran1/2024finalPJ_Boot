@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.mapper;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -22,4 +23,7 @@ public interface DealSatisfactionMapper {
     // 판매자 평점 업데이트
     int updateDealSatisSellerScore(@Param("dealSellerUserIdx") String dealSellerUserIdx, 
                                   @Param("dealSatisAverage") BigDecimal dealSatisAverage);
+
+    
+    List<DealSatisfactionVO> getDealSatisfactionList(String userIdx);
 } 

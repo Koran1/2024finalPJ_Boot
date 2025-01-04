@@ -20,7 +20,7 @@
 
     <select id="chkByUserIdx" parameterType="map" resultType="ChatRoomVO" >
         SELECT chatroom FROM pjchatroom 
-        WHERE userIdx in (#{userIdx}, #{sellerIdx}) 
+        WHERE userIdx in (#{userIdx}, #{sellerIdx}) and dealIdx = #{dealIdx}
         group by chatRoom HAVING COUNT(DISTINCT userIdx) = 2
     </select>
 

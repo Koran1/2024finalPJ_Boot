@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.deal.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.deal.service.DealService;
+import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -156,4 +158,25 @@ public class DealController2 {
     return dvo;
   }
  
+  @GetMapping("/rating")
+  public DataVO getRatings(@RequestParam("userIdx") String userIdx) {
+      DataVO dvo = new DataVO();
+      try {
+        String rating = dealService.getDealSatisSellerScore(userIdx);
+
+        List<DealSatisfactionVO> ratingList = dealService.getDealSatisfactionList(userIdx);
+        
+        Map<String, Object> resultMap = Map.of("rating", rating, "ratingList", ratingList);
+
+        dvo.setData(resultMap);
+        dvo.setSuccess(true);
+        dvo.setMessage("평점 조회 성공");
+      } catch (Exception e) {
+        dvo.setSuccess(false);
+        dvo.setMessage("평점 조회 실패");
+        e.printStackTrace();
+      }
+      return dvo;
+  }
+  
 }

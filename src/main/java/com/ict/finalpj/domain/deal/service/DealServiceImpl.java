@@ -180,6 +180,11 @@ public class DealServiceImpl implements DealService {
     }
 
     @Override
+    public boolean chkSatisfaction(String dealSatis01) {
+        return dealMapper.chkSatisfaction(dealSatis01);
+    }
+
+    @Override
     public String getDealSatisSellerScore(String dealSellerUserIdx) {
         return dealSatisfactionMapper.getDealSatisSellerScore(dealSellerUserIdx);
     }
@@ -234,6 +239,13 @@ public class DealServiceImpl implements DealService {
     public List<DealVO> getPurchaseList(String userIdx) {
         return dealMapper.getPurchaseList(userIdx);
     }
+
+    @Override
+    public List<DealSatisfactionVO> getDealSatisfactionList(String userIdx) {
+        return dealSatisfactionMapper.getDealSatisfactionList(userIdx);
+    }
+
+
 
 
 
