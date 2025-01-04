@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.service.DealService;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
@@ -535,7 +536,14 @@ public class DealController {
         @PathVariable("dealIdx") String dealIdx,
         @RequestParam("dealview") int dealview) {
         try {
+            // 상품 상태 업데이트
             int result = dealService.getDealActiveUpdate(dealIdx, dealview);
+            
+            // dealview가 0이면 신고 상태도 업데이트
+            if (dealview == 0) {
+                dealService.updateReportStatus(dealIdx);
+            }
+            
             if (result > 0) {
                 return ResponseEntity.ok(new DataVO(true, null, null, "상품 상태가 변경되었습니다.", null));
             } else {
@@ -544,7 +552,6 @@ public class DealController {
         } catch (Exception e) {
             log.error("상품 상태 변경 중 오류 발생", e);
             return ResponseEntity.ok(new DataVO(false, null, null, "상품 상태 변경 중 오류가 발생했습니다.", null));
-
         }
     }
 
@@ -565,6 +572,21 @@ public class DealController {
             e.printStackTrace();
         }
         return dvo;
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<DataVO> getDealReportInsert(@RequestBody ReportVO reportVO) {
+        try {
+            int result = dealService.getDealReportInsert(reportVO);
+            if (result > 0) {
+                return ResponseEntity.ok(new DataVO(true, null, null, "신고가 접수되었습니다.", null));
+            } else {
+                return ResponseEntity.ok(new DataVO(false, null, null, "신고 접수에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            log.error("신고 접수 중 오류 발생", e);
+            return ResponseEntity.ok(new DataVO(false, null, null, "신고 접수 중 오류가 발생했습니다.", null));
+        }
     }
     
 }

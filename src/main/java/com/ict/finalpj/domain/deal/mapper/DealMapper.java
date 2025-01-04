@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
@@ -72,5 +73,9 @@ public interface DealMapper {
   List<DealVO> getFavoriteList(String userIdx);
 
   List<DealVO> getPurchaseList(String userIdx);
+
+  int getDealReportInsert(ReportVO reportVO);
+
+  int updateReportStatus(@Param("dealIdx") String dealIdx);
 
 }

@@ -10,7 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   <sql id="dealColumns">
     dealIdx, dealSellerUserIdx, dealSellerNick, dealBuyerUserIdx, dealBuyerNick, 
     dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
-    dealDirectContent, dealCount, dealRegDate, deal02
+    dealDirectContent, dealCount, dealRegDate, dealview, deal02
   </sql>
 
   <select id="getDealMainList" resultType="DealVO">
@@ -261,5 +261,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE pjdeal.dealBuyerUserIdx = #{userIdx} and pjfile.fileOrder = 0
   </select>
 
+  <!--  신고 등록  -->
+  <insert id="getDealReportInsert" parameterType="ReportVO"> 
+      INSERT INTO pjreport (userIdx, reportedUserIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate) 
+      VALUES (#{userIdx}, #{reportedUserIdx}, #{reportCategory}, 1, #{reportTableIdx}, #{reportContent}, NOW()) 
+  </insert>
+
+  <!--  신고 상태 업데이트  -->
+  <update id="updateReportStatus"> 
+      UPDATE pjreport 
+      SET reportStatus = 1 
+      WHERE reportTableType = 1 AND reportTableIdx = #{dealIdx} 
+  </update>
 
 </mapper>

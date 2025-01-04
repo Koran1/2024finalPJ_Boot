@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
 import com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper;
@@ -245,8 +246,14 @@ public class DealServiceImpl implements DealService {
         return dealSatisfactionMapper.getDealSatisfactionList(userIdx);
     }
 
+    @Override
+    public int getDealReportInsert(ReportVO reportVO) {
+        return dealMapper.getDealReportInsert(reportVO);
+    }
 
-
-
+    @Override
+    public int updateReportStatus(String dealIdx) {
+        return dealMapper.updateReportStatus(dealIdx);
+    }
 
 }

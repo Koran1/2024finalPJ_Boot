@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
@@ -76,4 +77,8 @@ public interface DealService {
   List<DealVO> getPurchaseList(String userIdx);
 
   List<DealSatisfactionVO> getDealSatisfactionList(String userIdx);
+
+  int getDealReportInsert(ReportVO reportVO);
+
+  int updateReportStatus(String dealIdx);
 }
