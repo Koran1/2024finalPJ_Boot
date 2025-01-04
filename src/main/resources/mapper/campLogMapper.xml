@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.finalpj.domain.camplog.mapper.CampLogMapper">
+    <!-- 댓글 리스트 가져오기 -->
+    <select id="getCommentList" parameterType="String" resultType="CampLogCommentVO">
+        select * from pjcamplogComment where logIdx = #{logIdx}
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="getCommentWrite" parameterType="CampLogCommentVO">
+        insert into pjcamplogComment (logIdx, userIdx, logCommentContent, logCommentRegDate, commentIdx)
+        values (#{logIdx}, 3, #{logCommentContent}, NOW(), #{commentIdx});
+    </insert>
+
+    <!-- 댓글 삭제(업데이트) -->
+    <update id="getCommentDelete" parameterType="String">
+        update pjcamplogComment
+        set logCommentIsActive = 0
+        where logCommentIdx = #{logCommentIdx}
+    </update>
+
+    <!-- 댓글 신고 등록 -->
+    <insert id="getCommentReport" parameterType="ReportVO">
+        insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
+        values (3, #{reportCategory}, 4, #{reportTableIdx}, #{reportContent}, NOW());
+    </insert>
+
+    <!-- 댓글에 저장된 userIdx로 유저 닉네임 가져오기 -->
+    <select id="getUserInfoByIdx" parameterType="list" resultType="UserVO">
+        select * from pjuser where userIdx in
+        <foreach item = "userIdx" collection = "list" open = "(" separator = "," close = ")">
+            #{userIdx}
+        </foreach>
+    </select>
+
+    <!-- 로그 댓글 신고 횟수 가져오기 -->
+    <select id="getCommentReportCount" parameterType="ReportVO" resultType="ReportVO">
+        SELECT reportTableIdx, reportStatus, userIdx, COUNT(*) AS reportCount
+        FROM pjreport
+        WHERE reportTableType = 4
+        GROUP BY reportTableIdx, reportStatus, userIdx
+        ORDER BY reportTableIdx ASC;
+    </select>
+</mapper>
