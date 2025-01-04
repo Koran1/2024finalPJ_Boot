@@ -92,6 +92,10 @@ public class UserServiceImpl implements UserService {
     public int updateConnRegByIdx(String userIdx) {
         return userMapper.updateConnRegByIdx(userIdx);
     }
+    @Override
+    public int changeUserInfo(UserVO uvo) {
+        return userMapper.changeUserInfo(uvo);
+    }
 
 
 

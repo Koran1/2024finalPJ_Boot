@@ -29,4 +29,5 @@ public interface UserMapper {
 
     int updateConnRegByIdx(String userIdx);
 
+    int changeUserInfo(UserVO uvo);
 }

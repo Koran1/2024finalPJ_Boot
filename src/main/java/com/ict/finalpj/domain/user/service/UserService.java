@@ -26,4 +26,6 @@ public interface UserService {
 
 
     public int updateConnRegByIdx(String userIdx);
+
+    int changeUserInfo(UserVO uvo);
 }

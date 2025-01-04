@@ -81,4 +81,10 @@
         where userIdx = #{userIdx}
     </update>
 
+    <update id="changeUserInfo" parameterType="String">
+        update pjuser set userName = #{userName}, userNickname = #{userNickname}, userMail = #{userMail}, 
+        userPhone = #{userPhone}, userAddr = #{userAddr}, userUpdReg = NOW() 
+        where userIdx = #{userIdx}
+    </update>
+
 </mapper>
