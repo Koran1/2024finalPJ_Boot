@@ -18,7 +18,7 @@
     <!-- 댓글 삭제(업데이트) -->
     <update id="getCommentDelete" parameterType="String">
         update pjcamplogComment
-        set logCommentIsActive = 0
+        set logCommentIsDelete = 1
         where logCommentIdx = #{logCommentIdx}
     </update>
 
