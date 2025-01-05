@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CamplogReCommendVO {
+public class CampLogRecommentVO {
     private String logRecommendIdx, logIdx, userIdx;
 }

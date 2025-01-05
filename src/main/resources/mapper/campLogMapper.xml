@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.ict.finalpj.domain.camplog.mapper.CampLogMapper">
+    <select id="getDealListByuserIdx" resultType="DealVO" parameterType="String">
+        select * from pjdeal where dealSellerUserIdx = #{userIdx}
+    </select>
+    <select id="getFileNamesByDealIdxes"  resultType="String" parameterType="List">
+        select fileName from pjfile where  fileTableType = 2 and  fileTableIdx In        
+            <foreach collection="list" item="dealIdx" open="(" close=")" separator=",">
+                #{dealIdx}
+            </foreach>
+            order by field(fileTableIdx, 
+            <foreach collection="list" item="dealIdx" separator=",">
+                 #{dealIdx}
+            </foreach>
+            )
+    </select>
+    <select id="getFileNamesByDealIdx" parameterType="String" resultType="String" >
+        select fileName from pjfile where fileTableType = 2 and fileOrder = 0 and fileTableIdx = #{dealIdx}
+    </select>
+    <select id="getCampListAll"  resultType="CampVO">
+        select * from pjcamp order by campIdx
+    </select>
+    <insert id="insertToPjcamplog" parameterType="CampLogVO">
+        insert into pjlog(userIdx, campIdx, logTitle, logRegDate) values(#{userIdx}, #{campIdx}, #{logTitle}, now())
+    </insert>
+    <insert id="insertToPjlogcontent" parameterType="CampLogContentVO">
+        insert into pjlogcontent (logIdx, logContent, logContentOrder) values
+        <foreach  collection="contentData" item="content" separator=",">
+            (#{logIdx}, #{content.logContent}, #{content.logContentOrder})
+        </foreach>
+    </insert>
+    <insert id="insertToPjfile" parameterType="FileVO">
+        insert into pjfile (fileTableType, fileTableIdx, fileName, fileCreated, fileOrder, isThumbnail) values
+        <foreach  collection="fileData" item="data" separator=",">
+            (1,  #{fileTableIdx}, #{data.fileName}, now(), #{data.fileOrder}, #{data.isThumbnail})
+        </foreach>
+    </insert>
+    <insert id="insertToPjtaginfo" parameterType="TaginfoVO">
+        insert into pjtaginfo (logIdx, fieldIdx, tagContent, tagX, tagY, dealIdx, tagId, userIdx) values
+        <foreach  collection="tagData" item="data" separator=",">
+            (#{logIdx},  #{data.fieldIdx}, #{data.tagContent}, #{data.tagX}, #{data.tagY}, #{data.dealIdx}, #{data.tagId}, #{userIdx})
+        </foreach>
+    </insert>
+    <select id="getLogDetailByLogIdx"  resultType="CampLogVO" parameterType="String">
+        select * from pjlog where logIdx = #{logIdx}
+    </select>
+    <select id="getLogContentByLogIdx"  resultType="CampLogContentVO" parameterType="String">
+        select * from pjlogcontent where logIdx = #{logIdx} order by logContentOrder
+    </select>
+    <select id="isUserRemommend"  resultType="int" parameterType="map">
+        select count(*) from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
+    </select>
+    <select id="getLogFileByLogIdx"  resultType="FileVO" parameterType="String">
+        select * from pjfile where fileTableType = 2 and fileTableIdx = #{logIdx}
+    </select>
+    <select id="getLogTagByLogIdx"  resultType="TaginfoVO" parameterType="String">
+        select * from pjtaginfo where logIdx = #{logIdx}
+    </select>
+    <select id="getDealList"  resultType="DealVO" >
+        select * from pjdeal 
+    </select>
+    <select id="getUserDataByUserIdx"  resultType="UserVO" parameterType="String">
+        select * from pjuser where userIdx = #{userIdx}
+    </select>
+    <select id="getFileNamesBydealIdxes"  resultType="String" parameterType="List">
+        select fileName from pjfile where fileTableType = 1 and fileTableIdx In
+        <foreach collection="list" item="dealIdx"  open="(" close=")" separator=",">
+            #{dealIdx}
+        </foreach>
+         order by field(fileTableIdx, 
+            <foreach collection="list" item="dealIdx" separator=",">
+                 #{dealIdx}
+            </foreach>
+            )
+    </select>
+    <delete id="toogleOff"   parameterType="map">
+        delete from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
+    </delete>
+    <insert id="toogleOn" parameterType="map">
+        insert into pjlogrecommend (logIdx, userIdx) values(#{logIdx}, #{userIdx} )
+    </insert>
+    <update id="getLogActiveZero" parameterType="String">
+        update pjlog set logIsActive = 0 where logIdx = #{logIdx}
+    </update>
+    
+    
+ </mapper>
