@@ -1,5 +1,7 @@
 package com.ict.finalpj.domain.camplog.vo;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,4 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CampLogVO {
     private String logIdx, userIdx, campIdx, logTitle, logThumbnail, logView, logRecommend, logIsProduct, logIsActive, logUpdateDate, logRegDate;
+    private MultipartFile mpFile;
 }

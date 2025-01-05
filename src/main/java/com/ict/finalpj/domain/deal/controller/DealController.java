@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
-import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.FileVO;
 import com.ict.finalpj.domain.deal.service.DealService;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 // import com.ict.finalpj.domain.user.vo.UserVO;
@@ -128,7 +128,7 @@ public DataVO getDealWrite(
     dealVO.setDealSellerNick("임시닉네임");
 
     // DealVO에 파일 정보 추가
-    FileVo fileVo = new FileVo();
+    FileVO fileVo = new FileVO();
     if (multipartFile != null && !multipartFile.isEmpty()) {
       String fileName = multipartFile.getOriginalFilename();
       UUID uuid = UUID.randomUUID();
