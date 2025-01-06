@@ -15,3 +15,4 @@ public class ViewsVO {
     private Integer viewCount;
     private String viewRegTime;
 }
+

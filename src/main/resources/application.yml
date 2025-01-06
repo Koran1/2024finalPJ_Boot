@@ -91,3 +91,6 @@ jwt:
     secret: "abcdABCD1234qwerQWER5678zxcvZXCV9876asdfASDF4321poiuPOIU"  # Base64로 인코딩된 32바이트 이상의 문자열
     expiration: 86400000  # 24시간
 
+# 토스 
+toss:
+    secretKey: test_sk_ex6BJGQOVDxk0791WkkJVW4w2zNb

@@ -32,7 +32,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserInfoByPhone(userPhone);
     }
 
-
     @Override
     public UserVO getUserInfoByNickname(String userNickname) {
         return userMapper.getUserInfoByNickname(userNickname);
@@ -96,7 +95,4 @@ public class UserServiceImpl implements UserService {
     public int changeUserInfo(UserVO uvo) {
         return userMapper.changeUserInfo(uvo);
     }
-
-
-
 }

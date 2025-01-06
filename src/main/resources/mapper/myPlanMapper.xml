@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.finalpj.domain.mycamp.mapper.MyPlanMapper">
+
+	<!-- 캠핑 계획 상세 정보 -->
+    <select id="getPlanList" resultType="Map">
+        SELECT 
+            p.planIdx,
+            p.userIdx,
+            p.campIdx,
+            p.planTitle,
+            p.planBeginDate,
+            p.planEndDate,
+            p.planStartingPoint,
+            p.planIsBooking,
+            p.planRegDate,
+            p.planUpdateDate,
+            DATE_FORMAT(p.planBeginDate, '%m.%d') AS planBeginDate2,
+            DATE_FORMAT(p.planEndDate, '%m.%d') AS planEndDate2,
+            c.facltNm AS facltNm,
+            c.firstImageUrl AS firstImageUrl,
+            c.campImg2 AS campImg2
+        FROM 
+            pjplan p
+        LEFT JOIN 
+            pjcamp c 
+        ON 
+            p.campIdx = c.campIdx
+        WHERE 
+            p.userIdx = #{userIdx}
+    </select>
+
+    <!-- 캠핑 계획 삭제-->
+    <delete id="planListDelete" parameterType="java.util.List">
+        DELETE FROM pjplan WHERE planIdx IN
+        <foreach collection="list" item="planIdx" open="(" separator="," close=")">
+            #{planIdx}
+        </foreach>
+    </delete>
+   
+
+</mapper>
