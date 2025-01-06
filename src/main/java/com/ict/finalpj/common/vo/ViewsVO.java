@@ -8,5 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ViewsVO {
-    private String viewIdx, viewTableType, viewTableIdx, userIdx, viewCount, viewRegTime;
+    private String viewIdx;
+    private String viewTableType;
+    private String viewTableIdx;
+    private String userIdx;
+    private Integer viewCount;
+    private String viewRegTime;
 }
+

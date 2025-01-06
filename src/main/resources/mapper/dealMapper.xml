@@ -5,22 +5,273 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.finalpj.domain.deal.mapper.DealMapper">
+
+  <!-- 공통 컬럼 -->
+  <sql id="dealColumns">
+    dealIdx, dealSellerUserIdx, dealSellerNick, dealBuyerUserIdx, dealBuyerNick, 
+    dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
+    dealDirectContent, dealCount, dealRegDate, dealview, deal02
+  </sql>
+
   <select id="getDealMainList" resultType="DealVO">
-    select * from pjdeal where dealIdx = #{dealIdx} order by dealIdx asc
+    SELECT <include refid="dealColumns"/> 
+    FROM pjdeal 
+    ORDER BY dealRegDate DESC
+  </select>
+
+<!-- 파일 하나 가져오기 --> 
+  <select id="getDealFileOne" parameterType="String" resultType="FileVo">
+    SELECT f.* 
+    FROM pjfile f
+    JOIN pjdeal d ON f.fileTableIdx = d.dealIdx
+    WHERE f.fileTableIdx = #{fileTableIdx} 
+    AND f.fileTableType = 2 
+    AND f.fileOrder = 0 
+    LIMIT 1
   </select>
 
   <select id="getDealDetail" parameterType="String" resultType="DealVO">
-    select * from pjdeal where dealIdx = #{dealIdx}
+    SELECT <include refid="dealColumns"/>
+    FROM pjdeal 
+    WHERE dealIdx = #{dealIdx}
   </select>
 
-  <update id="getDealUpdate" parameterType="DealVO">
-    update pjdeal set dealTitle = #{dealTitle}, dealCategory = #{dealCategory}, dealStatus = #{dealStatus}, dealDescription = #{dealDescription}, dealPrice = #{dealPrice}, dealPackage = #{dealPackage}, dealDirect = #{dealDirect}, dealCount = #{dealCount} 
-    where dealIdx = #{dealIdx}
-  </update>
+<!-- 파일 여러개 가져오기 --> 
+  <select id="getDealFileDetail" parameterType="String" resultType="FileVo">
+    SELECT f.* 
+    FROM pjfile f
+    JOIN pjdeal d ON f.fileTableIdx = d.dealIdx
+    WHERE f.fileTableIdx = #{fileTableIdx}
+    AND f.fileTableType = 2
+    ORDER BY f.fileOrder ASC
+  </select>
 
   <insert id="getDealWrite" parameterType="DealVO">
-    insert into pjdeal (dealTitle, dealCategory, dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, dealCount, dealRegDate)
-    values (#{dealTitle}, #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, #{dealPackage}, #{dealDirect}, #{dealCount}, now())
+    INSERT INTO pjdeal 
+    (dealIdx, dealSellerUserIdx, dealSellerNick, dealTitle, dealCategory, 
+    dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
+    dealDirectContent, dealCount, dealRegDate) 
+    VALUES 
+    (#{dealIdx}, #{dealSellerUserIdx}, #{dealSellerNick}, #{dealTitle}, 
+    #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, 
+    #{dealPackage}, #{dealDirect}, #{dealDirectContent}, #{dealCount}, NOW())
   </insert>
+
+<!-- 파일 여러개 삽입 -->
+  <insert id="getIDealFileInsert" parameterType="FileVo">
+    INSERT INTO pjfile 
+    (fileTableType, fileTableIdx, fileName, fileOrder, fileCreated) 
+    VALUES 
+    (2, #{fileTableIdx}, #{fileName}, #{fileOrder}, NOW())
+  </insert>
+
+<!-- 파일 하나 수정 -->
+  <update id="getDealFileUpdate" parameterType="FileVo">
+    UPDATE pjfile 
+    SET fileName = #{fileName}
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileOrder = #{fileOrder}
+  </update>
+
+  <update id="getDealUpdate" parameterType="DealVO">
+    UPDATE pjdeal 
+    SET dealTitle = #{dealTitle}, 
+        dealCategory = #{dealCategory}, 
+        dealStatus = #{dealStatus}, 
+        dealDescription = #{dealDescription}, 
+        dealPrice = #{dealPrice}, 
+        dealPackage = #{dealPackage}, 
+        dealDirect = #{dealDirect},
+        dealDirectContent = #{dealDirectContent},
+        dealCount = #{dealCount} 
+    WHERE dealIdx = #{dealIdx}
+  </update>
+
+  <!-- 파일명으로 파일 삭제 -->
+  <delete id="getDealFileNameDelete">
+    DELETE FROM pjfile 
+    WHERE fileTableIdx = #{param1}
+    AND fileName = #{param2}
+    AND fileTableType = 2
+  </delete>
+
+  <update id="getDealFileOrder" parameterType="FileVo">
+    UPDATE pjfile 
+    SET fileOrder = #{fileOrder}
+    WHERE fileTableIdx = #{fileTableIdx} 
+    AND fileName = #{fileName}
+    AND fileTableType = 2
+  </update>
+
+
+
+  <!-- 좋아요 상태 확인 -->
+  <select id="isLiked" resultType="boolean">
+      SELECT COUNT(*) <![CDATA[>]]> 0
+      FROM pjdealfavorite
+      WHERE userIdx = #{userIdx} AND dealIdx = #{dealIdx}
+  </select>
+
+  <!-- 좋아요 추가 -->
+  <insert id="likeDeal">
+      INSERT INTO pjdealfavorite (userIdx, dealIdx)
+      VALUES (#{userIdx}, #{dealIdx})
+  </insert>
+
+  <!-- 좋아요 삭제 -->
+  <delete id="unlikeDeal">
+      DELETE FROM pjdealfavorite
+      WHERE userIdx = #{userIdx} AND dealIdx = #{dealIdx}
+  </delete>
+
+  <!-- 좋아요 개수 조회 -->
+  <select id="getFavoriteCount" parameterType="String" resultType="int">
+      SELECT COUNT(*) 
+      FROM pjdealfavorite 
+      WHERE dealIdx = #{dealIdx}
+  </select>
+
+  <!-- 조회수 정보 가져오기 -->
+  <select id="getViewCount" resultType="ViewsVO">
+      SELECT * 
+      FROM pjviews
+      WHERE userIdx = #{userIdx}
+        AND viewTableIdx = #{dealIdx}
+        AND viewTableType = 1
+  </select>
+
+  <!-- 조회수 정보 삽입 -->
+  <insert id="insertViewCount">
+      INSERT INTO pjviews (userIdx, viewTableIdx, viewCount, viewTableType, viewRegTime)
+      VALUES (#{userIdx}, #{dealIdx}, 1, 1, now())
+  </insert>
+
+  <!-- 조회수 정보 업데이트 -->
+  <update id="updateViewCount">
+      UPDATE pjviews
+      SET viewCount = viewCount + 1,
+          viewRegTime = now()
+      WHERE userIdx = #{userIdx}
+        AND viewTableIdx = #{dealIdx}
+        AND viewTableType = 1
+  </update>
+
+<!-- 판매자 정보 조회 -->
+<select id="getUserInfoByIdx" parameterType="String" resultType="UserVO">
+    SELECT userIdx, userNickname, userMail, userPhone, userAddr, userReg
+    FROM pjuser 
+    WHERE userIdx = #{userIdx}
+</select>
+
+<!-- 총 조회수 조회 -->
+<select id="getTotalViewCount" parameterType="String" resultType="int">
+    SELECT COUNT(*) 
+    FROM pjviews 
+    WHERE viewTableIdx = #{dealIdx}
+    AND viewTableType = 1
+</select>
+
+<!-- 판매 상태 변경 -->
+<update id="getDealStatusUpdate" parameterType="DealVO">
+    UPDATE pjdeal 
+    SET deal02 = '판매완료', dealBuyerUserIdx = #{dealBuyerUserIdx}, 
+    dealBuyerNick = #{dealBuyerNick}
+    WHERE dealIdx = #{dealIdx}
+</update>
+
+<!-- 판매자의 다른 상품 목록 조회 -->
+<select id="getSellerOtherDeals" parameterType="String" resultType="DealVO">
+    SELECT <include refid="dealColumns"/> 
+    FROM pjdeal 
+    WHERE dealSellerUserIdx = #{dealSellerUserIdx}
+    AND dealIdx != #{dealIdx}  <!-- 현재 상품 제외 -->
+    ORDER BY dealRegDate DESC
+</select>
+
+<!-- 만족도 평가 저장 -->
+<insert id="getDealSatisfactionInsert" parameterType="DealSatisfactionVO">
+    INSERT INTO pjdealsatisfaction (
+        dealSatisSellerUserIdx,
+        dealSatisSellerNick,
+        dealSatisBuyerUserIdx,
+        dealSatisBuyerNick,
+        dealSatisBuyerContent,
+        dealSatisSellerScore,
+        dealSatisBuyerRegDate,
+        dealSatis01
+    ) VALUES (
+        #{dealSatisSellerUserIdx},
+        #{dealSatisSellerNick},
+        #{dealSatisBuyerUserIdx},
+        #{dealSatisBuyerNick},
+        #{dealSatisBuyerContent},
+        #{dealSatisSellerScore},
+        NOW(),
+        #{dealSatis01}
+    )
+</insert>
+
+<!-- 후기 등록 여부 확인 -->
+<select id="chkSatisfaction" parameterType="String" resultType="boolean">
+    SELECT COUNT(*) <![CDATA[>]]> 0
+    FROM pjdealsatisfaction
+    WHERE dealSatis01 = #{dealSatis01}
+</select>
+
+<!-- 상품 활성화 상태 업데이트 -->
+<update id="getDealActiveUpdate" parameterType="map">
+  UPDATE pjdeal 
+  SET dealview = #{dealview}
+  WHERE dealIdx = #{dealIdx}
+</update>
+
+ <!-- 기존 쿼리 -->  
+ <select id="getDealManagement" parameterType="String" resultType="DealVO">
+    select coalesce(pjfile.fileName, 'noimg') as deal01 ,pjdeal.* from pjdeal join pjfile on pjdeal.dealIdx = pjfile.fileTableIdx 
+    WHERE pjdeal.dealSellerUserIdx = #{userIdx}
+  </select>
+
+ <select id="getDealMainSearch" parameterType="String" resultType="DealVO">
+    select coalesce(pjfile.fileName, 'noimg') as deal01 ,pjdeal.* from pjdeal join pjfile on pjdeal.dealIdx = pjfile.fileTableIdx 
+    WHERE (pjdeal.dealTitle LIKE CONCAT('%', #{searchKeyword}, '%') 
+        OR pjdeal.dealDescription LIKE CONCAT('%', #{searchKeyword}, '%'))  and pjfile.fileOrder = 0
+    order by dealIdx desc
+  </select>
+
+ <select id="getFavoriteList" parameterType="String" resultType="DealVO">
+    SELECT 
+        COALESCE(pjfile.fileName, 'noimg') AS deal01, 
+        pjdeal.*
+    FROM 
+        pjdeal
+    JOIN 
+        pjdealfavorite 
+    ON 
+        pjdeal.dealIdx = pjdealfavorite.dealIdx
+    JOIN 
+        pjfile 
+    ON 
+        pjfile.fileTableIdx = pjdealfavorite.dealIdx
+    WHERE 
+        pjdealfavorite.userIdx = #{userIdx} and pjfile.fileOrder = 0
+  </select>
+
+  <select id="getPurchaseList" parameterType="String" resultType="DealVO">
+    select coalesce(pjfile.fileName, 'noimg') as deal01, pjdeal.* from pjdeal join pjfile on pjdeal.dealIdx = pjfile.fileTableIdx 
+    WHERE pjdeal.dealBuyerUserIdx = #{userIdx} and pjfile.fileOrder = 0
+  </select>
+
+  <!--  신고 등록  -->
+  <insert id="getDealReportInsert" parameterType="ReportVO"> 
+      INSERT INTO pjreport (userIdx, reportedUserIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate) 
+      VALUES (#{userIdx}, #{reportedUserIdx}, #{reportCategory}, 1, #{reportTableIdx}, #{reportContent}, NOW()) 
+  </insert>
+
+  <!--  신고 상태 업데이트  -->
+  <update id="updateReportStatus"> 
+      UPDATE pjreport 
+      SET reportStatus = 1 
+      WHERE reportTableType = 1 AND reportTableIdx = #{dealIdx} 
+  </update>
 
 </mapper>

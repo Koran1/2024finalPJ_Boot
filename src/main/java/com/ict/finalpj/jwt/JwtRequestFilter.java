@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ict.finalpj.common.util.JwtUtil;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     throws ServletException, IOException {
         System.out.println("JwtRequestFilter here");
         final String requestTokenHeader = request.getHeader("Authorization");
-        String username = null;
+        String userIdx = null;
         String jwtToken = null;
 
         // 값이 없거나 'Bearer '로 시작하지 않으면 로그를 남기고 다음 필터로 전달한다
@@ -45,8 +46,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             log.info("JwtFilter - 추출메서드");
             try {
                 // 토큰 검증 by JwtUtil.java
-                username = jwtUtil.extractUserName(jwtToken);
-                log.info("JwtFilter - username :"+ username);
+                userIdx = jwtUtil.extractUserName(jwtToken);
+                log.info("JwtFilter - userIdx :"+ userIdx);
 
             } catch (Exception e) {
                 System.out.println("JWT 오류");
@@ -54,17 +55,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }else{
             System.out.println("JWT 없음");
-            logger.warn("JWT does not exist!");
+            // logger.warn("JWT does not exist!");
         }
 
         // username 추출 성공 시, 현재 Security Context에 인증정보가 없는 경우
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+        if(userIdx != null && SecurityContextHolder.getContext().getAuthentication() == null){
             // 사용자 이름을 가지고 현재 DB에 있는지 검사
             // UserVO 에서 m_id와 m_pw 를 Username 과 Password 로 getter 할 수 있도록 설정했음
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userIdx);
             log.info("JwtRequest - userDetails : "+userDetails.getUsername()+"\n");
             log.info("JwtRequest - userDetails : "+userDetails.getPassword()+"\n");
-            //log.info("JwtRequest - userDetails : "+userDetails.getAge()+"\n");
 
             if(jwtUtil.validateToken(jwtToken, userDetails)){
                 // 인증 객체 생성

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 는 반드시 mapper 의 위치로 설정해야 된다 -->
+<mapper namespace="com.ict.finalpj.domain.add.mapper.AddMapper">
+
+    <select id="getNoticeList" parameterType="map" resultType="NoticeVO" >
+        SELECT * FROM pjnotice 
+        WHERE (noticeSubject LIKE CONCAT('%', #{searchKeyword}, '%') 
+        OR noticeContent LIKE CONCAT('%', #{searchKeyword}, '%'))  
+        and noticeStatus = 'on' 
+        ORDER BY noticeIdx DESC limit #{limit} offset #{offset}
+    </select>
+
+    <select id="getNoticeListLv1" resultType="NoticeVO" >
+        select * from pjnotice where noticeLevel = '1' and noticeStatus = 'on' 
+        ORDER BY noticeIdx DESC limit 5
+    </select>
+    
+    <select id="getTotalNoticeCount" resultType="int" >
+        select count(*) from pjnotice 
+        WHERE (noticeSubject LIKE CONCAT('%', #{searchKeyword}, '%') 
+        OR noticeContent LIKE CONCAT('%', #{searchKeyword}, '%')) 
+        and noticeStatus = 'on' 
+    </select>
+    
+    <select id="getNoticeDetails" parameterType="String" resultType="NoticeVO" >
+        ( select * from pjnotice where noticeIdx <![CDATA[<]]> #{noticeIdx} and noticeStatus = 'on' 
+        ORDER by noticeIdx DESC limit 1 ) 
+        UNION ALL 
+        ( select * from pjnotice where noticeIdx = #{noticeIdx} and noticeStatus = 'on' ) 
+        union all 
+        ( select * from pjnotice where noticeIdx <![CDATA[>]]> #{noticeIdx} and noticeStatus = 'on' 
+        order by noticeIdx asc limit 1)
+    </select>
+
+    <select id="getNoticeLv1Details" parameterType="String" resultType="NoticeVO" >
+        ( select * from pjnotice where noticeIdx <![CDATA[<]]> #{noticeIdx} and noticeStatus = 'on' 
+         and noticeLevel = '1' ORDER by noticeIdx DESC limit 1 ) 
+        UNION ALL 
+        ( select * from pjnotice where noticeIdx = #{noticeIdx} 
+        and noticeStatus = 'on' and noticeLevel = '1') 
+        union all 
+        ( select * from pjnotice where noticeIdx <![CDATA[>]]> #{noticeIdx} and noticeStatus = 'on' 
+         and noticeLevel = '1' order by noticeIdx asc limit 1)
+    </select>
+
+
+    <select id="getFaqs" resultType="FAQVO" >
+        select * from pjfaq where faqStatus = 'on'
+    </select>
+
+    
+    <select id="getQnas" parameterType="String" resultType="QNAVO" >
+        select * from pjqna where userIdx = ${userIdx}
+    </select>
+
+    <select id="getQnaDetail" parameterType="String" resultType="QNAVO" >
+        select * from pjqna where qnaIdx = ${qnaIdx}
+    </select>
+
+    <insert id="writeQna" parameterType="QNAVO" >
+        insert into pjqna (qnaSubject, qnaContent, userIdx, qnaFile, qnaRegDate) 
+        values (#{qnaSubject}, #{qnaContent}, #{userIdx}, #{qnaFile}, NOW())
+    </insert>
+
+</mapper>

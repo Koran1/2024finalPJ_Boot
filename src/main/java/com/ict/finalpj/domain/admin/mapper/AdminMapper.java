@@ -1,4 +1,4 @@
-package com.ict.finalpj.domain.administrator.mapper;
+package com.ict.finalpj.domain.admin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper">
+
+  <!-- 만족도 등록 -->
+  <insert id="getDealSatisfactionInsert" parameterType="DealSatisfactionVO">
+    INSERT INTO pjdealSatisfaction ( 
+      dealSatisSellerUserIdx, 
+      dealSatisSellerNick, 
+      dealSatisBuyerUserIdx, 
+      dealSatisBuyerNick, 
+      dealSatisBuyerContent, 
+      dealSatisBuyerRegDate, 
+      dealSatisSellerScore, 
+      dealSatis01, 
+      dealSatis02 
+    ) 
+    VALUES (
+      #{dealSellerUserIdx}, 
+      #{dealSellerNick}, 
+      #{userIdx}, 
+      #{nickname}, 
+      #{dealSatisBuyerContent}, 
+      NOW(), 
+      #{dealSatisSellerScore}, 
+      #{dealSatis01}, 
+      #{dealSatis02} 
+    )
+  </insert>
+
+  <!-- 판매자의 평점 조회 -->
+  <select id="getDealSatisSellerScore" parameterType="String" resultType="String">
+    SELECT dealSatisSellerScore 
+    FROM pjuser 
+    WHERE userIdx = #{dealSellerUserIdx}
+  </select>
+
+  <!-- 판매자 평점 업데이트를 위한 통계 조회 -->
+  <select id="getDealSatisSellerScoreStats" parameterType="String" resultType="java.util.Map">
+    SELECT 
+      COUNT(*) as dealSatisSellerCount,
+      COALESCE(SUM(CAST(dealSatisSellerScore AS DECIMAL(10,2))), 0) as dealSatisSellerScoreSum
+    FROM pjdealsatisfaction 
+    WHERE dealSatisSellerUserIdx = #{dealSellerUserIdx}
+  </select>
+
+  <!-- 판매자 평점 업데이트 -->
+  <update id="updateDealSatisSellerScore">
+    UPDATE pjuser 
+    SET dealSatisSellerScore = #{dealSatisAverage} 
+    WHERE userIdx = #{dealSellerUserIdx}
+  </update>
+
+  <select id="getDealSatisfactionList" parameterType="String" resultType="DealSatisfactionVO">
+    select coalesce(pjfile.fileName, 'noimg') as dealSatis02 ,pjdealsatisfaction.* from pjdealsatisfaction 
+    join pjfile on pjdealsatisfaction.dealSatis01 = pjfile.fileTableIdx 
+    WHERE pjdealsatisfaction.dealSatisSellerUserIdx = #{userIdx}  and pjfile.fileOrder = 0
+  </select>
+
+
+</mapper>

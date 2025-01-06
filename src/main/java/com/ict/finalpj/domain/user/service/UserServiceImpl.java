@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.domain.user.mapper.UserMapper;
-
 import com.ict.finalpj.domain.user.vo.SocialVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -14,6 +13,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Override
+    public UserVO getUserInfoByIdx(String userIdx) {
+       return userMapper.getUserInfoByIdx(userIdx);
+    }
     @Override
     public UserVO getUserInfoById(String userId) {
         return userMapper.getUserInfoById(userId);
@@ -88,10 +91,8 @@ public class UserServiceImpl implements UserService {
     public int updateConnRegByIdx(String userIdx) {
         return userMapper.updateConnRegByIdx(userIdx);
     }
-
-    // 오류나서 잠시 주석
-    // @Override
-    // public UserVO getUserInfo(String name) {
-    // return userMapper.getUserInfo(name);
-    // }
+    @Override
+    public int changeUserInfo(UserVO uvo) {
+        return userMapper.changeUserInfo(uvo);
+    }
 }

@@ -45,26 +45,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("Security Filter Chain 호출 \n");
         http   
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                // 요청별 권한 설정 = Interceptor 기능
-                .authorizeHttpRequests(authorize -> authorize
-                    // 특정 URL 에 인증없이 허용
-                    .requestMatchers("/upload/**").permitAll()
-                    .requestMatchers("/oauth2/**").permitAll()
-                    .requestMatchers("/api/**").permitAll()
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
 
-                    // 나머지는 인증 필요-
-                    .anyRequest().authenticated())
+            // 요청별 권한 설정 = Interceptor 기능
+            .authorizeHttpRequests(authorize -> authorize
+                // 특정 URL 에 인증없이 허용
+                .requestMatchers("/upload/**").permitAll()
+                .requestMatchers("/oauth2/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
 
-                // oauth2Login 설정
-                .oauth2Login(oauth2 -> oauth2
-                    // 로그인 성공 시 호출
-                    .successHandler(oAuth2AuthenticationSuccessHandler())
-                    // 인증된 사용자에 대한 정보를 제공하는 api endpoint (사용자 정보를 가져오는 역할)
-                    .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService()))
-                )
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                // 나머지는 인증 필요-
+                .anyRequest().authenticated())
+
+            // oauth2Login 설정
+            .oauth2Login(oauth2 -> oauth2
+                // 로그인 성공 시 호출
+                .successHandler(oAuth2AuthenticationSuccessHandler())
+                // 인증된 사용자에 대한 정보를 제공하는 api endpoint (사용자 정보를 가져오는 역할)
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService()))
+            )
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

@@ -25,21 +25,22 @@ public class MyUserDetailService implements UserDetailsService{
     private UserMapper userMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        UserVO uvo = userMapper.getUserInfoById(userId);
+    public UserDetails loadUserByUsername(String userIdx) throws UsernameNotFoundException {
+        UserVO uvo = userMapper.getUserInfoByIdx(userIdx);
 
         if(uvo == null){
-            throw new UnsupportedOperationException("Error : userId is not Found!");
+            throw new UnsupportedOperationException("Error : userIdx is not Found!");
         }
-        return new User(uvo.getUserId(), uvo.getUserPw(), new ArrayList<>());
+        return new User(uvo.getUserIdx(), uvo.getUserPw(), new ArrayList<>());
     }
 
     // DB에서 정보 있는지 확인
     public String loadUserByOAuth2User(OAuth2User oAuth2User, String provider){
+        @SuppressWarnings("null")
         String id = oAuth2User.getAttribute("id").toString();
         String name = oAuth2User.getAttribute("name");
         String email = oAuth2User.getAttribute("email");
-        
+        log.info(id);
         UserVO uvo_true = new UserVO();
         SocialVO sovo = new SocialVO();
         String socialIdx = UUID.randomUUID().toString();
@@ -77,24 +78,26 @@ public class MyUserDetailService implements UserDetailsService{
     }
 
     // DB에서 정보 있는지 확인
-    public boolean chkJoinedByPhone(OAuth2User oAuth2User){
+    public String getUserIdxByPhone(OAuth2User oAuth2User){
+        @SuppressWarnings("null")
         String phone = oAuth2User.getAttribute("phone").toString();
 
         UserVO uvo_true = userMapper.getUserInfoByPhone(phone);
         if(uvo_true == null){
-            return false;
+            return null;
         }else{
             UserVO uvo = new UserVO();
             uvo.setN_userId(oAuth2User.getAttribute("id"));
             uvo.setUserPhone(phone);
             userMapper.updateUserNaverId(uvo);
 
-            return true;
+            return uvo_true.getUserIdx();
         }
     }
     
     // DB에서 정보 있는지 확인
     public UserVO getUserInfoByOAuth2User(OAuth2User oAuth2User, String provider){
+        @SuppressWarnings("null")
         String id = oAuth2User.getAttribute("id").toString();
         UserVO uvo_true = new UserVO();
 
@@ -108,22 +111,6 @@ public class MyUserDetailService implements UserDetailsService{
         return uvo_true;
     }
 
-    // // DB에서 정보 있는지 확인
-    // public boolean chkJoinedByPhone(OAuth2User oAuth2User){
-    //     String phone = oAuth2User.getAttribute("phone").toString();
-
-    //     UserVO uvo_true = userMapper.getUserInfoByPhone(phone);
-    //     if(uvo_true == null){
-    //         return false;
-    //     }else{
-    //         UserVO uvo = new UserVO();
-    //         uvo.setN_userId(oAuth2User.getAttribute("id"));
-    //         uvo.setUserPhone(phone);
-    //         userMapper.updateUserNaverId(uvo);
-
-    //         return true;
-    //     }
-    // }
 
 
     

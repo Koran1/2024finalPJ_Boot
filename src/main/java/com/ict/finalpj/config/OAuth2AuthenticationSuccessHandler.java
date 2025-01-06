@@ -70,10 +70,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                         );
                     } else if(provider.equals("naver")){
                         log.info("checking if user is new using phonenumber");
-                        boolean isJoined = userDetailService.chkJoinedByPhone(oAuth2User);
+                        String userIdx = userDetailService.getUserIdxByPhone(oAuth2User);
 
-                        if(isJoined){
-                            String token = jwtUtil.generateToken(oAuth2User.getAttribute("id").toString());
+                        if(userIdx != null){
+                            String token = jwtUtil.generateToken(userIdx);
                     
                             redirectUrl = String.format(
                                 "http://localhost:3000/user/login?token=%s&userId=%s&name=%s&email=%s",
@@ -89,7 +89,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                             );
                         }
                     } else{
-                        redirectUrl = "/login?error";
+                        redirectUrl = "http://localhost:3000/user/login/error";
                     }
                 }else{
                     UserVO uvo = userDetailService.getUserInfoByOAuth2User(oAuth2User, provider);
@@ -112,7 +112,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 response.sendRedirect(redirectUrl);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("OAuth2AuthenticationSuccessHandler error : " + e.getMessage());
             response.sendRedirect("/login?error");
         }
     }

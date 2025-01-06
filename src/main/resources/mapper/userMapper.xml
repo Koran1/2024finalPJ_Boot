@@ -5,6 +5,10 @@
 <!-- namespace 는 반드시 mapper 의 위치로 설정해야 된다 -->
 <mapper namespace="com.ict.finalpj.domain.user.mapper.UserMapper">
 
+    <select id="getUserInfoByIdx" parameterType="String" resultType="UserVO" >
+        select * from pjuser where userIdx = #{userIdx}
+    </select>
+
     <select id="getUserInfoById" parameterType="String" resultType="UserVO" >
         select * from pjuser where userId = #{userId}
     </select>
@@ -74,6 +78,12 @@
 
     <update id="updateConnRegByIdx" parameterType="String">
         update pjuser set userConnReg = NOW() 
+        where userIdx = #{userIdx}
+    </update>
+
+    <update id="changeUserInfo" parameterType="String">
+        update pjuser set userName = #{userName}, userNickname = #{userNickname}, userMail = #{userMail}, 
+        userPhone = #{userPhone}, userAddr = #{userAddr}, userUpdReg = NOW() 
         where userIdx = #{userIdx}
     </update>
 

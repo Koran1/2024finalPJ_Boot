@@ -55,6 +55,10 @@ dependencies {
 	 
 	 // javamail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// socketIO
+	implementation 'com.corundumstudio.socketio:netty-socketio:2.0.12'
+
 }
 
 tasks.named('test') {

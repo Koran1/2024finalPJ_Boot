@@ -23,15 +23,13 @@ spring :
 
     # DB 설정
     datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        # url: jdbc:mysql://localhost:3306/ictedu_db
-        # username: ictedu
         url: jdbc:mysql://localhost:3306/ictedu_db
         username: ictedu
         password: 1111
+        driver-class-name: com.mysql.cj.jdbc.Driver
     web:
         resources:
-            static-locations: file:D:/upload/
+            static-locations: file:D:/upload/deal/
             # static-locations: classpath:/static/
     security:
         oauth2:
@@ -71,7 +69,7 @@ spring :
                             
 # 파일 업로드 기능에서 파일이 저장될 물리적 경로를 명시
 file:
-    upload-dir: D:/upload
+    upload-dir: D:/upload/deal
     
 server:
     port: 8080
@@ -90,8 +88,8 @@ mybatis:
 
 # 비밀키 사용 (길이 : 32byte)
 jwt:
-    secret: "abcdABCD1234qwerQWER5678zxcvZXCV"
-    expiration: 3600000 # 1시간 (3600 s * 1000ms)
+    secret: "abcdABCD1234qwerQWER5678zxcvZXCV9876asdfASDF4321poiuPOIU"  # Base64로 인코딩된 32바이트 이상의 문자열
+    expiration: 86400000  # 24시간
 
 # 토스 
 toss:

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 는 반드시 mapper 의 위치로 설정해야 된다 -->
+<mapper namespace="com.ict.finalpj.domain.deal.mapper.ChatMapper">
+
+    <insert id="insertChatMessage" parameterType="ChatVO">
+        INSERT INTO pjchat (chatRoom, chatMessage,
+         chatSenderIdx, chatTime)
+        VALUES (#{chatRoom}, #{chatMessage}, 
+        #{chatSenderIdx}, #{chatTime})
+    </insert>
+
+    <select id="getChatList" parameterType="String" resultType="ChatVO" >
+        SELECT * FROM pjchat 
+        WHERE chatRoom = #{chatRoom}
+        ORDER BY chatTime asc
+    </select>
+
+    <select id="chkByUserIdx" parameterType="map" resultType="ChatRoomVO" >
+        SELECT chatroom FROM pjchatroom 
+        WHERE userIdx in (#{userIdx}, #{sellerIdx}) and dealIdx = #{dealIdx}
+        group by chatRoom HAVING COUNT(DISTINCT userIdx) = 2
+    </select>
+
+    <insert id="insertNewChat" parameterType="map">
+        INSERT INTO pjchatroom (chatRoom, dealIdx, userIdx, lastRead) 
+        VALUES (#{chatRoom}, #{dealIdx}, #{userIdx}, NOW()), 
+        (#{chatRoom}, #{dealIdx}, #{sellerIdx}, NOW())
+    </insert>
+
+    <select id="getChatListByUserIdx" parameterType="String" resultType="ChatRoomVO" >
+            select distinct c1.chatRoom, c1.dealIdx, c1.userIdx, c1.lastRead, 
+            COALESCE(unread.unReadCount, 0) AS unReadCount 
+            from pjchatroom c1 
+            join pjchatroom c2 on c1.chatRoom = c2.chatRoom 
+            LEFT JOIN ( 
+                select chatRoom, count(*) AS unReadCount 
+                from pjchat where chatTime > (
+                    select lastRead from pjchatroom 
+                    where userIdx = #{userIdx} and pjchatroom.chatRoom = pjchat.chatRoom
+                )  and pjchat.chatSenderIdx != #{userIdx} 
+                group by chatRoom 
+            ) unread on c1.chatRoom = unread.chatRoom 
+            where c2.userIdx = #{userIdx} and c1.userIdx != #{userIdx}
+    </select>
+
+    <select id="getRecentChat" parameterType="ChatRoomVO" resultType="ChatVO" >
+        SELECT * FROM pjchat 
+        WHERE chatRoom = #{chatRoom} and chatSenderIdx = #{userIdx}
+        order by chatTime desc limit 1;
+    </select>
+
+    <select id="getUnReadMessages" parameterType="String" resultType="int" >
+        SELECT COUNT(*) 
+        FROM pjchat c 
+        JOIN pjchatroom r ON c.chatRoom = r.chatRoom
+        WHERE r.userIdx = #{userIdx}
+        AND c.chatTime > r.lastRead
+    </select>
+
+    <update id="updateLastRead" parameterType="map">
+        update pjchatroom set lastRead = NOW() where chatRoom = #{chatRoom} and userIdx = #{userIdx}
+    </update>
+
+
+</mapper>
