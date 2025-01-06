@@ -120,6 +120,18 @@ public class CampLogServiceImpl implements CampLogService{
         return campLogMapper.getLogActiveZero(logIdx);
     }
     
+    // 로그 글 신고
+    @Override
+    public int getLogReport(ReportVO logIdx){
+        return campLogMapper.getLogReport(logIdx);
+    }
+
+    // 로그 글 신고 횟수
+    @Override
+    public List<ReportVO> getLogReportCount(String logIdx) {
+        return campLogMapper.getLogReportCount(logIdx);
+    }
+
 
     // *댓글*
     // 댓글 리스트 가져오기

@@ -258,7 +258,10 @@ public class CampLogController {
             List<FileVO> fileVO = campLogService.getLogFileByLogIdx(logIdx);
             List<TagInfoVO> tagVO = campLogService.getLogTagByLogIdx(logIdx);
             List<DealVO> dealVO = campLogService.getDealList();
-            
+            // 신고 추가
+            List<ReportVO> rvo = campLogService.getLogReportCount(logIdx);
+            log.info("data.data.rvo.reportCount" + rvo);
+            map.put("rvo", rvo);
           
             if (isUserRemommend > 0) {
                 map.put("doRecommend", true);
@@ -400,7 +403,25 @@ public class CampLogController {
         return dataVO;
     }
 
+    // 로그(후기)글 신고
+    @PostMapping("logReport")
+    public DataVO getLogReport(@ModelAttribute ReportVO rvo) {
+        DataVO dataVO = new DataVO();
+        try {
+            log.info("rvo : " + rvo);
+            int result = campLogService.getLogReport(rvo);
 
+            if(result > 0){
+                dataVO.setSuccess(true);
+                dataVO.setMessage("로그(후기)글 신고 완료");
+            }
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("로그(후기)글 신고 오류");
+            e.printStackTrace();
+        }
+        return dataVO;
+    }
 
 
 

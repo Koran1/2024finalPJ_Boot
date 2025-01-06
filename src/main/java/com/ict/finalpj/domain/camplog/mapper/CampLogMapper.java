@@ -37,6 +37,8 @@ public interface CampLogMapper {
     int toogleOff(Map<String, String> map );
     int toogleOn(Map<String, String> map );
     int getLogActiveZero(String logIdx);
+    public int getLogReport(ReportVO logIdx); // 로그 글 신고
+    public List<ReportVO> getLogReportCount(String logIdx); // 로그 글 신고 횟수
 
     // *댓글*
     public List<CampLogCommentVO> getCommentList(String logIdx);
