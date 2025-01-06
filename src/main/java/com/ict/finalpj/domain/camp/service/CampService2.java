@@ -2,6 +2,7 @@ package com.ict.finalpj.domain.camp.service;
 
 import java.util.List;
 
+import com.ict.finalpj.domain.camp.vo.CampFavVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogVO;
 
@@ -23,4 +24,7 @@ public interface CampService2 {
 
     // 캠프 조회수 메서드
     void updateViewCount(String userIdx, String campIdx);
+
+    // 캠핑장 좋아요 리스트 조회
+    List<CampFavVO> getLikeList(String userIdx);
 }

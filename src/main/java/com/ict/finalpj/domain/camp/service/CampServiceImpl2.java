@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.common.vo.ViewsVO;
 import com.ict.finalpj.domain.camp.mapper.CampMapper2;
+import com.ict.finalpj.domain.camp.vo.CampFavVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogVO;
 
@@ -77,5 +78,10 @@ public class CampServiceImpl2 implements CampService2 {
                 }
             }
         }
+    }
+
+    @Override
+    public List<CampFavVO> getLikeList(String userIdx) {
+        return campMapper2.getLikeList(userIdx);
     }
 }

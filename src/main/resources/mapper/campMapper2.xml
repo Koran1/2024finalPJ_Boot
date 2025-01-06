@@ -66,4 +66,9 @@
           AND viewTableIdx = #{campIdx}
     </update>
 
+    <select id="getLikeList" parameterType="String" resultType="CampFavVO">
+        SELECT * 
+        FROM pjfavcamp
+        WHERE userIdx = #{userIdx}
+    </select>
 </mapper>

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ict.finalpj.common.vo.ViewsVO;
+import com.ict.finalpj.domain.camp.vo.CampFavVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogVO;
 
@@ -31,4 +32,7 @@ public interface CampMapper2 {
     void insertViewInfo(@Param("userIdx") String userIdx, @Param("campIdx") String campIdx);
 
     void updateViewInfo(@Param("userIdx") String userIdx, @Param("campIdx") String campIdx);
+
+    // 캠핑장 좋아요 리스트 조회
+    List<CampFavVO> getLikeList(String userIdx);
 }

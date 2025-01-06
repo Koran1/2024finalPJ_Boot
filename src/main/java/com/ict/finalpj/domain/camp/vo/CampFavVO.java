@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CampFavVO {
-    private String campFavorIdx, userIdx, campidx;
+    private String campFavorIdx, userIdx, campIdx;
 }

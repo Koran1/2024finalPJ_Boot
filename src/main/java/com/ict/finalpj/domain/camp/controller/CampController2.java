@@ -4,19 +4,19 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.camp.service.CampService2;
+import com.ict.finalpj.domain.camp.vo.CampFavVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogVO;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @RestController
@@ -116,6 +116,23 @@ public class CampController2 {
         return ResponseEntity.ok(response);
     }
 
+    // 캠핑장 좋아요 리스트
+    @GetMapping("/getLikeList")
+    public DataVO getLikeList(@RequestParam("userIdx") String userIdx) {
+        DataVO dvo = new DataVO();
+        try {
+            List<CampFavVO> favList = campService2.getLikeList(userIdx);
+            dvo.setData(favList);
+            dvo.setSuccess(true);
+            dvo.setMessage("캠핑장 좋아요 리스트 조회 성공");
+
+        } catch (Exception e) {
+            dvo.setSuccess(false);
+            dvo.setMessage("캠핑장 좋아요 리스트 조회 오류");
+            e.printStackTrace();
+        }
+        return dvo;
+    }
     
 
 }
