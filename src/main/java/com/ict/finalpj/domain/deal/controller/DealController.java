@@ -103,7 +103,7 @@ public class DealController {
     @GetMapping("/dealMain")
     public DataVO getDealMainList() {
         try {
-            List<FileVo> file_list = new ArrayList<>();
+            // List<FileVo> file_list = new ArrayList<>();
             List<DealVO> list = dealService.getDealMainList();
 
             List<FileVo> fileList = list.stream()
@@ -115,12 +115,10 @@ public class DealController {
                 "list", list,
                 "file_list", fileList
             );
-
             return createResponse(true, "캠핑마켓 메인페이지 조회 완료", resultMap);
         } catch (Exception e) {
             log.error("메인페이지 조회 실패", e);
             return createResponse(false, "캠핑마켓 메인페이지 조회 실패", null);
-
         }
     }
 
@@ -589,4 +587,19 @@ public class DealController {
         }
     }
     
+    @GetMapping("/seller-satisfaction/{userIdx}")
+    public DataVO getSellerSatisfactions(@PathVariable String userIdx) {
+        DataVO dataVO = new DataVO();
+        try {
+            List<DealSatisfactionVO> satisfactions = dealService.getSellerSatisfactions(userIdx);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("판매자 만족도 조회 성공");
+            dataVO.setData(satisfactions);
+        } catch (Exception e) {
+            log.error("판매자 만족도 조회 실패", e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage("판매자 만족도 조회 실패");
+        }
+        return dataVO;
+    }
 }

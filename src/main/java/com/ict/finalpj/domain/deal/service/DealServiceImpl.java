@@ -256,4 +256,9 @@ public class DealServiceImpl implements DealService {
         return dealMapper.updateReportStatus(dealIdx);
     }
 
+    @Override
+    public List<DealSatisfactionVO> getSellerSatisfactions(String userIdx) {
+        return dealMapper.getSellerSatisfactions(userIdx);
+    }
+
 }

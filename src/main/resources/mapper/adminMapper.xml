@@ -5,4 +5,76 @@
 <!-- namespace 는 반드시 mapper 의 위치로 설정해야 된다 -->
 <mapper namespace="com.ict.finalpj.domain.admin.mapper.AdminMapper">
 
+<select id="getDealManagement" resultType="DealVO">
+    SELECT coalesce(pjfile.fileName, 'noimg') as deal01, pjdeal.* 
+    FROM pjdeal 
+    JOIN pjfile ON pjdeal.dealIdx = pjfile.fileTableIdx 
+    AND pjfile.fileTableType = 2 
+    AND pjfile.fileOrder = 0
+    ORDER BY pjdeal.dealRegDate DESC
+</select>
+
+<!-- 상세 정보 조회 (메인 이미지) -->
+<select id="getDealDetail" parameterType="String" resultType="DealVO">
+    SELECT 
+        d.*,
+        COALESCE(f.fileName, 'noimg') as deal01,
+        COALESCE(d.dealview, 1) as dealview
+    FROM pjdeal d
+    LEFT JOIN pjfile f ON d.dealIdx = f.fileTableIdx 
+        AND f.fileTableType = 2 
+        AND f.fileOrder = 0
+    WHERE d.dealIdx = #{dealIdx}
+</select>
+
+<!-- 상품 이미지 전체 조회 (스몰 이미지들) -->
+<select id="getDealFiles" parameterType="String" resultType="FileVO">
+    SELECT * 
+    FROM pjfile 
+    WHERE fileTableIdx = #{dealIdx}
+        AND fileTableType = 2
+    ORDER BY fileOrder ASC
+</select>
+
+<select id="getFavoriteCount" parameterType="String" resultType="int">
+    SELECT COUNT(*) FROM pjdealfavorite WHERE dealIdx = #{dealIdx}
+</select>
+
+<select id="getSellerOtherDeals" parameterType="String" resultType="DealVO">
+    SELECT d.* FROM pjdeal d
+    WHERE d.dealSellerUserIdx = (
+        SELECT dealSellerUserIdx FROM pjdeal WHERE dealIdx = #{dealIdx}
+    )
+    AND d.dealIdx != #{dealIdx}
+</select>
+
+<!-- 판매자의 다른 상품 이미지 -->
+<select id="getSellerOtherFiles" parameterType="String" resultType="FileVO">
+    SELECT DISTINCT f.* 
+    FROM pjfile f
+    JOIN pjdeal d ON f.fileTableIdx = d.dealIdx
+    WHERE d.dealSellerUserIdx = (
+        SELECT dealSellerUserIdx FROM pjdeal WHERE dealIdx = #{dealIdx}
+    )
+    AND d.dealIdx != #{dealIdx}
+    AND f.fileTableType = 2
+    AND f.fileOrder = 0
+</select>
+
+<select id="getDealSatisSellerScore" parameterType="String" resultType="String">
+    SELECT 
+        COALESCE(
+            ROUND(AVG(dealSatisSellerScore), 1), 
+            '5.0'
+        ) as avgScore
+    FROM pjdealsatisfaction 
+    WHERE dealSatisSellerIdx = #{userIdx}
+</select>
+
+<update id="getAdminDealActiveUpdate" parameterType="map">
+    UPDATE pjdeal 
+    SET dealview = #{dealview} 
+    WHERE dealIdx = #{dealIdx}
+</update>
+
 </mapper>

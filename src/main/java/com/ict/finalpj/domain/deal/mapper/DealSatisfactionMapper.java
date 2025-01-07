@@ -22,8 +22,7 @@ public interface DealSatisfactionMapper {
     
     // 판매자 평점 업데이트
     int updateDealSatisSellerScore(@Param("dealSellerUserIdx") String dealSellerUserIdx, 
-                                  @Param("dealSatisAverage") BigDecimal dealSatisAverage);
-
+                                @Param("dealSatisAverage") BigDecimal dealSatisAverage);
     
     List<DealSatisfactionVO> getDealSatisfactionList(String userIdx);
 } 

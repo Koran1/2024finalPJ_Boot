@@ -81,4 +81,6 @@ public interface DealService {
   int getDealReportInsert(ReportVO reportVO);
 
   int updateReportStatus(String dealIdx);
+
+  List<DealSatisfactionVO> getSellerSatisfactions(String userIdx);
 }

@@ -78,4 +78,6 @@ public interface DealMapper {
 
   int updateReportStatus(@Param("dealIdx") String dealIdx);
 
+  List<DealSatisfactionVO> getSellerSatisfactions(String userIdx);
+
 }
