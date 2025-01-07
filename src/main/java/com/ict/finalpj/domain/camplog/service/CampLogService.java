@@ -3,7 +3,7 @@ package com.ict.finalpj.domain.camplog.service;
 import java.util.List;
 import java.util.Map;
 
-import com.ict.finalpj.common.vo.FileVO;
+import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogCommentVO;
@@ -22,12 +22,12 @@ public interface CampLogService {
     List<CampVO> getCampListAll();
     int insertToPjcamplog(CampLogVO cvo);
     int insertToPjlogcontent(CampLogContentVO cvto);
-    int insertToPjfile(FileVO fvo);
+    int insertToPjfile(FileVo fvo);
     int insertToPjtaginfo(TagInfoVO tvo);
     CampLogVO getLogDetailByLogIdx(String logIdx);
     List<CampLogContentVO> getLogContentByLogIdx(String logIdx);
     int isUserRemommend(String logIdx, String userIdx);
-    List<FileVO> getLogFileByLogIdx(String logIdx);
+    List<FileVo> getLogFileByLogIdx(String logIdx);
     List<TagInfoVO> getLogTagByLogIdx(String logIdx);
     List<DealVO> getDealList();
     UserVO getUserDataByUserIdx(String userIdx);

@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ict.finalpj.common.vo.FileVO;
+import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.camplog.mapper.CampLogMapper;
@@ -54,7 +54,7 @@ public class CampLogServiceImpl implements CampLogService{
     }
 
     @Override
-    public int insertToPjfile(FileVO fvo) {
+    public int insertToPjfile(FileVo fvo) {
         return campLogMapper.insertToPjfile(fvo);
     }
 
@@ -82,7 +82,7 @@ public class CampLogServiceImpl implements CampLogService{
     }
 
     @Override
-    public List<FileVO> getLogFileByLogIdx(String logIdx) {
+    public List<FileVo> getLogFileByLogIdx(String logIdx) {
         return campLogMapper.getLogFileByLogIdx(logIdx);
     }
 
@@ -170,6 +170,7 @@ public class CampLogServiceImpl implements CampLogService{
     public List<ReportVO> getCommentReportCount(List<String> userIdxList) {
         return campLogMapper.getCommentReportCount(userIdxList);
     }
+    
     @Override
     public Map<String, Object> getCamplogList(CampLogListVO campLogListVO) {
         int offset = (campLogListVO.getPage() -1) * campLogListVO.getSize();

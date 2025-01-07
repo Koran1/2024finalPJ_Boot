@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
-import com.ict.finalpj.common.vo.FileVO;
-import com.ict.finalpj.common.vo.FileVO.FileData;
+import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.FileVo.FileData;
 import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.camplog.service.CampLogService;
@@ -120,7 +120,7 @@ public class CampLogController {
                             files[i].transferTo(new File(dir, fileNames[i]));
                         }
 
-                        FileVO fvo = new FileVO();
+                        FileVo fvo = new FileVo();
                         fvo.setFileTableType("1");
                         fvo.setFileTableIdx(dto.getLvo().getLogIdx());
                         List<FileData> dataList = new ArrayList<>();
@@ -255,7 +255,7 @@ public class CampLogController {
             CampLogVO logVO = campLogService.getLogDetailByLogIdx(logIdx);
             List<CampLogContentVO> contentVO = campLogService.getLogContentByLogIdx(logIdx);
             int isUserRemommend = campLogService.isUserRemommend(logIdx, userIdx);
-            List<FileVO> fileVO = campLogService.getLogFileByLogIdx(logIdx);
+            List<FileVo> fileVO = campLogService.getLogFileByLogIdx(logIdx);
             List<TagInfoVO> tagVO = campLogService.getLogTagByLogIdx(logIdx);
             List<DealVO> dealVO = campLogService.getDealList();
             // 신고 추가

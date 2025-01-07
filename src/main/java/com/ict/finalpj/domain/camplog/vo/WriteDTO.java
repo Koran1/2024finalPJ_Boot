@@ -1,7 +1,7 @@
 package com.ict.finalpj.domain.camplog.vo;
 
 
-import com.ict.finalpj.common.vo.FileVO;
+import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -13,5 +13,5 @@ public class WriteDTO {
     private CampLogVO lvo;
     private CampLogContentVO lcvo;
     private TagInfoVO tvo;
-    private FileVO fvo;
+    private FileVo fvo;
 }
