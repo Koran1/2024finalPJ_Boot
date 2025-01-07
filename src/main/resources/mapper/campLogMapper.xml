@@ -178,13 +178,13 @@
 				GROUP_CONCAT(DISTINCT re.userIdx) as reporterUserIds, 
 				re.reportedUserIdx,  
 				re.reportTableIdx, re2.reportCount, 
-            	(select count(*) from pjcamplogrecommend cr where cr.logIdx = cl.logIdx) as totalLikes, 
-            	(select count(*) from pjcamplogcomment cm where cm.logIdx = cl.logIdx and cm.logCommentIsActive = 1) as totalCount, 
+            	(select count(*) from pjlogrecommend cr where cr.logIdx = cl.logIdx) as totalLikes, 
+            	(select count(*) from pjlogcomment cm where cm.logIdx = cl.logIdx and cm.logCommentIsActive = 1) as totalCount, 
             	<!-- ROW_NUMBER() over (partition by cl.logIdx, re.userIdx order by re.reportRegDate desc) as rn  -->
 				ROW_NUMBER() over (partition by cl.logIdx order by cl.logIdx desc) as rn 
-        	from pjcamplog cl 
+        	from pjlog cl 
         	left join pjuser u on cl.userIdx = u.userIdx 
-        	left join pjcamplogcontent cn on cl.logIdx = cn.logIdx 
+        	left join pjlogcontent cn on cl.logIdx = cn.logIdx 
         	left join pjfile f on f.fileTableType = 1 and cl.logIdx = f.fileTableIdx and f.isThumbnail = 1 
         	left join pjcamp c on cl.campIdx = c.campIdx 
         	left join pjreport re on re.reportTableType = 3 and re.reportTableIdx = cl.logIdx 
@@ -222,8 +222,8 @@
 	</select>
 
 	<select id="getCampLogCount" parameterType="CampLogListVO" resultType="int">
-		select count(distinct cl.logIdx) from pjcamplog cl 
-		left join pjcamplogcontent cn on cl.logIdx = cn.logIdx 
+		select count(distinct cl.logIdx) from pjlog cl 
+		left join pjlogcontent cn on cl.logIdx = cn.logIdx 
 		left join pjreport re on re.reportTableType = 3 and re.reportTableIdx = cl.logIdx
 		where cl.logIsActive = 1 
 			and (re.reportStatus != 1 or re.reportStatus is null)

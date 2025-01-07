@@ -9,9 +9,9 @@
 		select 
 			cl.logIdx, cl.logTitle, cl.logRegDate, cl.logUpdateDate, 
 			f.fileIdx, f.fileName, 
-			(select count(*) from pjcamplogcomment cc where cc.logIdx=cl.logIdx and logCommentIsActive = 1) as commentCount, 
+			(select count(*) from pjlogcomment cc where cc.logIdx=cl.logIdx and logCommentIsActive = 1) as commentCount, 
 		u.userIdx 
-		from pjcamplog cl 
+		from pjlog cl 
 		left join pjfile f on cl.logIdx = f.fileTableIdx and f.fileTableType=1 and fileActive = 1
 		left join pjuser u on cl.userIdx = u.userIdx 
 		where cl.userIdx=#{userIdx} and cl.logIsActive = 1 
@@ -20,6 +20,6 @@
 	</select>
 
 	<select id="getMyLogCount" parameterType="MyLogVO" resultType="int">
-		select count(*) from pjcamplog cl where cl.userIdx=#{userIdx}
+		select count(*) from pjlog cl where cl.userIdx=#{userIdx}
 	</select>
 </mapper>

@@ -12,7 +12,7 @@
 
     <!-- 캠핑로그 목록 -->
     <select id="getCampLog" resultType="CampLogVO">
-        SELECT * FROM pjcamplog WHERE campIdx = #{campIdx}
+        SELECT * FROM pjlog WHERE campIdx = #{campIdx}
         <choose>
             <when test="logAlign == 'rec'">
                 ORDER BY logRecommend DESC

@@ -251,9 +251,11 @@ public class CampLogController {
     public DataVO getLogDetail(@RequestParam("logIdx") String logIdx, @RequestParam("userIdx") String userIdx) {
         DataVO dataVO = new DataVO();
         try {
+            log.info("userIdx" + userIdx);
             Map<String, Object> map = new HashMap<>();
             CampLogVO logVO = campLogService.getLogDetailByLogIdx(logIdx);
             List<CampLogContentVO> contentVO = campLogService.getLogContentByLogIdx(logIdx);
+            log.info("contentVO : " + contentVO);
             int isUserRemommend = campLogService.isUserRemommend(logIdx, userIdx);
             List<FileVo> fileVO = campLogService.getLogFileByLogIdx(logIdx);
             List<TagInfoVO> tagVO = campLogService.getLogTagByLogIdx(logIdx);
@@ -280,7 +282,8 @@ public class CampLogController {
             if (dealVO != null) {
                 map.put("dealVO", dealVO);
             }
-            if (tagVO != null) {
+            if (tagVO != null && tagVO.size() > 0) {
+                log.info("'tagVO is not null : '" + tagVO);
                 List<String> tempt1 = new ArrayList<>();
                 for (TagInfoVO k : tagVO) {
                     if (k.getDealIdx() != null) {
@@ -289,6 +292,7 @@ public class CampLogController {
                 }
                 Set<String> tempt2 = new HashSet<>(tempt1);
                 List<String> dealIdxes = new ArrayList<>(tempt2);
+
                 String[] fileNames = campLogService.getFileNamesBydealIdxes(dealIdxes);
 
                 Map<String, String> fNameBydealIdx = new HashMap<>();
@@ -438,31 +442,41 @@ public class CampLogController {
         try {
             // 댓글 리스트 불러오기
             List<CampLogCommentVO> lcvo = campLogService.getCommentList(logIdx);
-            // 댓글 리스트에서 userIdx 만 추출
-            List<String> userIdxList = lcvo.stream()
-                                 .map(CampLogCommentVO::getUserIdx)  // CampLogCommentVO에서 userIdx만 추출
-                                 .distinct()                        // 중복 제거
-                                 .collect(Collectors.toList());
-            // userIdxList를 통해 UserVO 리스트 불러오기
-            List<UserVO> uvo = campLogService.getUserInfoByIdx(userIdxList);
-
-            // userIdxList를 통해 
-            List<ReportVO> rvo = campLogService.getCommentReportCount(userIdxList);
             log.info("lcvo : " + lcvo);
+            if(lcvo == null || lcvo.size() == 0){
+                log.info("lcvo is null");
+                dataVO.setSuccess(false);
+                dataVO.setMessage("댓글 리스트 불러오기 오류 발생");
+                return dataVO;
+            }else{
 
-            // userIdx와 userNickname을 매핑
-            Map<String, String> userNicknameMap = uvo.stream()
+                // 댓글 리스트에서 userIdx 만 추출
+                List<String> userIdxList = lcvo.stream()
+                .map(CampLogCommentVO::getUserIdx)  // CampLogCommentVO에서 userIdx만 추출
+                .distinct()                        // 중복 제거
+                .collect(Collectors.toList());
+                
+                // userIdxList를 통해 UserVO 리스트 불러오기
+                List<UserVO> uvo = campLogService.getUserInfoByIdx(userIdxList);
+                
+                // userIdxList를 통해 
+                List<ReportVO> rvo = campLogService.getCommentReportCount(userIdxList);
+                log.info("lcvo : " + lcvo);
+                
+                // userIdx와 userNickname을 매핑
+                Map<String, String> userNicknameMap = uvo.stream()
                 .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserNickname));
-
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("lcvo", lcvo);
-            resultMap.put("userNicknameMap", userNicknameMap);
-            resultMap.put("rvo", rvo);
-            dataVO.setSuccess(true);
-            dataVO.setMessage("댓글 리스트를 불러옵니다.");
-            dataVO.setData(resultMap);
-            return dataVO;
-        } catch (Exception e) {
+                
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("lcvo", lcvo);
+                resultMap.put("userNicknameMap", userNicknameMap);
+                resultMap.put("rvo", rvo);
+                dataVO.setSuccess(true);
+                dataVO.setMessage("댓글 리스트를 불러옵니다.");
+                dataVO.setData(resultMap);
+                return dataVO;
+                }
+            } catch (Exception e) {
             dataVO.setSuccess(false);
             dataVO.setMessage("댓글 리스트 불러오기 오류 발생");
             e.printStackTrace();
