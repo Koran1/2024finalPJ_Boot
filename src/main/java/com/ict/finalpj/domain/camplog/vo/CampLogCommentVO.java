@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CampLogCommentVO {
-    private String logCommentIdx, logIdx, userIdx, logCommentContent, logCommentRegDate, commentIdx, logCommentIsActive;
+    private String logCommentIdx, logIdx, userIdx, logCommentContent, logCommentRegDate, commentIdx, logCommentIsActive, logCommentIsDelete;
 }

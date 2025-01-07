@@ -18,7 +18,7 @@
         	select viewTableIdx, sum(viewCount) as totalViews from pjviews 
         	where viewTableType = 2 group by viewTableIdx
     	) v on c.campIdx = v.viewTableIdx
-		left outer join pjcamplog l on c.campIdx = l.campIdx 
+		left outer join pjlog l on c.campIdx = l.campIdx 
     	left join (
 			select campIdx, count(userIdx) as totalLikes from pjfavcamp group by campIdx
 		) f on c.campIdx = f.campIdx

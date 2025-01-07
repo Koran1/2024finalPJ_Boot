@@ -12,10 +12,10 @@
 	<insert id="getBookWrite" parameterType="BookVO">
 		insert into pjbook(campIdx, userIdx, bookCheckInDate, bookCheckOutDate, bookSelectedZone, 
         bookAdultCount , bookYouthCount, bookChildCount, bookCarCount, bookTotalPrice, bookUserName,
-        bookUserPhone, bookCar1, bookCar2, bookRequest, orderId)
+        bookUserPhone, bookCar1, bookCar2, bookRequest, orderId, bookRegDate, paymentKey)
 		values(#{campIdx}, 1, #{bookCheckInDate}, #{bookCheckOutDate}, #{bookSelectedZone}, 
         #{bookAdultCount} , #{bookYouthCount}, #{bookChildCount}, #{bookCarCount}, #{bookTotalPrice}, #{bookUserName},
-        #{bookUserPhone}, #{bookCar1}, #{bookCar2}, #{bookRequest}, #{orderId})
+        #{bookUserPhone}, #{bookCar1}, #{bookCar2}, #{bookRequest}, #{orderId}, NOW(), #{paymentKey})
 	</insert>
 
 	<select id="getBookInfo" parameterType="String" resultType="BookVO">
