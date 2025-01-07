@@ -130,11 +130,11 @@ public class BookController {
     }
 
     @PostMapping("write")
-    public DataVO getBookWrite(@RequestBody String orderId) {
+    public DataVO getBookWrite(@ModelAttribute BookVO bvo) {
         DataVO dataVO = new DataVO();
         try {
-            orderId = orderId.trim().replace("\"", "");
-            BookVO bvo = tempStorage.remove(orderId);
+            // orderId = orderId.trim().replace("\"", "");
+            // BookVO bvo = tempStorage.remove(orderId);
 
             // 로그인 여부 확인
             // if(authentication == null){
@@ -148,7 +148,7 @@ public class BookController {
             // bvo.setUserIdx(authentication.getName());
 
             log.info("write2 시작");
-            log.info("받은 orderId : " + orderId);
+            // log.info("받은 orderId : " + orderId);
             log.info("tempStorage : " + tempStorage);
             log.info("campIdx : " + bvo.getCampIdx());
             log.info("getBookCheckInDate : " + bvo.getBookCheckInDate());

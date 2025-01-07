@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class BookVO {
     private String bookIdx, campIdx, userIdx, bookCheckInDate, bookCheckOutDate, bookSelectedZone, 
         bookAdultCount , bookYouthCount, bookChildCount, bookCarCount, bookTotalPrice, bookUserName,
-        bookUserPhone, bookCar1, bookCar2, bookRequest, orderId, bookRegDate, planIdx;
+        bookUserPhone, bookCar1, bookCar2, bookRequest, orderId, bookRegDate, paymentKey, planIdx;
 }

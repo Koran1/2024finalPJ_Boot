@@ -162,7 +162,7 @@ public class CampLogController {
     }
 
     @GetMapping("/linkmodal/{userIdx}")
-    public DataVO openLinkModal(@PathVariable String userIdx) {
+    public DataVO openLinkModal(@PathVariable("userIdx") String userIdx) {
         DataVO dataVO = new DataVO();
         try {
             List<DealVO> result = campLogService.getDealListByuserIdx(userIdx);
