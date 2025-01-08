@@ -99,12 +99,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     
 
                     redirectUrl = String.format(
-                        "http://localhost:3000/user/login?token=%s&userIdx=%s&nickname=%s&userEtc01=%s",
+                        "http://localhost:3000/user/login?token=%s&userIdx=%s&nickname=%s",
                         URLEncoder.encode(token, StandardCharsets.UTF_8),
                         URLEncoder.encode(userIdx, StandardCharsets.UTF_8),
-                        URLEncoder.encode(uvo.getUserNickname(), StandardCharsets.UTF_8),
-                        URLEncoder.encode(uvo.getUserEtc01(), StandardCharsets.UTF_8)
+                        URLEncoder.encode(uvo.getUserNickname(), StandardCharsets.UTF_8)
                     );
+                    if(uvo.getUserEtc01() != null){
+                        redirectUrl = String.format(
+                        "%s&userEtc01=%s",
+                        URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8),
+                        URLEncoder.encode(uvo.getUserEtc01(), StandardCharsets.UTF_8));
+                    }
 
                     // 로그인 기록 
                     userMapper.updateConnRegByIdx(userIdx);
