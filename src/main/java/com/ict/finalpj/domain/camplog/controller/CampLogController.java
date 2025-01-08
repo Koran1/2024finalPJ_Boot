@@ -50,11 +50,11 @@ public class CampLogController {
     @Autowired
     CampLogService campLogService;
 
-     public DataVO tagMethod(TagInfoVO tvo, WriteDTO dto) {
+    public DataVO tagMethod(TagInfoVO tvo, WriteDTO dto) {
         DataVO dataVO = new DataVO();
         tvo.setLogIdx(dto.getLvo().getLogIdx());
         tvo.setUserIdx(dto.getUvo().getUserIdx());
-        
+
         List<TagData> tagList = new ArrayList<>();
         for (TagData k : dto.getTvo().getTagData()) {
             TagData tag = new TagData();
@@ -80,7 +80,7 @@ public class CampLogController {
         }
     }
 
-     @GetMapping("/list")
+    @GetMapping("/list")
     public DataVO getCamplogList(CampLogListVO campLogListVO) {
         DataVO dataVO = new DataVO();
         try {
@@ -96,7 +96,7 @@ public class CampLogController {
         }
         return dataVO;
     }
-    
+
     @PostMapping("/write")
     public DataVO getWriteCampLog(@RequestPart(value = "WriteData") WriteDTO dto,
             @RequestPart(value = "mpFiles", required = false) MultipartFile[] mpFiles) {
@@ -283,7 +283,7 @@ public class CampLogController {
                 dataVO.setSuccess(false);
                 dataVO.setMessage("거래 중인 상품이 없습니다.");
                 return dataVO;
-                
+
             }
             List<String> dealIdxes = new ArrayList<>();
             Map<String, String> map = new HashMap<>();
@@ -360,7 +360,8 @@ public class CampLogController {
     }
 
     @GetMapping("/detail")
-    public DataVO getLogDetail(@RequestParam("logIdx") String logIdx, @RequestParam(value = "userIdx",  required = false) String userIdx) {
+    public DataVO getLogDetail(@RequestParam("logIdx") String logIdx,
+            @RequestParam(value = "userIdx", required = false) String userIdx) {
         DataVO dataVO = new DataVO();
         log.info("도착----------------------");
         try {
@@ -373,15 +374,19 @@ public class CampLogController {
             List<DealVO> dealVO = campLogService.getDealList();
             int RecommendCount = campLogService.countLogRecommend(logIdx);
             map.put("RecommendCount", RecommendCount);
-            
+            // 신고 추가
+            List<ReportVO> rvo = campLogService.getLogReportCount(logIdx);
+            log.info("data.data.rvo.reportCount" + rvo);
+            map.put("rvo", rvo);
+
             if (userIdx != null) {
                 int isUserRemommend = campLogService.isUserRemommend(logIdx, userIdx);
                 if (isUserRemommend > 0) {
                     map.put("doRecommend", true);
                 } else {
                     map.put("doRecommend", false);
-                } 
-            }else {
+                }
+            } else {
                 map.put("doRecommend", false);
             }
 
@@ -624,7 +629,6 @@ public class CampLogController {
         return dataVO;
     }
 
-    
     // *댓글*
     // 댓글 리스트 불러오기
     @GetMapping("commentList")
@@ -635,30 +639,30 @@ public class CampLogController {
             // 댓글 리스트 불러오기
             List<CampLogCommentVO> lcvo = campLogService.getCommentList(logIdx);
             log.info("lcvo : " + lcvo);
-            if(lcvo == null || lcvo.size() == 0){
+            if (lcvo == null || lcvo.size() == 0) {
                 log.info("lcvo is null");
                 dataVO.setSuccess(false);
                 dataVO.setMessage("댓글 리스트 불러오기 오류 발생");
                 return dataVO;
-            }else{
+            } else {
 
                 // 댓글 리스트에서 userIdx 만 추출
                 List<String> userIdxList = lcvo.stream()
-                .map(CampLogCommentVO::getUserIdx)  // CampLogCommentVO에서 userIdx만 추출
-                .distinct()                        // 중복 제거
-                .collect(Collectors.toList());
-                
+                        .map(CampLogCommentVO::getUserIdx) // CampLogCommentVO에서 userIdx만 추출
+                        .distinct() // 중복 제거
+                        .collect(Collectors.toList());
+
                 // userIdxList를 통해 UserVO 리스트 불러오기
                 List<UserVO> uvo = campLogService.getUserInfoByIdx(userIdxList);
-                
+
                 // userIdxList를 통해 신고 테이블에서 작성된 댓글의 userIdx와 비교해 존재하는 댓글들의 신고 횟수 가져오기
                 List<ReportVO> rvo = campLogService.getCommentReportCount(userIdxList);
                 log.info("lcvo : " + lcvo);
-                
+
                 // userIdx와 userNickname을 매핑
                 Map<String, String> userNicknameMap = uvo.stream()
-                .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserNickname));
-                
+                        .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserNickname));
+
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("lcvo", lcvo);
                 resultMap.put("userNicknameMap", userNicknameMap);
@@ -667,8 +671,8 @@ public class CampLogController {
                 dataVO.setMessage("댓글 리스트를 불러옵니다.");
                 dataVO.setData(resultMap);
                 return dataVO;
-                }
-            } catch (Exception e) {
+            }
+        } catch (Exception e) {
             dataVO.setSuccess(false);
             dataVO.setMessage("댓글 리스트 불러오기 오류 발생");
             e.printStackTrace();
@@ -682,12 +686,12 @@ public class CampLogController {
         DataVO dataVO = new DataVO();
         try {
             int result = campLogService.getCommentWrite(lcvo);
-            if(result > 0){
+            if (result > 0) {
                 dataVO.setSuccess(true);
 
-                if(lcvo.getCommentIdx() != null){
+                if (lcvo.getCommentIdx() != null) {
                     dataVO.setMessage("댓글 저장 완료");
-                }else{
+                } else {
                     dataVO.setMessage("답글 저장 완료");
                 }
             }
@@ -696,7 +700,7 @@ public class CampLogController {
             dataVO.setMessage("댓/답글 저장 오류");
             e.printStackTrace();
         }
-        return dataVO;   
+        return dataVO;
     }
 
     // 댓글 삭제
@@ -707,12 +711,12 @@ public class CampLogController {
             String logCommentIdx = lcvo.getLogCommentIdx();
             int result = campLogService.getCommentDelete(logCommentIdx);
 
-            if(result > 0){
+            if (result > 0) {
                 dataVO.setSuccess(true);
 
-                if(lcvo.getCommentIdx() != null){
+                if (lcvo.getCommentIdx() != null) {
                     dataVO.setMessage("댓글 삭제 완료");
-                }else{
+                } else {
                     dataVO.setMessage("답글 삭제 완료");
                 }
             }
@@ -732,7 +736,7 @@ public class CampLogController {
             log.info("rvo : " + rvo);
             int result = campLogService.getCommentReport(rvo);
 
-            if(result > 0){
+            if (result > 0) {
                 dataVO.setSuccess(true);
                 dataVO.setMessage("댓글 신고 완료");
             }
