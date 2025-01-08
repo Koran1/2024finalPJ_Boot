@@ -362,6 +362,7 @@ public class CampLogController {
     @GetMapping("/detail")
     public DataVO getLogDetail(@RequestParam("logIdx") String logIdx, @RequestParam(value = "userIdx",  required = false) String userIdx) {
         DataVO dataVO = new DataVO();
+        log.info("도착----------------------");
         try {
             Map<String, Object> map = new HashMap<>();
             CampLogVO logVO = campLogService.getLogDetailByLogIdx(logIdx);
