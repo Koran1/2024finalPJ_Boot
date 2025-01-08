@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalpj.domain.weather.mapper.WthrMapper">
+	<select id="getRegInfo" parameterType="String" resultType="RegionVO">
+		select * from regioninfo where region = #{region}
+	</select>
+	
+	<delete id="deleteWthrInfo">
+		delete from pjweather
+	</delete>
+	
+	<insert id="insertWthrInfo" parameterType="WthrVO">
+	 	insert into pjweather (wthrDate, wthrTMin, wthrTMax, wthrSKY_PTY, wthrPOP, region)
+	 	values (#{wthrDate}, #{wthrTMin}, #{wthrTMax}, #{wthrSKY_PTY}, #{wthrPOP}, #{region})
+	</insert>
+	
+	<select id="getWthrInfo" parameterType="String" resultType="WthrVO">
+		select * from pjweather where region = #{region} ORDER BY wthrDate asc 
+	</select>
+
+	<update id="insertMoonSunInfo" parameterType="WthrVO">
+	 	update pjweather set wthrSunrise = #{wthrSunrise}, wthrSunset = #{wthrSunset}, 
+		wthrMoonrise = #{wthrMoonrise}, wthrMoonset = #{wthrMoonset} where wthrDate = #{wthrDate}
+	</update>
+
+	<update id="insertLunAgeInfo" parameterType="WthrVO">
+	 	update pjweather set wthrLunAge = #{wthrLunAge} where wthrDate = #{wthrDate}
+	</update>
+
+</mapper>
