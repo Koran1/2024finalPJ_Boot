@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.book.service.BookService;
 import com.ict.finalpj.domain.book.vo.BookVO;
 
@@ -17,8 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import java.util.concurrent.ConcurrentHashMap;
 
 // 토스 서버(API)에 저장하는 컨트롤러인데 next.js에서 처리해서 필요없음(미사용 컨트롤러)
 @Slf4j
@@ -32,14 +32,16 @@ public class PaymentsController {
     @Value("${toss.secretKey}")
     private String tossSecretKey;
 
+    // 토스 API successUrl
     @PostMapping("/success")
-    public ResponseEntity<String> handlePaymentSuccess(@RequestBody Map<String, Object> paymentData) {
-        String orderId = (String) paymentData.get("orderId");
+    public ResponseEntity<String> handlePaymentSuccess(@RequestBody Map<String, Object> paymentData, @RequestParam String orderId) {
+        // String orderId = (String) paymentData.get("orderId");
+        if(orderId != (String) paymentData.get("orderId")) {
+            System.out.println("주문 번호 검증 실패: ");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("주문 번호 검증 실패");
+        }
         String paymentKey = (String) paymentData.get("paymentKey");
         String amount = (String) paymentData.get("amount");
-
-        BookVO bvo = new BookVO();
-        bvo.setBookTotalPrice(amount);
 
         // 결제 검증 API 호출
         String tossUrl = "https://api.tosspayments.com/v1/payments/confirm";
@@ -64,13 +66,68 @@ public class PaymentsController {
         if (tossResponse.getStatusCode() == HttpStatus.OK) {
             System.out.println("결제 검증 성공: " + tossResponse.getBody());
 
-            // TODO: DB에 결제 성공 기록 저장
+            // DB에 예약 정보 저장
+            orderId = orderId.trim().replace("\"", "");
+            BookVO bvo = tempStorage.remove(orderId);
+            bvo.setPaymentKey(paymentKey);
+
+            log.info("success 시작");
+            log.info("받은 orderId : " + orderId);
+            log.info("tempStorage : " + tempStorage);
+            log.info("campIdx : " + bvo.getCampIdx());
+            log.info("userIdx : " + bvo.getUserIdx());
+            log.info("getBookCheckInDate : " + bvo.getBookCheckInDate());
+            log.info("getBookCheckOutDate : " + bvo.getBookCheckOutDate());
+            log.info("getBookAdultCount : " + bvo.getBookAdultCount());
+            log.info("getBookYouthCount : " + bvo.getBookYouthCount());
+            log.info("getBookChildCount : " + bvo.getBookChildCount());
+            log.info("getBookCarCount : " + bvo.getBookCarCount());
+            log.info("getBookTotalPrice : " + bvo.getBookTotalPrice());
+            log.info("getBookUserName : " + bvo.getBookUserName());
+            log.info("getBookUserPhone : " + bvo.getBookUserPhone());
+            log.info("getBookCar1 : " + bvo.getBookCar1());
+            log.info("getBookCar2 : " + bvo.getBookCar2());
+            log.info("getBookRequest : " + bvo.getBookRequest());
+            log.info("getOrderId : " + bvo.getOrderId());
+            log.info("getPaymentKey : " + bvo.getPaymentKey());
+            log.info("success 끝");
+
+            // 토스 결제 완료 시 DB에 저장
             int result = bookService.getBookWrite(bvo);
-            return ResponseEntity.ok("결제 성공 처리 완료");
+            if(result == 0){
+                System.out.println("예약 실패");
+                return ResponseEntity.ok("예약 실패");
+            }else{
+                System.out.println("예약 성공");
+                return ResponseEntity.ok("예약 성공");
+            }
         } else {
             System.out.println("결제 검증 실패: " + tossResponse.getBody());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("결제 검증 실패");
         }
     }
     
+
+    // 임시 데이터 저장소 (Thread-safe) 서버 종료될 때까지 살아있음
+    private ConcurrentHashMap<String, BookVO> tempStorage = new ConcurrentHashMap<>();
+
+    @PostMapping("saveData")
+    public DataVO temporarySaveData(@ModelAttribute BookVO bvo) {
+        DataVO dataVO = new DataVO();
+
+        try {
+            tempStorage.put(bvo.getOrderId(), bvo); // 데이터 임시 저장
+            log.info("saveData 시작");
+            log.info("tempStorage : " + tempStorage);
+            log.info("saveData 끝");
+
+            dataVO.setSuccess(true);
+            dataVO.setMessage("임시 저장 성공");
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("임시 저장 실패");
+        }
+        return dataVO;
+    }
+
 }

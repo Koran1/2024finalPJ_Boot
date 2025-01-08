@@ -5,9 +5,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.domain.book.service.BookService;
@@ -18,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.ict.finalpj.domain.book.vo.BookVO;
 
@@ -29,6 +35,9 @@ import com.ict.finalpj.domain.book.vo.BookVO;
 public class BookController {
     @Autowired
     private BookService bookService;
+
+    @Value("${toss.secretKey}")
+    private String tossSecretKey;
 
     // 캠핑장 정보 페이지에서 예약하기 버튼 클릭 시 예약 페이지로 이동
     @GetMapping("/goBookPage")
@@ -54,7 +63,7 @@ public class BookController {
         }
         return dataVO;
     }
-
+    
     // 예약 상세 보기
     @GetMapping("/detail")
     public DataVO getBookDetail(@RequestParam("bookIdx") String bookIdx) {
@@ -86,26 +95,58 @@ public class BookController {
     // 예약 취소
     @GetMapping("/cancel")
     public DataVO getBookCancel(@RequestParam("bookIdx") String bookIdx) {
-        log.info(bookIdx);
         DataVO dataVO = new DataVO();
-        try {
-            int result = bookService.getBookCancel(bookIdx);
+        log.info("bookIdx : " + bookIdx);
+        // 토스 서버에 보내기
+        BookVO bvo = bookService.getBookInfo(bookIdx);
+        String paymentKey = bvo.getPaymentKey();
+        String cancelReason = "구매자가 취소를 원함";
+        // 결제 검증 API 호출(결제 키로 해당 결제 내역 호출)
+        String tossUrl = "https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel";
+        
+        // 토스 API 요청 데이터 설정 (const data = new FormData();)
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("cancelReason", cancelReason);
+        
+        // HTTP 요청 헤더 설정 (headers: {})
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        // --header 'Authorization: Basic dGVzdF9za19leDZCSkdRT1ZEeGswNzkxV2trSlZXNHcyek5iOg==' \
+        headers.setBasicAuth(tossSecretKey, "");
 
-            if(result > 0){
-                dataVO.setSuccess(true);
-                dataVO.setMessage("예약을 취소 합니다.");
-                return dataVO;
-            }else{
+        // HTTP 요청 생성 (await axios.post(API_URL, data, headers:{}))
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestData, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> tossResponse = restTemplate.postForEntity(tossUrl, requestEntity, Map.class);
+
+        if(tossResponse.getStatusCode() == HttpStatus.OK){
+            log.info("예약 결제 취소 성공");
+            // 결제 취소 DB
+            try {
+                int result = bookService.getBookCancel(bookIdx);
+    
+                if(result > 0){
+                    dataVO.setSuccess(true);
+                    dataVO.setMessage("예약을 취소 합니다.");
+                    return dataVO;
+                }else{
+                    dataVO.setSuccess(false);
+                    dataVO.setMessage("예약 취소 실패");
+                    return dataVO;
+                }
+            } catch (Exception e) {
                 dataVO.setSuccess(false);
-                dataVO.setMessage("예약 취소 실패");
+                dataVO.setMessage("예약 취소 오류 발생");
+                e.printStackTrace();
                 return dataVO;
             }
-        } catch (Exception e) {
+        } else{
+            log.info("예약 결제 취소 실패");
             dataVO.setSuccess(false);
-            dataVO.setMessage("예약 취소 오류 발생");
-            e.printStackTrace();
+            dataVO.setMessage("예약 취소 실패");
+            return dataVO;
         }
-        return dataVO;
     }
 
     // 임시 데이터 저장소 (Thread-safe) 서버 종료될 때까지 살아있음
@@ -131,27 +172,19 @@ public class BookController {
     }
 
     @PostMapping("write")
-    public DataVO getBookWrite(@ModelAttribute BookVO bvo) {
+    // public DataVO getBookWrite(@ModelAttribute BookVO bvo) {
+    public DataVO getBookWrite(@RequestParam("orderId") String orderId, @RequestParam("paymentKey") String paymentKey) {
         DataVO dataVO = new DataVO();
         try {
-            // orderId = orderId.trim().replace("\"", "");
-            // BookVO bvo = tempStorage.remove(orderId);
+            orderId = orderId.trim().replace("\"", "");
+            BookVO bvo = tempStorage.remove(orderId);
+            bvo.setPaymentKey(paymentKey);
 
-            // 로그인 여부 확인
-            // if(authentication == null){
-            //     dataVO.setSuccess(false);
-            //     dataVO.setMessage("로그인이 필요합니다.");
-            //     return dataVO;
-            // }
-
-            // 로그인한 사람의 id 추출
-            // log.info(authentication.getName());
-            // bvo.setUserIdx(authentication.getName());
-
-            log.info("write2 시작");
-            // log.info("받은 orderId : " + orderId);
+            log.info("write 시작");
+            log.info("받은 orderId : " + orderId);
             log.info("tempStorage : " + tempStorage);
             log.info("campIdx : " + bvo.getCampIdx());
+            log.info("userIdx : " + bvo.getUserIdx());
             log.info("getBookCheckInDate : " + bvo.getBookCheckInDate());
             log.info("getBookCheckOutDate : " + bvo.getBookCheckOutDate());
             log.info("getBookAdultCount : " + bvo.getBookAdultCount());
@@ -165,20 +198,20 @@ public class BookController {
             log.info("getBookCar2 : " + bvo.getBookCar2());
             log.info("getBookRequest : " + bvo.getBookRequest());
             log.info("getOrderId : " + bvo.getOrderId());
-            log.info("write2 끝");
+            log.info("getPaymentKey : " + bvo.getPaymentKey());
+            log.info("write 끝");
 
-            // 토스 결제 완료 시 DB에 저장
-            if(bvo.getBookTotalPrice() == null){
+            // 결제 키가 없으면 결제 실패
+            if(bvo.getPaymentKey() == null){
                 log.info("is null");
                 dataVO.setSuccess(false);
                 dataVO.setMessage("결제가 완료되지 않았습니다.");
                 return dataVO;
             }
-
+            // 토스 결제 완료 시 DB에 저장
             dataVO.setMessage("결제가 완료되었습니다.");
-            // DB에 저장
             int result = bookService.getBookWrite(bvo);
-            log.info("result" + result);
+            log.info("DB저장 성공" + result);
             if(result == 0){
                 dataVO.setSuccess(false);
                 dataVO.setMessage("예약 실패");

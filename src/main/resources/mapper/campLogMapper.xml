@@ -188,7 +188,7 @@
     <!-- 댓글 등록 -->
     <insert id="getCommentWrite" parameterType="CampLogCommentVO">
         insert into pjlogComment (logIdx, userIdx, logCommentContent, logCommentRegDate, commentIdx)
-        values (#{logIdx}, 3, #{logCommentContent}, NOW(), #{commentIdx});
+        values (#{logIdx}, #{userIdx}, #{logCommentContent}, NOW(), #{commentIdx});
     </insert>
 
     <!-- 댓글 삭제(업데이트) -->
@@ -201,7 +201,7 @@
     <!-- 댓글 신고 등록 -->
     <insert id="getCommentReport" parameterType="ReportVO">
         insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
-        values (3, #{reportCategory}, 4, #{reportTableIdx}, #{reportContent}, NOW());
+        values (#{userIdx}, #{reportCategory}, 4, #{reportTableIdx}, #{reportContent}, NOW());
     </insert>
 
     <!-- 댓글에 저장된 userIdx로 유저 닉네임 가져오기 -->
