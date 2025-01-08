@@ -31,12 +31,20 @@ public interface CampLogService {
     List<TagInfoVO> getLogTagByLogIdx(String logIdx);
     List<DealVO> getDealList();
     UserVO getUserDataByUserIdx(String userIdx);
-    String[] getFileNamesBydealIdxes(List<String> dealIdxes);
     int toogleOff(Map<String, String> map);
     int toogleOn(Map<String, String> map);
     int getLogActiveZero(String logIdx);
+    int countLogRecommend(String logIdx);
+    String getFacltNmByCampIdx(String campIdx);
+    int updateToPjcamplog(CampLogVO lvo);
+    int deleteLogContentByLogIdx(String logIdx);
+    int deleteOldFile(FileVo fvo);
+    int deleteTagByLogIdx(String logIdx);
     public int getLogReport(ReportVO logIdx); // 로그 글 신고
     public List<ReportVO> getLogReportCount(String logIdx); // 로그 글 신고 횟수
+
+    // 캠프로그 리스트 
+    Map<String, Object> getCamplogList(CampLogListVO campLogListVO);
 
     // *댓글*
     public List<CampLogCommentVO> getCommentList(String logIdx);
@@ -45,5 +53,4 @@ public interface CampLogService {
     public int getCommentReport(ReportVO logCommentIdx);
     public List<UserVO> getUserInfoByIdx(List<String> userIdxList);
     public List<ReportVO> getCommentReportCount(List<String> userIdxList);
-    Map<String, Object> getCamplogList(CampLogListVO campLogListVO);
 }

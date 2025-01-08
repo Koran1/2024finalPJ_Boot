@@ -9,27 +9,15 @@
         select * from pjdeal where dealSellerUserIdx = #{userIdx}
     </select>
     <select id="getFileNamesByDealIdxes"  resultType="String" parameterType="List">
-        select fileName from pjfile where  fileTableType = 2 
-        <!-- and fileTableIdx In -->
-        <if test="list != null and list.size() > 0">
-            and fileTableIdx In
-            
-            <foreach collection="list" item="dealIdx" open="(" close=")" separator=",">
+        select fileName from pjfile where  fileTableType = 2 and  fileTableIdx In        
+            <foreach collection="dealIdxes" item="dealIdx" open="(" close=")" separator=",">
                 #{dealIdx}
             </foreach>
-        </if>
-            <!-- order by field(fileTableIdx, 
-            <foreach collection="list" item="dealIdx" separator=",">
+            order by field(fileTableIdx, 
+            <foreach collection="dealIdxes" item="dealIdx" separator=",">
                  #{dealIdx}
             </foreach>
-            ) -->
-            <if test="list != null and list.size() > 0">
-                order by field(fileTableIdx, 
-                <foreach collection="list" item="dealIdx" separator=",">
-                    #{dealIdx}
-                </foreach>
-                )
-            </if>
+            )
     </select>
     <select id="getFileNamesByDealIdx" parameterType="String" resultType="String" >
         select fileName from pjfile where fileTableType = 2 and fileOrder = 0 and fileTableIdx = #{dealIdx}
@@ -37,7 +25,7 @@
     <select id="getCampListAll"  resultType="CampVO">
         select * from pjcamp order by campIdx
     </select>
-    <insert id="insertToPjcamplog" parameterType="CampLogVO">
+    <insert id="insertToPjcamplog" parameterType="CampLogVO" useGeneratedKeys="true" keyProperty="logIdx">
         insert into pjlog(userIdx, campIdx, logTitle, logRegDate) values(#{userIdx}, #{campIdx}, #{logTitle}, now())
     </insert>
     <insert id="insertToPjlogcontent" parameterType="CampLogContentVO">
@@ -46,7 +34,7 @@
             (#{logIdx}, #{content.logContent}, #{content.logContentOrder})
         </foreach>
     </insert>
-    <insert id="insertToPjfile" parameterType="FileVo">
+    <insert id="insertToPjfile" parameterType="FileVO">
         insert into pjfile (fileTableType, fileTableIdx, fileName, fileCreated, fileOrder, isThumbnail) values
         <foreach  collection="fileData" item="data" separator=",">
             (1,  #{fileTableIdx}, #{data.fileName}, now(), #{data.fileOrder}, #{data.isThumbnail})
@@ -55,7 +43,7 @@
     <insert id="insertToPjtaginfo" parameterType="TaginfoVO">
         insert into pjtaginfo (logIdx, fieldIdx, tagContent, tagX, tagY, dealIdx, tagId, userIdx) values
         <foreach  collection="tagData" item="data" separator=",">
-            (#{logIdx},  #{data.fieldIdx}, #{data.tagContent}, #{data.tagX}, #{data.tagY}, #{data.dealIdx}, #{data.tagId}, #{userIdx})
+            (#{logIdx}, #{data.fieldIdx}, #{data.tagContent}, #{data.tagX}, #{data.tagY}, #{data.dealIdx}, #{data.tagId}, #{userIdx})
         </foreach>
     </insert>
     <select id="getLogDetailByLogIdx"  resultType="CampLogVO" parameterType="String">
@@ -67,8 +55,8 @@
     <select id="isUserRemommend"  resultType="int" parameterType="map">
         select count(*) from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
     </select>
-    <select id="getLogFileByLogIdx"  resultType="FileVo" parameterType="String">
-        select * from pjfile where fileTableType = 2 and fileTableIdx = #{logIdx}
+    <select id="getLogFileByLogIdx"  resultType="FileVO" parameterType="String">
+        select * from pjfile where fileTableType = 1 and fileTableIdx = #{logIdx}
     </select>
     <select id="getLogTagByLogIdx"  resultType="TaginfoVO" parameterType="String">
         select * from pjtaginfo where logIdx = #{logIdx}
@@ -78,30 +66,6 @@
     </select>
     <select id="getUserDataByUserIdx"  resultType="UserVO" parameterType="String">
         select * from pjuser where userIdx = #{userIdx}
-    </select>
-    <select id="getFileNamesBydealIdxes"  resultType="String" parameterType="List">
-        select fileName from pjfile where fileTableType = 1 
-        <!-- and fileTableIdx In -->
-        <if test="list != null and list.size() > 0">
-            and fileTableIdx In
-
-        <foreach collection="list" item="dealIdx"  open="(" close=")" separator=",">
-            #{dealIdx}
-        </foreach>
-
-        </if>
-         <!-- order by field(fileTableIdx, 
-            <foreach collection="list" item="dealIdx" separator=",">
-                 #{dealIdx}
-            </foreach>
-            ) -->
-        <if test="list != null and list.size() > 0">
-            order by field(fileTableIdx, 
-            <foreach collection="list" item="dealIdx" separator=",">
-                #{dealIdx}
-            </foreach>
-            )
-        </if>
     </select>
     <delete id="toogleOff"   parameterType="map">
         delete from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
@@ -115,59 +79,24 @@
     <select id="countLogRecommend" parameterType="String" >
         select count(*) from pjlogrecommend where logIdx = #{logIdx}
     </select>
-    <!-- 로그(후기)글 신고 등록 -->
-    <insert id="getLogReport" parameterType="ReportVO">
-        insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
-        values (3, #{reportCategory}, 3, #{reportTableIdx}, #{reportContent}, NOW());
-    </insert>
-    <!-- 로그(후기)글 신고 횟수 가져오기 -->
-    <select id="getLogReportCount" parameterType="ReportVO" resultType="ReportVO">
-        SELECT COUNT(*) AS reportCount
-        FROM pjreport
-        WHERE reportTableType = 3 and reportTableIdx = #{reportTableIdx};
+    <select id="getFacltNmByCampIdx" parameterType="String" resultType="String" >
+        select facltNm from pjcamp where campIdx = #{campIdx}
     </select>
-
-    <!-- 댓글 -->
-    <!-- 댓글 리스트 가져오기 -->
-    <select id="getCommentList" parameterType="String" resultType="CampLogCommentVO">
-        select * from pjlogComment where logIdx = #{logIdx}
-    </select>
-
-    <!-- 댓글 등록 -->
-    <insert id="getCommentWrite" parameterType="CampLogCommentVO">
-        insert into pjlogComment (logIdx, userIdx, logCommentContent, logCommentRegDate, commentIdx)
-        values (#{logIdx}, 3, #{logCommentContent}, NOW(), #{commentIdx});
-    </insert>
-
-    <!-- 댓글 삭제(업데이트) -->
-    <update id="getCommentDelete" parameterType="String">
-        update pjlogComment
-        set logCommentIsDelete = 1
-        where logCommentIdx = #{logCommentIdx}
+    <update id="updateToPjcamplog" parameterType="CampLogVO">
+        update pjlog set campIdx = #{campIdx},  logTitle = #{logTitle}  where logIdx = #{logIdx}
     </update>
-
-    <!-- 댓글 신고 등록 -->
-    <insert id="getCommentReport" parameterType="ReportVO">
-        insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
-        values (3, #{reportCategory}, 4, #{reportTableIdx}, #{reportContent}, NOW());
-    </insert>
-
-    <!-- 댓글에 저장된 userIdx로 유저 닉네임 가져오기 -->
-    <select id="getUserInfoByIdx" parameterType="list" resultType="UserVO">
-        select * from pjuser where userIdx in
-        <foreach item = "userIdx" collection = "list" open = "(" separator = "," close = ")">
-            #{userIdx}
+    <delete id="deleteLogContentByLogIdx" parameterType="String">
+        delete from pjlogcontent where logIdx = #{logIdx}
+    </delete>
+    <delete id="deleteTagByLogIdx" parameterType="String">
+        delete from pjtaginfo where logIdx = #{logIdx}
+    </delete>
+    <delete id="deleteOrders" parameterType="FileVO">
+        delete from pjfile where fileTableType = 1 and fileTableType = #{fileTableIdx} and fileOrder In 
+        <foreach collection="deleteOrders" item="deleteOrder"  open="(" close=")" separator=",">
+            #{deleteOrder}
         </foreach>
-    </select>
-
-    <!-- 로그 댓글 신고 횟수 가져오기 -->
-    <select id="getCommentReportCount" parameterType="ReportVO" resultType="ReportVO">
-        SELECT reportTableIdx, reportStatus, userIdx, COUNT(*) AS reportCount
-        FROM pjreport
-        WHERE reportTableType = 4
-        GROUP BY reportTableIdx, reportStatus, userIdx
-        ORDER BY reportTableIdx ASC;
-    </select>
+    </delete>
     <select id="getCamplogList" parameterType="CampLogListVO" resultType="CampLogListVO">
     select * from 
 		(
@@ -238,4 +167,57 @@
 					and cn.logContent like concat('%', #{keyword}, '%')
 				</if>
 	</select>
+    <!-- 로그(후기)글 신고 등록 -->
+    <insert id="getLogReport" parameterType="ReportVO">
+        insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
+        values (3, #{reportCategory}, 3, #{reportTableIdx}, #{reportContent}, NOW());
+    </insert>
+    <!-- 로그(후기)글 신고 횟수 가져오기 -->
+    <select id="getLogReportCount" parameterType="ReportVO" resultType="ReportVO">
+        SELECT COUNT(*) AS reportCount
+        FROM pjreport
+        WHERE reportTableType = 3 and reportTableIdx = #{reportTableIdx};
+    </select>
+
+    <!-- 댓글 -->
+    <!-- 댓글 리스트 가져오기 -->
+    <select id="getCommentList" parameterType="String" resultType="CampLogCommentVO">
+        select * from pjlogComment where logIdx = #{logIdx}
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="getCommentWrite" parameterType="CampLogCommentVO">
+        insert into pjlogComment (logIdx, userIdx, logCommentContent, logCommentRegDate, commentIdx)
+        values (#{logIdx}, 3, #{logCommentContent}, NOW(), #{commentIdx});
+    </insert>
+
+    <!-- 댓글 삭제(업데이트) -->
+    <update id="getCommentDelete" parameterType="String">
+        update pjlogComment
+        set logCommentIsDelete = 1
+        where logCommentIdx = #{logCommentIdx}
+    </update>
+
+    <!-- 댓글 신고 등록 -->
+    <insert id="getCommentReport" parameterType="ReportVO">
+        insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
+        values (3, #{reportCategory}, 4, #{reportTableIdx}, #{reportContent}, NOW());
+    </insert>
+
+    <!-- 댓글에 저장된 userIdx로 유저 닉네임 가져오기 -->
+    <select id="getUserInfoByIdx" parameterType="list" resultType="UserVO">
+        select * from pjuser where userIdx in
+        <foreach item = "userIdx" collection = "list" open = "(" separator = "," close = ")">
+            #{userIdx}
+        </foreach>
+    </select>
+
+    <!-- 로그 댓글 신고 횟수 가져오기 -->
+    <select id="getCommentReportCount" parameterType="ReportVO" resultType="ReportVO">
+        SELECT reportTableIdx, reportStatus, userIdx, COUNT(*) AS reportCount
+        FROM pjreport
+        WHERE reportTableType = 4
+        GROUP BY reportTableIdx, reportStatus, userIdx
+        ORDER BY reportTableIdx ASC;
+    </select>
 </mapper>

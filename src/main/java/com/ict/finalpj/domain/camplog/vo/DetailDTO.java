@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class DetailDTO {
     private int order;
-    private String  logContent, fileName;
+    private String  logContent, fileName, isTumbnail;
     private List<DetailTagData> tagData;
 
     @Data

@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FileVo {
   private String fileIdx, fileTableType, fileTableIdx, fileName, fileUpdated, fileCreated, fileActive, isThumbnail;
-
   private int fileOrder;
+  private String[] deleteOrders;
   private MultipartFile multipartFile; 
   private String dealIdx;
 
