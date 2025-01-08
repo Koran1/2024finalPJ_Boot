@@ -20,7 +20,7 @@
 
     <select id="chkByUserIdx" parameterType="map" resultType="ChatRoomVO" >
         SELECT chatroom FROM pjchatroom 
-        WHERE userIdx in (#{userIdx}, #{sellerIdx}) and dealIdx = #{dealIdx}
+        WHERE userIdx in (#{userIdx}, #{sellerIdx}) and dealIdx = #{dealIdx} 
         group by chatRoom HAVING COUNT(DISTINCT userIdx) = 2
     </select>
 
@@ -39,11 +39,11 @@
                 select chatRoom, count(*) AS unReadCount 
                 from pjchat where chatTime > (
                     select lastRead from pjchatroom 
-                    where userIdx = #{userIdx} and pjchatroom.chatRoom = pjchat.chatRoom
+                    where userIdx = #{userIdx} and pjchatroom.chatRoom = pjchat.chatRoom 
                 )  and pjchat.chatSenderIdx != #{userIdx} 
                 group by chatRoom 
             ) unread on c1.chatRoom = unread.chatRoom 
-            where c2.userIdx = #{userIdx} and c1.userIdx != #{userIdx}
+            where c2.userIdx = #{userIdx} and c1.userIdx != #{userIdx} and c2.hasLeft = 0
     </select>
 
     <select id="getRecentChat" parameterType="ChatRoomVO" resultType="ChatVO" >
@@ -62,6 +62,10 @@
 
     <update id="updateLastRead" parameterType="map">
         update pjchatroom set lastRead = NOW() where chatRoom = #{chatRoom} and userIdx = #{userIdx}
+    </update>
+
+    <update id="leaveChat" parameterType="ChatRoomVO">
+        update pjchatroom set hasLeft = 1 where chatRoom = #{chatRoom} and userIdx = #{userIdx}
     </update>
 
 

@@ -1,7 +1,6 @@
 package com.ict.finalpj.domain.deal.mapper;
 
 import java.util.List;
-
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -26,4 +25,5 @@ public interface ChatMapper {
 
     void updateLastRead(Map<String, String> map);
 
+    int leaveChat(ChatRoomVO crvo);
 }

@@ -97,11 +97,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     // 성공 후 userIdx로 토큰을 만들어서 client에게 redirect 한다
                     String token = jwtUtil.generateToken(userIdx);
                     
+
                     redirectUrl = String.format(
-                        "http://localhost:3000/user/login?token=%s&userIdx=%s&nickname=%s",
+                        "http://localhost:3000/user/login?token=%s&userIdx=%s&nickname=%s&userEtc01=%s",
                         URLEncoder.encode(token, StandardCharsets.UTF_8),
-                        URLEncoder.encode(uvo.getUserIdx(), StandardCharsets.UTF_8),
-                        URLEncoder.encode(uvo.getUserNickname(), StandardCharsets.UTF_8)
+                        URLEncoder.encode(userIdx, StandardCharsets.UTF_8),
+                        URLEncoder.encode(uvo.getUserNickname(), StandardCharsets.UTF_8),
+                        URLEncoder.encode(uvo.getUserEtc01(), StandardCharsets.UTF_8)
                     );
 
                     // 로그인 기록 

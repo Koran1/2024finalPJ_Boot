@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ import com.ict.finalpj.domain.user.service.UserService;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 @RestController
@@ -156,6 +158,30 @@ public class ChatController {
             dvo.setSuccess(false);
             dvo.setMessage("안 읽은 메시지 수 조회 실패!");
         }
+        return dvo;
+    }
+
+     @PutMapping("/leaveChat")
+    public DataVO leaveChat(
+        @RequestParam("room") String room,
+        @RequestParam("userIdx") String userIdx
+        ) {
+        DataVO dvo = new DataVO();
+            try {
+                ChatRoomVO crvo = new ChatRoomVO();
+                crvo.setChatRoom(room);
+                crvo.setUserIdx(userIdx);
+
+                int result = chatService.leaveChat(crvo);
+                dvo.setSuccess(true);
+                dvo.setMessage("채팅 나가기 성공");
+
+
+            } catch (Exception e) {
+                dvo.setSuccess(false);
+                dvo.setMessage("채팅 나가기 오류");
+                e.printStackTrace();
+            }
         return dvo;
     }
     

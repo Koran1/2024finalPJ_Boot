@@ -46,6 +46,11 @@ public class ChatServiceImpl implements ChatService {
         chatMapper.updateLastRead(map);
     }
 
+    @Override
+    public int leaveChat(ChatRoomVO crvo) {
+        return chatMapper.leaveChat(crvo);
+    }
+
 
 
 }

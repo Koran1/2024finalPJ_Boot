@@ -83,7 +83,7 @@
 
     <update id="changeUserInfo" parameterType="String">
         update pjuser set userName = #{userName}, userNickname = #{userNickname}, userMail = #{userMail}, 
-        userPhone = #{userPhone}, userAddr = #{userAddr}, userUpdReg = NOW() 
+        userPhone = #{userPhone}, userAddr = #{userAddr}, userUpdReg = NOW(), userEtc01 = #{userEtc01} 
         where userIdx = #{userIdx}
     </update>
 

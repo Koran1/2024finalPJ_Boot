@@ -70,6 +70,7 @@ public class UserController {
             Map<String, String> map = new HashMap<>();
             map.put("userIdx", userIdx);
             map.put("userNickname", uvo_true.getUserNickname());
+            map.put("userEtc01", uvo_true.getUserEtc01());
             dvo.setData(map);
 
             dvo.setSuccess(true);

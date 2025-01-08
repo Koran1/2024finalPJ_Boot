@@ -15,4 +15,5 @@ public interface ChatService {
     public int getUnReadMessages(String userIdx);
 
     public void updateLastRead(Map<String, String> map);
+    int leaveChat(ChatRoomVO crvo);
 }
