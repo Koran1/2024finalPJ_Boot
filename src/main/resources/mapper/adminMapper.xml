@@ -2,7 +2,8 @@
 <!DOCTYPE mapper
  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- namespace 는 반드시 mapper 의 위치로 설정해야 된다 -->
+
+<!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.finalpj.domain.admin.mapper.AdminMapper">
 
 <select id="getDealManagement" resultType="DealVO">
@@ -77,4 +78,65 @@
     WHERE dealIdx = #{dealIdx}
 </update>
 
+    <!-- 캠핑정보 관리 -->
+    <select id="getSearchList" parameterType="CampSearchVO" resultType="CampVO">
+        select * from pjcamp 
+        where 1=1 
+        <if test="sortOption == 'all'">
+            <if test="keyword != null">
+                and facltNm like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+        <if test="sortOption == 'open'">
+            and manageSttus = '운영'
+            <if test="keyword != null">
+                and facltNm like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+        <if test="sortOption == 'closed'">
+            and manageSttus = '휴장'
+            <if test="keyword != null">
+                and facltNm like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+        order by campIdx asc
+        limit #{size} offset #{offset}
+    </select>
+
+    <select id="getSearchCount" parameterType="CampSearchVO" resultType="int">
+        select count(*) from pjcamp 
+        where 1=1 
+             <if test="sortOption == 'all'">
+            <if test="keyword != null">
+                and facltNm like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+        <if test="sortOption == 'open'">
+            and manageSttus = '운영'
+            <if test="keyword != null">
+                and facltNm like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+        <if test="sortOption == 'closed'">
+            and manageSttus = '휴장'
+            <if test="keyword != null">
+                and facltNm like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+    </select>
+
+    <!-- QNA 관리 -->
+    <select id="getQnaList" resultType="QNAVO">
+        SELECT 
+            pjqna.*, 
+            pjuser.userNickname
+        FROM 
+            pjqna
+        LEFT JOIN 
+            pjuser
+        ON 
+            pjqna.userIdx = pjuser.userIdx
+        ORDER BY 
+            pjqna.qnaReRegDate ASC;
+    </select>
 </mapper>

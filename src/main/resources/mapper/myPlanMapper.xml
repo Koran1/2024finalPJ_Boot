@@ -20,9 +20,9 @@
             p.planUpdateDate,
             DATE_FORMAT(p.planBeginDate, '%m.%d') AS planBeginDate2,
             DATE_FORMAT(p.planEndDate, '%m.%d') AS planEndDate2,
-            c.facltNm AS facltNm,
-            c.firstImageUrl AS firstImageUrl,
-            c.campImg2 AS campImg2
+            c.facltNm,
+            c.firstImageUrl,
+            c.campImg2
         FROM 
             pjplan p
         LEFT JOIN 

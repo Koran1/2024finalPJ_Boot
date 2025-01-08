@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class QNAVO {
     private String qnaIdx, userIdx, qnaSubject, qnaFile, qnaContent,
-    qnaRegDate, qnaReSubject, qnaReContent, qnaReRegDate, qnaStatus, qnaEtc01, qnaEtc02;
+            qnaRegDate, qnaReSubject, qnaReContent, qnaReRegDate, qnaStatus, qnaEtc01, qnaEtc02, userNickname;
 }
