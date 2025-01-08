@@ -20,7 +20,7 @@ import com.ict.finalpj.domain.user.vo.UserVO;
 public interface CampLogMapper {
     // *로그(후기) 내용*
     List<DealVO> getDealListByuserIdx(String userIdx);
-    String[] getFileNamesByDealIdxes(List<String> dealIdx);
+    String[] getFileNamesByDealIdxes(List<String> dealIdxes);
     String getFileNamesByDealIdx(String dealIdx);
     List<CampVO> getCampListAll();
     int insertToPjcamplog(CampLogVO cvo);
@@ -34,12 +34,21 @@ public interface CampLogMapper {
     List<TagInfoVO> getLogTagByLogIdx(String logIdx);
     List<DealVO> getDealList();
     UserVO getUserDataByUserIdx(String userIdx);
-    String[] getFileNamesBydealIdxes(List<String> dealIdxes);
     int toogleOff(Map<String, String> map );
     int toogleOn(Map<String, String> map );
     int getLogActiveZero(String logIdx);
+    int countLogRecommend(String logIdx);
+    String getFacltNmByCampIdx(String campIdx);
+    int updateToPjcamplog(CampLogVO lvo);
+    int deleteLogContentByLogIdx(String logIdx);
+    int deleteOrders(FileVo fvo);
+    int deleteTagByLogIdx(String logIdx);
     public int getLogReport(ReportVO logIdx); // 로그 글 신고
     public List<ReportVO> getLogReportCount(String logIdx); // 로그 글 신고 횟수
+
+        // 리스트
+    List<CampLogListVO> getCamplogList(CampLogListVO campLogListVO);
+    int getCampLogCount(CampLogListVO campLogListVO);
 
     // *댓글*
     public List<CampLogCommentVO> getCommentList(String logIdx);
@@ -48,6 +57,4 @@ public interface CampLogMapper {
     public int getCommentReport(ReportVO logCommentIdx);
     public List<UserVO> getUserInfoByIdx(List<String> userIdxList);
     public List<ReportVO> getCommentReportCount(List<String> userIdxList);
-    List<CampLogListVO> getCamplogList(CampLogListVO campLogListVO);
-    int getCampLogCount(CampLogListVO campLogListVO);
 }

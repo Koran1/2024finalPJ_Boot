@@ -31,8 +31,8 @@ public class CampLogServiceImpl implements CampLogService{
     }
 
     @Override
-    public String[] getFileNamesByDealIdxes(List<String> dealIdx) {
-        return campLogMapper.getFileNamesByDealIdxes(dealIdx);
+    public String[] getFileNamesByDealIdxes(List<String> dealIdxes) {
+        return campLogMapper.getFileNamesByDealIdxes(dealIdxes);
     }
     @Override
     public String getFileNamesByDealIdx(String dealIdx) {
@@ -100,12 +100,6 @@ public class CampLogServiceImpl implements CampLogService{
     public UserVO getUserDataByUserIdx(String userIdx) {
         return campLogMapper.getUserDataByUserIdx(userIdx);
     }
-
-    @Override
-    public String[] getFileNamesBydealIdxes(List<String> dealIdxes) {
-        return campLogMapper.getFileNamesBydealIdxes(dealIdxes);
-    }
-
     @Override
     public int toogleOff(Map<String, String> map) {
         return campLogMapper.toogleOff(map);
@@ -120,7 +114,50 @@ public class CampLogServiceImpl implements CampLogService{
     public int getLogActiveZero(String logIdx) {
         return campLogMapper.getLogActiveZero(logIdx);
     }
-    
+
+    @Override
+    public int countLogRecommend(String logIdx) {
+        return campLogMapper.countLogRecommend(logIdx);
+    }
+
+    @Override
+    public String getFacltNmByCampIdx(String campIdx) {
+        return campLogMapper.getFacltNmByCampIdx(campIdx);
+    }
+    @Override
+    public int updateToPjcamplog(CampLogVO lvo) {
+        return campLogMapper.updateToPjcamplog(lvo);
+    }
+
+    @Override
+    public int deleteLogContentByLogIdx(String logIdx) {
+        return campLogMapper.deleteLogContentByLogIdx(logIdx);
+    }
+
+    @Override
+    public int deleteOldFile(FileVo fvo) {
+        return campLogMapper.deleteOrders(fvo);
+    }
+
+    @Override
+    public int deleteTagByLogIdx(String logIdx) {
+        return campLogMapper.deleteTagByLogIdx(logIdx);
+    }
+
+    @Override
+    public Map<String, Object> getCamplogList(CampLogListVO campLogListVO) {
+        int offset = (campLogListVO.getPage() -1) * campLogListVO.getSize();
+        campLogListVO.setOffset(offset);
+
+        List<CampLogListVO> camplogList = campLogMapper.getCamplogList(campLogListVO);
+        int totalCount = campLogMapper.getCampLogCount(campLogListVO);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", camplogList);
+        result.put("totalCount", totalCount);
+        result.put("totalPages", (int) Math.ceil((double) totalCount / campLogListVO.getSize()));
+        return result;
+    }
     // 로그 글 신고
     @Override
     public int getLogReport(ReportVO logIdx){
@@ -171,18 +208,4 @@ public class CampLogServiceImpl implements CampLogService{
         return campLogMapper.getCommentReportCount(userIdxList);
     }
     
-    @Override
-    public Map<String, Object> getCamplogList(CampLogListVO campLogListVO) {
-        int offset = (campLogListVO.getPage() -1) * campLogListVO.getSize();
-        campLogListVO.setOffset(offset);
-
-        List<CampLogListVO> camplogList = campLogMapper.getCamplogList(campLogListVO);
-        int totalCount = campLogMapper.getCampLogCount(campLogListVO);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", camplogList);
-        result.put("totalCount", totalCount);
-        result.put("totalPages", (int) Math.ceil((double) totalCount / campLogListVO.getSize()));
-        return result;
-    }
 }
