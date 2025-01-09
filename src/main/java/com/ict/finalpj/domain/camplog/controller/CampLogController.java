@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -275,12 +276,11 @@ public class CampLogController {
         DataVO dataVO = new DataVO();
         try {
             List<DealVO> result = campLogService.getDealListByuserIdx(userIdx);
-            log.info("result: " + result);
             if (result == null || result.size() == 0) {
                 dataVO.setSuccess(false);
                 dataVO.setMessage("거래 중인 상품이 없습니다.");
                 return dataVO;
-
+                
             }
             List<String> dealIdxes = new ArrayList<>();
             Map<String, String> map = new HashMap<>();
@@ -288,8 +288,11 @@ public class CampLogController {
                 dealIdxes.add(k.getDealIdx());
                 map.put(k.getDealIdx(), null);
             }
-
+            log.info("dealIdxes: " + dealIdxes);
+            
+            
             String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
+            log.info("fileNames: " + Arrays.toString(fileNames));
             if (fileNames == null) {
                 dataVO.setSuccess(false);
                 dataVO.setMessage("데이터를 불러오는 중에 문제가 발생했습니다.");
