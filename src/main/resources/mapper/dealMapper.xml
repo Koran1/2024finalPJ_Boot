@@ -50,11 +50,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     INSERT INTO pjdeal 
     (dealIdx, dealSellerUserIdx, dealSellerNick, dealTitle, dealCategory, 
     dealStatus, dealDescription, dealPrice, dealPackage, dealDirect, 
-    dealDirectContent, dealCount, dealRegDate) 
+    dealDirectContent, dealCount, dealRegDate, deal03) 
     VALUES 
     (#{dealIdx}, #{dealSellerUserIdx}, #{dealSellerNick}, #{dealTitle}, 
     #{dealCategory}, #{dealStatus}, #{dealDescription}, #{dealPrice}, 
-    #{dealPackage}, #{dealDirect}, #{dealDirectContent}, #{dealCount}, NOW())
+    #{dealPackage}, #{dealDirect}, #{dealDirectContent}, #{dealCount}, NOW(), #{deal03})
   </insert>
 
 <!-- 파일 여러개 삽입 -->
@@ -287,6 +287,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         AND f.fileOrder = 0
     WHERE ds.dealSatisSellerUserIdx = #{userIdx}
     ORDER BY ds.dealSatisBuyerRegDate DESC
+  </select>
+
+  <!-- 판매자의 캠핑장 후기 조회 -->
+  <select id="getSellerCampLogs" resultType="CampLogListVO">
+    SELECT 
+        l.logIdx, l.logTitle, l.logRegDate,
+        c.facltNm,
+        f.fileName
+    FROM pjlog l
+    LEFT JOIN pjcamp c ON l.campIdx = c.campIdx
+    LEFT JOIN pjfile f ON f.fileTableType = 1 
+        AND l.logIdx = f.fileTableIdx 
+        AND f.isThumbnail = 1
+    WHERE l.userIdx = #{sellerIdx}
+        AND l.logIsActive = 1
+    ORDER BY l.logRegDate DESC
+    LIMIT 6
   </select>
 
 </mapper>

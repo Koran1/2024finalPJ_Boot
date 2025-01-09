@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.common.vo.ViewsVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
@@ -83,4 +84,7 @@ public interface DealService {
   int updateReportStatus(String dealIdx);
 
   List<DealSatisfactionVO> getSellerSatisfactions(String userIdx);
+
+  // 판매자의 캠핑장 후기 조회
+  List<CampLogListVO> getSellerCampLogs(String sellerIdx);
 }

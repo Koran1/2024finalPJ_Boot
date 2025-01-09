@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.common.vo.ViewsVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
 import com.ict.finalpj.domain.deal.mapper.DealMapper;
 import com.ict.finalpj.domain.deal.mapper.DealSatisfactionMapper;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
@@ -259,6 +260,11 @@ public class DealServiceImpl implements DealService {
     @Override
     public List<DealSatisfactionVO> getSellerSatisfactions(String userIdx) {
         return dealMapper.getSellerSatisfactions(userIdx);
+    }
+
+    @Override
+    public List<CampLogListVO> getSellerCampLogs(String sellerIdx) {
+        return dealMapper.getSellerCampLogs(sellerIdx);
     }
 
 }

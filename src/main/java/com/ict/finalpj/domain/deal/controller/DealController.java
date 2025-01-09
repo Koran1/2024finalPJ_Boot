@@ -29,6 +29,7 @@ import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.common.vo.ViewsVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
 import com.ict.finalpj.domain.deal.service.DealService;
 import com.ict.finalpj.domain.deal.vo.DealSatisfactionVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
@@ -599,6 +600,22 @@ public class DealController {
             log.error("판매자 만족도 조회 실패", e);
             dataVO.setSuccess(false);
             dataVO.setMessage("판매자 만족도 조회 실패");
+        }
+        return dataVO;
+    }
+
+    @GetMapping("/seller-camplogs/{sellerIdx}")
+    public DataVO getSellerCampLogs(@PathVariable String sellerIdx) {
+        DataVO dataVO = new DataVO();
+        try {
+            List<CampLogListVO> campLogs = dealService.getSellerCampLogs(sellerIdx);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("판매자의 캠핑장 후기 조회 성공");
+            dataVO.setData(campLogs);
+        } catch (Exception e) {
+            log.error("판매자의 캠핑장 후기 조회 실패", e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage("판매자의 캠핑장 후기 조회 실패");
         }
         return dataVO;
     }
