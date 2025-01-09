@@ -288,7 +288,6 @@ public class CampLogController {
                 dealIdxes.add(k.getDealIdx());
                 map.put(k.getDealIdx(), null);
             }
-            log.info("dealIdxes: " + dealIdxes);
             
             
             String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
@@ -412,6 +411,7 @@ public class CampLogController {
                 }
                 Set<String> tempt2 = new HashSet<>(tempt1);
                 List<String> dealIdxes = new ArrayList<>(tempt2);
+                
                 if (dealIdxes.size() > 0) {
                     String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
                     Map<String, String> fNameBydealIdx = new HashMap<>();
@@ -533,6 +533,7 @@ public class CampLogController {
     @GetMapping("/getLogForEdit")
     public DataVO getLogForEdit(@RequestParam("logIdx") String logIdx) {
         DataVO dataVO = new DataVO();
+        log.info("logIdx: " + logIdx);
         try {
             Map<String, Object> map = new HashMap<>();
             CampLogVO logVO = campLogService.getLogDetailByLogIdx(logIdx);
@@ -550,7 +551,7 @@ public class CampLogController {
             if (dealVO != null) {
                 map.put("dealVO", dealVO);
             }
-            if (tagVO != null) {
+            if (tagVO != null && tagVO.size() != 0) {
                 List<String> tempt1 = new ArrayList<>();
                 for (TagInfoVO k : tagVO) {
                     if (k.getDealIdx() != null) {
