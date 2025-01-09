@@ -101,7 +101,7 @@
     select * from 
 		(
         	select 
-            	cl.logIdx,  cl.logTitle, cl.logRegdate, u.userNickname, c.campIdx, c.facltNm, cn.logContent, f.fileName, 
+            	cl.logIdx,  cl.logTitle, cl.logRegdate, u.userNickname, u.userEtc01, c.campIdx, c.facltNm, cn.logContent, f.fileName, 
            		re.reportStatus, 
 				<!-- re.userIdx as reporterUserIdx,  -->
 				GROUP_CONCAT(DISTINCT re.userIdx) as reporterUserIds, 

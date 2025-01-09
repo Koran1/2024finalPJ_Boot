@@ -41,7 +41,8 @@ public class CampLogListVO {
         reportTableIdx, // reportTableIdx = logIdx
         // reportStatus, // 신고 처리 상태(0인 경우, 처리 전 / 1인 경우 처리 완료)
         // reporterUserIdx, 
-        reporterUserIds
+        reporterUserIds,
+        userEtc01       // 유저 프로필 사진
         ;
 
         private String keyword, option, sortOption;

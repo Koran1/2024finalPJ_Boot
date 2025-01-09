@@ -395,6 +395,7 @@ public class CampLogController {
                     Map<String, String> map2 = new HashMap<>();
                     map2.put("userIdx", userData.getUserIdx());
                     map2.put("userNickname", userData.getUserNickname());
+                    map2.put("userEtc01", userData.getUserEtc01());
                     userVO.add(map2);
                     map.put("userVO", userVO);
                 }
