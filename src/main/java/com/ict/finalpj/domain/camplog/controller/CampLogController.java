@@ -655,13 +655,18 @@ public class CampLogController {
                 // userIdxList를 통해 신고 테이블에서 작성된 댓글의 userIdx와 비교해 존재하는 댓글들의 신고 횟수 가져오기
                 List<ReportVO> rvo = campLogService.getCommentReportCount(userIdxList);
 
-                // userIdx와 userNickname을 매핑
+                // userIdx와 userNickname과 userEtc01을 매핑
                 Map<String, String> userNicknameMap = uvo.stream()
                         .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserNickname));
+
+                // userIdx와 userEtc01을 매핑
+                Map<String, String> userImgMap = uvo.stream()
+                .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserEtc01));
 
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("lcvo", lcvo);
                 resultMap.put("userNicknameMap", userNicknameMap);
+                resultMap.put("userImgMap", userImgMap);
                 resultMap.put("rvo", rvo);
                 dataVO.setSuccess(true);
                 dataVO.setMessage("댓글 리스트를 불러옵니다.");
