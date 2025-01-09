@@ -71,11 +71,11 @@ public class CampLogController {
         int resultTVO = campLogService.insertToPjtaginfo(tvo);
         if (resultTVO > 0) {
             dataVO.setSuccess(true);
-            dataVO.setMessage("작성이 완료되었습니다");
+            dataVO.setMessage("성공적으로 완료되었습니다");
             return dataVO;
         } else {
             dataVO.setSuccess(true);
-            dataVO.setMessage("작성이 완료되었습니다");
+            dataVO.setMessage("성공적으로 완료되었습니다");
             return dataVO;
         }
     }
@@ -267,7 +267,7 @@ public class CampLogController {
             e.printStackTrace();
         }
         dataVO.setSuccess(false);
-        dataVO.setMessage("작성 중 오류 발생");
+        dataVO.setMessage("수정ㄴㄴ 중 오류 발생");
         return dataVO;
     }
 
@@ -289,10 +289,8 @@ public class CampLogController {
                 map.put(k.getDealIdx(), null);
             }
             
-            
             String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
-            log.info("fileNames: " + Arrays.toString(fileNames));
-            if (fileNames == null) {
+            if (fileNames == null || fileNames.length == 0 ) {
                 dataVO.setSuccess(false);
                 dataVO.setMessage("데이터를 불러오는 중에 문제가 발생했습니다.");
                 return dataVO;
@@ -411,16 +409,20 @@ public class CampLogController {
                 }
                 Set<String> tempt2 = new HashSet<>(tempt1);
                 List<String> dealIdxes = new ArrayList<>(tempt2);
-                
                 if (dealIdxes.size() > 0) {
                     String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
-                    Map<String, String> fNameBydealIdx = new HashMap<>();
-    
+                    List<Map<String, String>> fNameBydealIdx = new ArrayList<>();
                     for (int i = 0; i < fileNames.length; i++) {
-                        fNameBydealIdx.put(dealIdxes.get(i), fileNames[i]);
+                        Map<String, String> fileMap = new HashMap<>();
+                        fileMap.put("dealIdx", dealIdxes.get(i));
+                        fileMap.put("fileName", fileNames[i]);
+                        fNameBydealIdx.add(fileMap);
                     }
                     map.put("fNameByDealIdx", fNameBydealIdx);
                 }
+
+              
+                
 
             }
 
@@ -533,7 +535,6 @@ public class CampLogController {
     @GetMapping("/getLogForEdit")
     public DataVO getLogForEdit(@RequestParam("logIdx") String logIdx) {
         DataVO dataVO = new DataVO();
-        log.info("logIdx: " + logIdx);
         try {
             Map<String, Object> map = new HashMap<>();
             CampLogVO logVO = campLogService.getLogDetailByLogIdx(logIdx);
@@ -560,17 +561,25 @@ public class CampLogController {
                 }
                 Set<String> tempt2 = new HashSet<>(tempt1);
                 List<String> dealIdxes = new ArrayList<>(tempt2);
-                String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
-
-                Map<String, String> fNameBydealIdx = new HashMap<>();
-                for (int i = 0; i < fileNames.length; i++) {
-                    fNameBydealIdx.put(dealIdxes.get(i), fileNames[i]);
+                if (dealIdxes.size() > 0 ) {
+                    String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
+                    List<Map<String, String>> fNameBydealIdx = new ArrayList<>();
+                    for (int i = 0; i < fileNames.length; i++) {
+                        Map<String, String> fileMap = new HashMap<>();
+                        fileMap.put("dealIdx", dealIdxes.get(i));
+                        fileMap.put("fileName", fileNames[i]);
+                        fNameBydealIdx.add(fileMap);
+                    }
+                    map.put("fNameByDealIdx", fNameBydealIdx);
+                    
                 }
-                map.put("fNameByDealIdx", fNameBydealIdx);
-            }
 
+            }
+            log.info("contentVO: " + contentVO);
+            log.info("fileVO: " + fileVO);
             List<DetailDTO> totalData = new ArrayList<>(); // 상세페이지에 뿌리기 위한 가공된 데이터
             if (contentVO != null && fileVO != null) {
+
 
                 int maxSize = Math.max(contentVO.size(), fileVO.size());
 
