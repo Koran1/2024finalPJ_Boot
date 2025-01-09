@@ -139,4 +139,249 @@
         ORDER BY 
             pjqna.qnaReRegDate ASC;
     </select>
+
+    <!-- 관리자 회원 정보 리스트 -->
+	<select id="getAdminUserList" parameterType="UserListVO" resultType="UserListVO">
+    	select * from pjuser 
+		where 1=1 
+			<if test="option == 'all'">
+				and (userLevel = 1 or userLevel = 2 or userLevel = 3)
+				<if test="keyword != null">
+					and (userName like concat('%', #{keyword}, '%') 
+					or userNickname like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+			<if test="option == 'general'">
+				and userLevel = 1 
+				<if test="keyword != null">
+					and (userName like concat('%', #{keyword}, '%') 
+					or userNickname like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+			<if test="option == 'bad'">
+				and userLevel = 3
+				<if test="keyword != null">
+					and (userName like concat('%', #{keyword}, '%') 
+					or userNickname like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+			<if test="option == 'rest'">
+				and userLevel = 2
+				<if test="keyword != null">
+					and (userName like concat('%', #{keyword}, '%') 
+					or userNickname like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+		order by userIdx asc 
+		limit #{size} offset #{offset}
+	</select>
+
+	<!-- 관리자 회원 정보 페이징 관련 -->
+	<select id="getUserListCount" parameterType="UserListVO" resultType="int">
+    	select count(*) 
+    	from pjuser
+    	where 1=1
+        	<if test="option == 'all'">
+            	and (userLevel = 1 or userLevel = 2 or userLevel = 3)
+            	<if test="keyword != null">
+                	and (userName like concat('%', #{keyword}, '%') 
+                	or userNickname like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+        	<if test="option == 'general'">
+            	and userLevel = 1
+            	<if test="keyword != null">
+                	and (userName like concat('%', #{keyword}, '%') 
+                	or userNickname like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+        	<if test="option == 'bad'">
+            	and userLevel = 3
+            	<if test="keyword != null">
+                	and (userName like concat('%', #{keyword}, '%') 
+                	or userNickname like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+        	<if test="option == 'rest'">
+            	and userLevel = 2
+            	<if test="keyword != null">
+                	and (userName like concat('%', #{keyword}, '%') 
+                	or userNickname like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+	</select>
+
+	<!-- 관리자 회원 정보 업데이트 -->
+	<update id="getAdminUpdateUser" parameterType="UserListVO">
+		update pjuser set userLevel = #{userLevel} where userIdx = #{userIdx}
+	</update>
+
+	<!-- 관리자 공지사항 리스트 -->
+	<select id="getAdminNoticeList" parameterType="NoticeListVO" resultType="NoticeListVO">
+    	select * from pjnotice 
+		where 1=1 
+			<if test="option == 'all'">
+				and (noticeStatus = 'on' or noticeStatus = 'off')
+				<if test="keyword != null">
+					and (noticeSubject like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+			<if test="option == 'on'">
+				and noticeStatus = 'on'  
+				<if test="keyword != null">
+					and (noticeSubject like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+			<if test="option == 'off'">
+				and noticeStatus = 'off'
+				<if test="keyword != null">
+					and (noticeSubject like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+		order by noticeIdx desc 
+		limit #{size} offset #{offset}
+	</select>
+
+	<!-- 관리자 공지사항 리스트 페이징 관련 -->
+	<select id="getNoticeListCount" parameterType="NoticeListVO" resultType="int">
+    	select count(*) from pjnotice 
+    	where 1=1
+        	<if test="option == 'all'">
+            	and (noticeStatus = 'on' or noticeStatus = 'off')
+            	<if test="keyword != null">
+                	and (noticeSubject like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+        	<if test="option == 'on'">
+            	and noticeStatus = 'on' 
+            	<if test="keyword != null">
+                	and (noticeSubject like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+        	<if test="option == 'off'">
+            	and noticeStatus = 'off' 
+            	<if test="keyword != null">
+                	and (noticeSubject like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+	</select>
+
+	<!-- 관리자 공지사항 noticeStatus 업데이트  -->
+	<update id="getUpdateNoticeStatus" parameterType="String">
+		UPDATE pjnotice 
+		SET noticeStatus = CASE 
+							WHEN noticeStatus = 'on' THEN 'off' 
+							ELSE 'on' 
+						END
+		WHERE noticeIdx = #{noticeIdx}
+	</update>
+
+	<!-- 관리자 공지사항 정보 업데이트(모달) -->
+	<update id="getAdminUpdateNoticeModal" parameterType="NoticeListVO">
+		update pjnotice set noticeLevel = #{noticeLevel}, noticeStatus = #{noticeStatus} where noticeIdx = #{noticeIdx}
+	</update>
+
+	<!-- 관리자 공지사항 쓰기 -->
+	<insert id="getAdminNoticeListWrite" parameterType="NoticeVO">
+		insert into pjnotice (noticeSubject, noticeFile, noticeContent, noticeReg, noticeLevel, noticeStatus) 
+		values(#{noticeSubject}, #{noticeFile}, #{noticeContent}, #{noticeReg}, #{noticeLevel}, #{noticeStatus})
+	</insert>
+
+	<!-- 관리자 공지사항 상세 -->
+	<select id="getNoticeListIdx" parameterType="String" resultType="NoticeVO">
+		select * from pjnotice where noticeIdx = #{noticeIdx}
+	</select>
+
+	<!-- 관리자 공지사항 수정 -->
+	<update id="getAdminNoticeListUpdate" parameterType="NoticeVO">
+		update pjnotice set 
+			noticeSubject = #{noticeSubject}, noticeFile = #{noticeFile}, noticeContent = #{noticeContent}, noticeReg = #{noticeReg}, noticeLevel = #{noticeLevel}, noticeStatus = #{noticeStatus} 
+		where noticeIdx = #{noticeIdx}
+	</update>
+
+	<!-- 관리자 FAQ 리스트 -->
+	<select id="getAdminFAQList" parameterType="FAQListVO" resultType="FAQListVO">
+    	select * from pjfaq 
+		where 1=1 
+			<if test="option == 'all'">
+				and (faqStatus = 'on' or faqStatus = 'off')
+				<if test="keyword != null">
+					and (faqQuestion like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+			<if test="option == 'on'">
+				and faqStatus = 'on'  
+				<if test="keyword != null">
+					and (faqQuestion like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+			<if test="option == 'off'">
+				and faqStatus = 'off'
+				<if test="keyword != null">
+					and (faqQuestion like concat('%', #{keyword}, '%'))
+				</if>
+			</if>
+		order by faqIdx desc 
+		limit #{size} offset #{offset}
+	</select>
+
+	<!-- 관리자 FAQ 리스트 페이징 관련 -->
+	<select id="getFAQListCount" parameterType="FAQListVO" resultType="int">
+    	select count(*) from pjfaq 
+    	where 1=1
+        	<if test="option == 'all'">
+            	and (faqStatus = 'on' or faqStatus = 'off')
+            	<if test="keyword != null">
+                	and (faqQuestion like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+        	<if test="option == 'on'">
+            	and faqStatus = 'on' 
+            	<if test="keyword != null">
+                	and (faqQuestion like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+        	<if test="option == 'off'">
+            	and faqStatus = 'off' 
+            	<if test="keyword != null">
+                	and (faqQuestion like concat('%', #{keyword}, '%'))
+            	</if>
+        	</if>
+	</select>
+
+	<!-- 관리자 FAQ faqStatus 업데이트  -->
+	<update id="getUpdateFAQStatus" parameterType="string">
+		UPDATE pjfaq 
+		SET faqStatus = CASE 
+							WHEN faqStatus = 'on' THEN 'off' 
+							ELSE 'on' 
+						END
+		WHERE faqIdx = #{faqIdx}
+	</update>
+
+	<!-- 관리자 FAQ 정보 업데이트(모달) -->
+	<update id="getAdminUpdateFAQModal" parameterType="FAQVO">
+		update pjfaq set faqStatus = #{faqStatus} where faqIdx = #{faqIdx}
+	</update>
+
+	<!-- 관리자 FAQ 쓰기 -->
+	<insert id="getAdminFAQListWrite" parameterType="FAQVO">
+		insert into pjfaq (faqQuestion, faqAnswer, faqReg, faqStatus) 
+		values(#{faqQuestion}, #{faqAnswer}, #{faqReg}, #{faqStatus})
+	</insert>
+
+	<!-- 관리자 FAQ 상세 -->
+	<select id="getFAQListIdx" parameterType="String" resultType="FAQVO">
+		select * from pjfaq where faqIdx = #{faqIdx}
+	</select>
+
+	<!-- 관리자 FAQ 수정 -->
+	<update id="getAdminFAQListUpdate" parameterType="FAQVO">
+    update pjfaq set 
+        faqQuestion = #{faqQuestion}, 
+        faqAnswer = #{faqAnswer}, 
+        faqReg = #{faqReg}, 
+        faqStatus = #{faqStatus}
+    where faqIdx = #{faqIdx}
+</update>
 </mapper>
