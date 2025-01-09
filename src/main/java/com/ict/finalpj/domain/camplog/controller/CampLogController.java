@@ -260,7 +260,7 @@ public class CampLogController {
             if (dto.getTvo() != null) {
                 campLogService.deleteTagByLogIdx(dto.getLvo().getLogIdx());
                 TagInfoVO tvo = new TagInfoVO();
-                DataVO dataVO2 = tagMethod(tvo, dto, dto.getTvo().getLogIdx());
+                DataVO dataVO2 = tagMethod(tvo, dto, dto.getLvo().getLogIdx());
                 return dataVO2;
             }
         } catch (Exception e) {
