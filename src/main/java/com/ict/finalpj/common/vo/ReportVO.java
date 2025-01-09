@@ -16,7 +16,12 @@ public class ReportVO {
     reportTableIdx,
     reportContent,
     reportRegDate,
-    reportStatus;
+    reportStatus,
+    isActive;
 
     private String reportCount;
+
+    // 어드민 페이지에서 사용할 페이징, 검색용
+    private String keyword, sortOption;
+    private int page, size, offset;
 }

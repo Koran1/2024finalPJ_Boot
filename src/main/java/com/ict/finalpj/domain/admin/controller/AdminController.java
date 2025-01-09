@@ -1,9 +1,11 @@
 package com.ict.finalpj.domain.admin.controller;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,11 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.domain.admin.service.AdminService;
 import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
+import com.ict.finalpj.domain.user.vo.UserVO;
+
 import lombok.extern.slf4j.Slf4j;
 
 import com.ict.finalpj.domain.add.vo.FAQVO;
@@ -517,6 +522,66 @@ public class AdminController {
             dataVO.setMessage("FAQ 정보 업데이트 중 오류 발생");
             e.printStackTrace();
         }
+        return dataVO;
+    }
+
+    // 신고 관리 : 신고 리스트 불러오기 필터, 페이징
+    @PostMapping("/getReportList")
+    public DataVO getReportList(@RequestBody ReportVO rvo) {
+        log.info("Sort Option: {}", rvo);
+        DataVO dataVO = new DataVO();
+        try {
+            Map<String, Object> reportList = adminService.getRerpotList(rvo);
+            
+            // log.info("rvo : " + rvo);
+
+            List<UserVO> uvo = adminService.getUserInfo();
+            // userIdx와 userNickname을 매핑
+            Map<String, String> userNicknameMap = uvo.stream()
+                .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserNickname));
+
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("reportList", reportList);
+            resultMap.put("userNicknameMap", userNicknameMap);
+            dataVO.setData(resultMap);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("신고 리스트 조회 성공");
+            log.info("신고 리스트 조회 성공");
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("신고 리스트 조회 오류");
+            log.info("신고 리스트 조회 오류", e);
+        }
+        return dataVO;
+    }
+
+    @PostMapping("/reportProcess")
+    public DataVO getReportProcess(@RequestBody ReportVO rvo) {
+        DataVO dataVO = new DataVO();
+        try {
+            log.info("rvo1 : " + rvo);
+            
+            int result = adminService.getReportProcess(rvo);
+            log.info("rvo2 : " + rvo);
+            
+            if(result > 0){
+                log.info("rvo3 : " + rvo);
+                dataVO.setSuccess(true);
+                dataVO.setMessage("신고 처리 성공");
+                log.info("신고 처리 성공");
+            } else{
+                dataVO.setSuccess(false);
+                dataVO.setMessage("신고 처리 실패");
+                log.info("신고 처리 실패");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            dataVO.setSuccess(false);
+            dataVO.setMessage("신고 처리 오류");
+            log.info("신고 처리 오류", e);
+        }
+
         return dataVO;
     }
 }

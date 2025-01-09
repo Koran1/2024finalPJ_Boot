@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.common.vo.FileVo;
+import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.domain.admin.mapper.AdminMapper;
 import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
+import com.ict.finalpj.domain.user.vo.UserVO;
 import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 import com.ict.finalpj.domain.add.vo.QNAVO;
@@ -196,5 +198,54 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public int getAdminFAQListUpdate(FAQVO faqvo) {
         return adminMapper.getAdminFAQListUpdate(faqvo);
+    }
+
+    // 신고 관리 : 신고 리스트 불러오기 필터, 페이징
+    @Override
+    public Map<String, Object> getRerpotList(ReportVO rvo) {
+        int offset = (rvo.getPage() - 1) * rvo.getSize();
+        rvo.setOffset(offset);
+
+        List<ReportVO> reportList = adminMapper.getReportList(rvo);
+        int totalCount = adminMapper.getReportCount(rvo);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", reportList);
+        result.put("totalCount", totalCount);
+        result.put("totalPages", (int) Math.ceil((double) totalCount / rvo.getSize()));
+        return result;
+    }
+
+    // 신고 관리 : userIdx, userNickname 가져오기(신고한 유저, 신고된 유저 닉네임 출력용)
+    @Override
+    public List<UserVO> getUserInfo() {
+        return adminMapper.getUserInfo();
+    }
+
+    // 신고 관리 : 신고 처리(승인, 반려)
+    @Override
+    public int getReportProcess(ReportVO rvo) {
+        int result = 0;
+        // 신고 처리 여부가 반려인 경우(status == 2) 반려한 reportIdx만 reportStatus == 2 처리
+        if(rvo.getReportStatus().equals("2")){
+            result = adminMapper.getReportProcessReturn(rvo);
+        }
+
+        // 신고 처리 여부가 승인인 경우(status == 1) 해당 신고 테이블 종류 && 신고 테이블 Idx의 reportStatus == 1 (reportStatus == 0인 것만)일괄 처리
+        if(rvo.getReportStatus().equals("1")){
+            result = adminMapper.getReportProcessApprove(rvo);
+            switch (rvo.getReportTableType()) {
+                // 신고 테이블 종류가 1(거래 상품 신고)인 경우
+                case "1": result = adminMapper.getReportProcessDeal(rvo); break;
+                // 신고 테이블 종류가 2(캠핑장 상세보기 댓글 신고)인 경우
+                // case "2": return adminMapper.getReportProcessCampComm(rvo);
+                // 신고 테이블 종류가 3(후기 글 신고)인 경우
+                case "3": result = adminMapper.getReportProcessLog(rvo); break;
+                // 신고 테이블 종류가 4(후기 댓/답글 신고)인 경우
+                case "4": result = adminMapper.getReportProcessLogComm(rvo); break;
+            }
+        }
+
+        return result;
     }
 }

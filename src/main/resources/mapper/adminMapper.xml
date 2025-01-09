@@ -377,11 +377,109 @@
 
 	<!-- 관리자 FAQ 수정 -->
 	<update id="getAdminFAQListUpdate" parameterType="FAQVO">
-    update pjfaq set 
-        faqQuestion = #{faqQuestion}, 
-        faqAnswer = #{faqAnswer}, 
-        faqReg = #{faqReg}, 
-        faqStatus = #{faqStatus}
-    where faqIdx = #{faqIdx}
-</update>
+        update pjfaq set 
+            faqQuestion = #{faqQuestion}, 
+            faqAnswer = #{faqAnswer}, 
+            faqReg = #{faqReg}, 
+            faqStatus = #{faqStatus}
+        where faqIdx = #{faqIdx}
+    </update>
+
+    <!-- 신고 관리 -->
+    <!-- 신고 목록 가져오기 -->
+    <select id="getReportList" parameterType="ReportVO" resultType="ReportVO">
+        select * from pjreport 
+        where 1=1 
+        <!-- <if test="sortOption == 'all'">
+        </if> -->
+        <if test="sortOption == 'deal'">
+            and reportTableType = 1
+        </if>
+        <!-- 캠핑장 댓글 아마 없던걸로 알아서 더미임 -->
+        <if test="sortOption == 'campComment'">
+            and reportTableType = 2
+        </if>
+        <if test="sortOption == 'log'">
+            and reportTableType = 3
+        </if>
+        <if test="sortOption == 'logComment'">
+            and reportTableType = 4
+        </if>
+        order by reportIdx asc
+        limit #{size} offset #{offset}
+    </select>
+
+    <!-- 신고 페이징 개수 -->
+    <select id="getReportCount" parameterType="ReportVO" resultType="int">
+        select count(*) from pjreport  
+        where 1=1 
+        <!-- <if test="sortOption == 'all'">
+        </if> -->
+        <if test="sortOption == '거래 상품 신고'">
+            and reportTableType = 1
+        </if>
+        <!-- 캠핑장 댓글 아마 없던걸로 알아서 더미임 -->
+        <if test="sortOption == '캠핑장 상세보기 댓글 신고'">
+            and reportTableType = 2
+        </if>
+        <if test="sortOption == '후기 글 신고'">
+            and reportTableType = 3
+        </if>
+        <if test="sortOption == '후기 댓/답글 신고'">
+            and reportTableType = 4
+        </if>
+    </select>
+
+    <!-- 신고 리스트에 저장된 userIdx로 유저 닉네임 가져오기 -->
+    <select id="getUserInfo" resultType="UserVO">
+        select userIdx, userNickname from pjuser
+    </select>
+
+    <!-- 신고 처리 상태에 따라 반려는 해당 행만 reportStatus = 2로 업데이트 -->
+    <update id="getReportProcessReturn" parameterType="ReportVO">
+        UPDATE pjreport 
+        SET reportStatus = 2
+        WHERE reportIdx = #{reportIdx}
+    </update>
+
+    <!-- 신고 처리 상태에 따라 승인은 해당 행만 reportStatus = 1, 해당 TableType/Idx에 대한 isActive = 0 으로 일괄 업데이트 -->
+    <update id="getReportProcessApprove" parameterType="ReportVO">
+        UPDATE pjreport 
+        SET reportStatus = 1
+        WHERE reportIdx = #{reportIdx}
+    </update>
+
+    <!-- 신고 승인 처리 된 reportTableType이 1(거래 상품 신고)인 경우 -->
+    <update id="getReportProcessDeal" parameterType="ReportVO">
+        UPDATE pjdeal 
+        <if test="reportStatus == '1'">
+            SET dealView = 0
+        </if>
+        WHERE dealIdx = #{reportTableIdx}
+    </update>
+    <!-- 신고 승인 처리 된 reportTableType이 2(캠핑장 상세보기 댓글 신고)인 경우 -->
+    <!-- <update id="getReportProcessCampComm" parameterType="ReportVO">
+        UPDATE pjcampcomment 
+        <if test="reportStatus == '1'">
+            SET isActive = 0
+        </if>
+        WHERE campCommentIdx = #{reportTableIdx}
+    </update> -->
+    <!-- 신고 승인 처리 된 reportTableType이 3(후기 글 신고)인 경우 -->
+    <update id="getReportProcessLog" parameterType="ReportVO">
+        UPDATE pjlog 
+        <if test="reportStatus == '1'">
+            SET logIsActive = 0
+        </if>
+        WHERE logIdx = #{reportTableIdx}
+    </update>
+    <!-- 신고 승인 처리 된 reportTableType이 4(후기 댓/답글 신고)인 경우 -->
+    <update id="getReportProcessLogComm" parameterType="ReportVO">
+        UPDATE pjlogcomment 
+        <if test="reportStatus == '1'">
+            SET logCommentIsActive = 0
+        </if>
+        WHERE logCommentIdx = #{reportTableIdx}
+    </update>
+
 </mapper>
