@@ -12,7 +12,20 @@
 
     <!-- 캠핑로그 목록 -->
     <select id="getCampLog" resultType="CampLogVO">
-        SELECT * FROM pjlog WHERE campIdx = #{campIdx}
+        SELECT 
+            pjlog.*, 
+            pjuser.userNickname, 
+            pjfile.fileName AS logThumbnail
+        FROM 
+            pjlog
+        LEFT JOIN 
+            pjuser ON pjlog.userIdx = pjuser.userIdx
+        LEFT JOIN 
+            pjfile ON pjlog.logIdx = pjfile.fileTableIdx
+            AND pjfile.fileTableType = 1
+            AND pjfile.isThumbnail = 1
+        WHERE 
+            pjlog.campIdx = #{campIdx}
         <choose>
             <when test="logAlign == 'rec'">
                 ORDER BY logRecommend DESC

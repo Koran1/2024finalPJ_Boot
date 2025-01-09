@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class CampLogVO {
-    private String logIdx, userIdx, campIdx, logTitle, logThumbnail, logView, logRecommend, logIsProduct, logIsActive,
-            logUpdateDate, logRegDate;
+    private String logIdx, userIdx, campIdx, logTitle, logView, logRecommend, logIsProduct, logIsActive,
+            logUpdateDate, logRegDate, userNickname, logThumbnail;
     private MultipartFile mpFile;
 }
