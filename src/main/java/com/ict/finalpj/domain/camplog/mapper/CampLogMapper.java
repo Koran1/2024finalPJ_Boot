@@ -57,4 +57,7 @@ public interface CampLogMapper {
     public int getCommentReport(ReportVO logCommentIdx);
     public List<UserVO> getUserInfoByIdx(List<String> userIdxList);
     public List<ReportVO> getCommentReportCount(List<String> userIdxList);
+
+    // 내가 쓴 댓글
+    List<CampLogCommentVO> getMyComments(String userIdx);
 }

@@ -220,4 +220,9 @@
         GROUP BY reportTableIdx, reportStatus, userIdx
         ORDER BY reportTableIdx ASC;
     </select>
+
+    <!-- 내가 쓴 댓글 리스트 가져오기 -->
+    <select id="getMyComments" parameterType="String" resultType="CampLogCommentVO">
+        select lc.*, l.logTitle as logTitle from pjlogcomment lc left join pjlog l on l.logIdx = lc.logIdx where lc.userIdx = #{userIdx}
+    </select>
 </mapper>

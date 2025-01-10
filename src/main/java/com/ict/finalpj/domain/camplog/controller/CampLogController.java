@@ -763,4 +763,23 @@ public class CampLogController {
         return dataVO;
     }
 
+    // 내가 쓴 댓글 리스트
+    @GetMapping("/getMyComments")
+    public DataVO getMyComments(@RequestParam("userIdx") String userIdx) {
+         DataVO dataVO = new DataVO();
+        try {
+                log.info("내가 쓴 댓글 : " + userIdx);
+                List<CampLogCommentVO> clvo = campLogService.getMyComments(userIdx);
+            
+                dataVO.setData(clvo);
+                dataVO.setSuccess(true);
+                dataVO.setMessage("내가 쓴 댓글 조회 완료");
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("내가 쓴 댓글 조회 오류");
+            e.printStackTrace();
+        }
+        return dataVO;
+    }
+    
 }

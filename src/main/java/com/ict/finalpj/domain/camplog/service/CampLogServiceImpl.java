@@ -207,5 +207,10 @@ public class CampLogServiceImpl implements CampLogService{
     public List<ReportVO> getCommentReportCount(List<String> userIdxList) {
         return campLogMapper.getCommentReportCount(userIdxList);
     }
+
+    @Override
+    public List<CampLogCommentVO> getMyComments(String userIdx) {
+        return campLogMapper.getMyComments(userIdx);
+    }
     
 }
