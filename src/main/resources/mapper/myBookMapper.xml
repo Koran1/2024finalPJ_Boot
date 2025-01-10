@@ -7,12 +7,30 @@
 <mapper namespace="com.ict.finalpj.domain.mycamp.mapper.MyBookMapper">
 	<select id="getMyBookList" parameterType="MyBookVO" resultType="MyBookVO">
 		select 
-			u.userIdx, c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, 
+			u.userIdx, c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, c.regionCode, c.addr1, c.mapY, c.mapX,
 			b.bookIdx, b.bookCheckInDate, b.bookCheckOutDate, b.bookSelectedZone, 
-			b.bookAdultCount, b.bookYouthCount, b.bookChildCount, b.bookCarCount
+			b.bookAdultCount, b.bookYouthCount, b.bookChildCount, b.bookCarCount,
+			w.wthrTMin, w.wthrTMax, w.wthrSKY_PTY, w.wthrPOP, w.wthrSunrise, w.wthrSunset, w.wthrMoonrise, w.wthrMoonset, w.wthrLunAge
 		from pjbook b
-		left join pjcamp c on b.campIdx = c.campIdx 
+		left join pjcamp c on b.campIdx = c.campIdx
+		left join pjuser u on b.userIdx = u.userIdx 
+		left join pjweather w 
+			on w.wthrDate = b.bookCheckInDate 
+			and (
+				(c.regionCode = 17 and w.region = 10)  -- When regionCode is 17, compare to region 10
+				or c.regionCode = w.region            -- Otherwise, compare regions directly
+			)
+		where u.userIdx = #{userIdx}
+	</select>
+	<!-- <select id="getMyBookList" parameterType="MyBookVO" resultType="MyBookVO">
+		select 
+			u.userIdx, u.userAddr, c.campIdx, c.facltNm, c.firstImageUrl, c.campImg2, c.regionCode, c.addr1, c.mapY, c.mapX,
+			b.bookIdx, b.bookCheckInDate, b.bookCheckOutDate, b.bookSelectedZone, 
+			b.bookAdultCount, b.bookYouthCount, b.bookChildCount, b.bookCarCount,
+
+		from pjbook b
+		left join pjcamp c on b.campIdx = c.campIdx
 		left join pjuser u on b.userIdx = u.userIdx 
 		where u.userIdx = #{userIdx} 
-	</select>
+	</select> -->
 </mapper>

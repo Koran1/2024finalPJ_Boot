@@ -1,6 +1,24 @@
 package com.ict.finalpj.domain.camplog.controller;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,25 +42,6 @@ import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Slf4j
 @RestController
@@ -372,7 +371,7 @@ public class CampLogController {
             // 신고 추가
             List<ReportVO> rvo = campLogService.getLogReportCount(logIdx);
             map.put("rvo", rvo);
-
+            log.info("rvo : " + rvo);
             if (userIdx != null) {
                 int isUserRemommend = campLogService.isUserRemommend(logIdx, userIdx);
                 if (isUserRemommend > 0) {
@@ -627,6 +626,23 @@ public class CampLogController {
         return dataVO;
     }
 
+    @PostMapping("logReport")
+    public DataVO getLogReport(@ModelAttribute ReportVO rvo) {
+        DataVO dataVO = new DataVO();
+        try {
+            int result = campLogService.getLogReport(rvo);
+
+            if (result > 0) {
+                dataVO.setSuccess(true);
+                dataVO.setMessage("로그 글 신고 완료");
+            }
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("로그 글 신고 오류");
+            e.printStackTrace();
+        }
+        return dataVO;
+    }
     // *댓글*
     // 댓글 리스트 불러오기
     @GetMapping("commentList")
@@ -732,6 +748,7 @@ public class CampLogController {
     public DataVO getCommentReport(@ModelAttribute ReportVO rvo) {
         DataVO dataVO = new DataVO();
         try {
+            log.info("rvo : " + rvo);
             int result = campLogService.getCommentReport(rvo);
 
             if (result > 0) {

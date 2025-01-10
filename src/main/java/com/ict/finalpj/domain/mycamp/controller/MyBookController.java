@@ -27,6 +27,7 @@ public class MyBookController {
         DataVO dataVO = new DataVO();
         try {
             List<MyBookVO> myBookList = myBookService.getMyBookList(myBookVO);
+            
             dataVO.setSuccess(true);
             dataVO.setMessage("나의 예약 리스트 조회 성공");
             dataVO.setData(myBookList);

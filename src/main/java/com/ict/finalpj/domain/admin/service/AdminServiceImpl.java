@@ -81,6 +81,12 @@ public class AdminServiceImpl implements AdminService {
         return result;
     }
 
+    // 캠핑 정보 입력
+    @Override
+    public int insertCamp(CampVO campVO) {
+        return adminMapper.insertCamp(campVO);
+    }
+
     // QNA 관리
     @Override
     public List<QNAVO> getQnaList() {
@@ -248,4 +254,21 @@ public class AdminServiceImpl implements AdminService {
 
         return result;
     }
+
+    @Override
+    public int updateCamp(CampVO campData) {
+        return adminMapper.updateCamp(campData);
+    }
+
+    @Override
+    public QNAVO getQnaDetail(String qnaIdx) {
+        return adminMapper.getQnaDetail(qnaIdx);
+    }
+
+    @Override
+    public int updateQna(QNAVO formData) {
+        return adminMapper.updateQna(formData);
+    }
+
+    
 }

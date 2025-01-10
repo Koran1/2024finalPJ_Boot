@@ -29,7 +29,15 @@ public class MyBookVO {
         planEndDate, // 캠핑 끝 날짜
         planTitle, // 계획 제목
         planRegDate, // 계획 작성일
-        planUpdateDate // 계획 수정일
+        planUpdateDate, // 계획 수정일
+
+        // 날씨 및 길찾기 정보
+        regionCode,
+        wthrTMin, wthrTMax, wthrSKY_PTY, wthrPOP,
+        wthrSunrise, wthrSunset, wthrMoonrise, wthrMoonset, wthrLunAge,
+        addr1,
+        mapY,
+        mapX
         ;
 
     private int 

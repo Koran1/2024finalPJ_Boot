@@ -38,12 +38,24 @@ public interface AdminMapper {
   // 캠핑정보 관리
   List<CampVO> getSearchList(CampSearchVO campSearchVOearchVO);
 
+  // 캠핑 정보 입력
+  int insertCamp(CampVO campVO);
+
+  // 캠핑 정보 수정
+  int updateCamp(CampVO campData);
+  
   // 캠핑정보 관리 페이징
   int getSearchCount(CampSearchVO campSearchVOsearchVO);
 
   // QNA 관리
   List<QNAVO> getQnaList();
 
+  // QNA 상세 보기
+  QNAVO getQnaDetail(String qnaIdx);
+
+    // QNA 업데이트
+  int updateQna(QNAVO formData);
+  
   // 관리자 회원 정보 리스트
   List<UserListVO> getAdminUserList(UserListVO userListVO);
   int getUserListCount(UserListVO userListVO);

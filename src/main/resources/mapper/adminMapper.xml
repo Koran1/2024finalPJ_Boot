@@ -103,6 +103,118 @@
         limit #{size} offset #{offset}
     </select>
 
+	<insert id="insertCamp" parameterType="CampVO">
+		INSERT INTO pjcamp (
+			campIdx, contentId, facltNm, lineIntro, intro, insrncAt, trsagntNo, bizrno, facltDivNm, 
+			manageSttus, hvofBgnde, hvofEnddle, featureNm, induty, lctCl, doNm, doNm2, regionCode, 
+			sigunguNm, addr1, mapY, mapX, tel, homepage, resveUrl, resveCl, gnrlSiteCo, autoSiteCo, 
+			glampSiteCo, caravSiteCo, indvdlCaravSiteCo, sitedStnc, siteMg1Width, siteMg2Width, siteMg3Width, 
+			siteMg1Vrticl, siteMg2Vrticl, siteMg3Vrticl, siteMg1Co, siteMg2Co, siteMg3Co, siteBottomCl1, 
+			siteBottomCl2, siteBottomCl3, siteBottomCl4, siteBottomCl5, glampInnerFclty, caravInnerFclty, 
+			prmisnDe, operPdCl, operDeCl, trlerAcmpnyAt, caravAcmpnyAt, toiletCo, swrmCo, wtrplCo, brazierCl, 
+			sbrsCl, sbrsEtc, posblFcltyCl, posblFcltyEtc, extshrCo, frprvtWrppCo, frprvtSandCo, fireSensorCo, 
+			themaEnvrnCl, eqpmnLendCl, animalCmgCl, tourEraCl, firstImageUrl, campImg2, campImg3, campImg4, 
+			campImg5, campImg6, createdtime, modifiedtime, campView
+		) 
+		VALUES (
+			#{campIdx}, #{contentId}, #{facltNm}, #{lineIntro}, #{intro}, #{insrncAt}, #{trsagntNo}, 
+			#{bizrno}, #{facltDivNm}, #{manageSttus}, #{hvofBgnde}, #{hvofEnddle}, #{featureNm}, 
+			#{induty}, #{lctCl}, #{doNm}, #{doNm2}, #{regionCode}, #{sigunguNm}, #{addr1}, #{mapY}, 
+			#{mapX}, #{tel}, #{homepage}, #{resveUrl}, #{resveCl}, #{gnrlSiteCo}, #{autoSiteCo}, 
+			#{glampSiteCo}, #{caravSiteCo}, #{indvdlCaravSiteCo}, #{sitedStnc}, #{siteMg1Width}, 
+			#{siteMg2Width}, #{siteMg3Width}, #{siteMg1Vrticl}, #{siteMg2Vrticl}, #{siteMg3Vrticl}, 
+			#{siteMg1Co}, #{siteMg2Co}, #{siteMg3Co}, #{siteBottomCl1}, #{siteBottomCl2}, #{siteBottomCl3}, 
+			#{siteBottomCl4}, #{siteBottomCl5}, #{glampInnerFclty}, #{caravInnerFclty}, #{prmisnDe}, 
+			#{operPdCl}, #{operDeCl}, #{trlerAcmpnyAt}, #{caravAcmpnyAt}, #{toiletCo}, #{swrmCo}, 
+			#{wtrplCo}, #{brazierCl}, #{sbrsCl}, #{sbrsEtc}, #{posblFcltyCl}, #{posblFcltyEtc}, #{extshrCo}, 
+			#{frprvtWrppCo}, #{frprvtSandCo}, #{fireSensorCo}, #{themaEnvrnCl}, #{eqpmnLendCl}, 
+			#{animalCmgCl}, #{tourEraCl}, #{firstImageUrl}, #{campImg2}, #{campImg3}, #{campImg4}, 
+			#{campImg5}, #{campImg6}, #{createdtime}, #{modifiedtime}, #{campView}
+		)
+	</insert>
+
+	<update id="updateCamp" parameterType="CampVO">
+		UPDATE pjcamp
+		SET
+			contentId = #{contentId},
+			facltNm = #{facltNm},
+			lineIntro = #{lineIntro},
+			intro = #{intro},
+			insrncAt = #{insrncAt},
+			trsagntNo = #{trsagntNo},
+			bizrno = #{bizrno},
+			facltDivNm = #{facltDivNm},
+			manageSttus = #{manageSttus},
+			hvofBgnde = #{hvofBgnde},
+			hvofEnddle = #{hvofEnddle},
+			featureNm = #{featureNm},
+			induty = #{induty},
+			lctCl = #{lctCl},
+			doNm = #{doNm},
+			doNm2 = #{doNm2},
+			regionCode = #{regionCode},
+			sigunguNm = #{sigunguNm},
+			addr1 = #{addr1},
+			mapY = #{mapY},
+			mapX = #{mapX},
+			tel = #{tel},
+			homepage = #{homepage},
+			resveUrl = #{resveUrl},
+			resveCl = #{resveCl},
+			gnrlSiteCo = #{gnrlSiteCo},
+			autoSiteCo = #{autoSiteCo},
+			glampSiteCo = #{glampSiteCo},
+			caravSiteCo = #{caravSiteCo},
+			indvdlCaravSiteCo = #{indvdlCaravSiteCo},
+			sitedStnc = #{sitedStnc},
+			siteMg1Width = #{siteMg1Width},
+			siteMg2Width = #{siteMg2Width},
+			siteMg3Width = #{siteMg3Width},
+			siteMg1Vrticl = #{siteMg1Vrticl},
+			siteMg2Vrticl = #{siteMg2Vrticl},
+			siteMg3Vrticl = #{siteMg3Vrticl},
+			siteMg1Co = #{siteMg1Co},
+			siteMg2Co = #{siteMg2Co},
+			siteMg3Co = #{siteMg3Co},
+			siteBottomCl1 = #{siteBottomCl1},
+			siteBottomCl2 = #{siteBottomCl2},
+			siteBottomCl3 = #{siteBottomCl3},
+			siteBottomCl4 = #{siteBottomCl4},
+			siteBottomCl5 = #{siteBottomCl5},
+			glampInnerFclty = #{glampInnerFclty},
+			caravInnerFclty = #{caravInnerFclty},
+			prmisnDe = #{prmisnDe},
+			operPdCl = #{operPdCl},
+			operDeCl = #{operDeCl},
+			trlerAcmpnyAt = #{trlerAcmpnyAt},
+			caravAcmpnyAt = #{caravAcmpnyAt},
+			toiletCo = #{toiletCo},
+			swrmCo = #{swrmCo},
+			wtrplCo = #{wtrplCo},
+			brazierCl = #{brazierCl},
+			sbrsCl = #{sbrsCl},
+			sbrsEtc = #{sbrsEtc},
+			posblFcltyCl = #{posblFcltyCl},
+			posblFcltyEtc = #{posblFcltyEtc},
+			extshrCo = #{extshrCo},
+			frprvtWrppCo = #{frprvtWrppCo},
+			frprvtSandCo = #{frprvtSandCo},
+			fireSensorCo = #{fireSensorCo},
+			themaEnvrnCl = #{themaEnvrnCl},
+			eqpmnLendCl = #{eqpmnLendCl},
+			animalCmgCl = #{animalCmgCl},
+			tourEraCl = #{tourEraCl},
+			firstImageUrl = #{firstImageUrl},
+			campImg2 = #{campImg2},
+			campImg3 = #{campImg3},
+			campImg4 = #{campImg4},
+			campImg5 = #{campImg5},
+			campImg6 = #{campImg6},
+			modifiedtime = #{modifiedtime},
+			campView = #{campView}
+		WHERE campIdx = #{campIdx};
+	</update>
+
     <select id="getSearchCount" parameterType="CampSearchVO" resultType="int">
         select count(*) from pjcamp 
         where 1=1 
@@ -139,6 +251,15 @@
         ORDER BY 
             pjqna.qnaReRegDate ASC;
     </select>
+
+    <select id="getQnaDetail" parameterType="String" resultType="QNAVO">
+        SELECT q.*, u.userNickname from pjqna q left join pjuser u on u.userIdx = q.userIdx where qnaIdx = #{qnaIdx}
+    </select>
+
+	<update id="updateQna" parameterType="QNAVO">
+		update pjqna set qnaReSubject = #{qnaReSubject}, qnaReContent =#{qnaReContent},
+		qnaReRegDate = NOW(), qnaStatus='답변완료' where qnaIdx = #{qnaIdx}
+	</update>
 
     <!-- 관리자 회원 정보 리스트 -->
 	<select id="getAdminUserList" parameterType="UserListVO" resultType="UserListVO">

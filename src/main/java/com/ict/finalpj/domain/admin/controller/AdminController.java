@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,19 +23,19 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ict.finalpj.common.vo.DataVO;
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
+import com.ict.finalpj.domain.add.vo.FAQVO;
+import com.ict.finalpj.domain.add.vo.NoticeVO;
+import com.ict.finalpj.domain.add.vo.QNAVO;
 import com.ict.finalpj.domain.admin.service.AdminService;
 import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
+import com.ict.finalpj.domain.camp.vo.CampSearchVO;
+import com.ict.finalpj.domain.camp.vo.CampVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.ict.finalpj.domain.add.vo.FAQVO;
-import com.ict.finalpj.domain.add.vo.NoticeVO;
-import com.ict.finalpj.domain.add.vo.QNAVO;
-import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 
 @Slf4j
 @RestController
@@ -178,9 +178,48 @@ public class AdminController {
         return dataVO;
     }
 
+    // 캠핑 신규 등록
+    @PostMapping("/insertCamp")
+    public DataVO insertCamp(@RequestBody CampVO campData) {
+        log.info("CampVO" + campData);
+        DataVO dataVO = new DataVO();
+        try {
+            int result = adminService.insertCamp(campData);
+            
+            dataVO.setSuccess(true);
+            dataVO.setMessage("캠핑장 정보 삽입 성공");
+            log.info("캠핑장 리스트 조회 성공");
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("캠핑장 정보 삽입 실패");
+            log.info("캠핑장 리스트 조회 실패", e);
+        }
+        return dataVO;
+    }
+
+    // 캠핑 정보 업데이트
+    @PutMapping("/updateCamp")
+    public DataVO updateCamp(@RequestBody CampVO campData) {
+        log.info("CampVO" + campData);
+        DataVO dataVO = new DataVO();
+        try {
+            adminService.updateCamp(campData);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("캠핑장 정보 수정 성공");
+            log.info("캠핑장 리스트 조회 성공");
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("캠핑장 정보 수정 실패");
+            log.info("캠핑장 리스트 조회 실패", e);
+        }
+        return dataVO;
+    }
+
     // QnA 관리
     @GetMapping("/qnaList")
-    public DataVO getMethodName() {
+    public DataVO getQnaList() {
         DataVO dataVO = new DataVO();
         try {
             List<QNAVO> qnaList = adminService.getQnaList();
@@ -196,7 +235,48 @@ public class AdminController {
 
         return dataVO;
     }
+    
+    // QNA 상세보기
+    @GetMapping("/getQnaDetail")
+    public DataVO getQnaDetail(
+        @RequestParam("qnaIdx") String qnaIdx
+    ) {
+        DataVO dataVO = new DataVO();
+        try {
+            QNAVO qna = adminService.getQnaDetail(qnaIdx);
 
+            dataVO.setSuccess(true);
+            dataVO.setMessage("QNA 리스트 조회 성공");
+            dataVO.setData(qna);
+            log.info("QNA 리스트 조회 성공");
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("QNA 리스트 조회 실패");
+            log.info("QNA 리스트 조회 실패", e);
+        }
+
+        return dataVO;
+    }
+
+    // QNA 업데이트
+    @PutMapping("/updateQna")
+    public DataVO updateQna(@RequestBody QNAVO formData) {
+        log.info("CampVO" + formData);
+        DataVO dataVO = new DataVO();
+        try {
+            int result = adminService.updateQna(formData);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("QNA 완료");
+            log.info("캠핑장 리스트 조회 성공");
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+           dataVO.setMessage("QNA 실패");
+            log.info("캠핑장 리스트 조회 실패", e);
+        }
+        return dataVO;
+    }
+    
     // 회원정보 리스트
     @GetMapping("/userList")
     public DataVO getAdminUserList(UserListVO userListVO) {
@@ -543,6 +623,7 @@ public class AdminController {
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("reportList", reportList);
             resultMap.put("userNicknameMap", userNicknameMap);
+            log.info("resultMap : " + resultMap);
             dataVO.setData(resultMap);
             dataVO.setSuccess(true);
             dataVO.setMessage("신고 리스트 조회 성공");

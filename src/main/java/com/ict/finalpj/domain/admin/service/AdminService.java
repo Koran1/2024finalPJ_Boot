@@ -3,6 +3,8 @@ package com.ict.finalpj.domain.admin.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
@@ -14,6 +16,7 @@ import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
+import com.ict.finalpj.domain.camp.vo.CampVO;
 
 public interface AdminService {
   List<DealVO> getDealManagement();
@@ -33,9 +36,21 @@ public interface AdminService {
   // 캠핑정보관리
   Map<String, Object> getCampingList(CampSearchVO campSearchVO);
 
+  // 캠핑 정보 입력
+  int insertCamp(CampVO campVO);
+
+  // 캠핑 정보 수정
+  int updateCamp(CampVO campData);
+
   // QNA 관리
   List<QNAVO> getQnaList();
 
+  // QNA 상세 보기
+  QNAVO getQnaDetail(String qnaIdx);
+
+  // QNA 업데이트
+  int updateQna(QNAVO formData);
+  
   // 관리자 회원 정보 리스트
   Map<String, Object> getAdminUserList(UserListVO userListVO);
 

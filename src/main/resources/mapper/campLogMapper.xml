@@ -169,8 +169,8 @@
 	</select>
     <!-- 로그(후기)글 신고 등록 -->
     <insert id="getLogReport" parameterType="ReportVO">
-        insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
-        values (3, #{reportCategory}, 3, #{reportTableIdx}, #{reportContent}, NOW());
+        insert into pjreport (userIdx, reportedUserIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate) 
+        values (#{userIdx}, #{reportedUserIdx}, #{reportCategory}, 3, #{reportTableIdx}, #{reportContent}, NOW());
     </insert>
     <!-- 로그(후기)글 신고 횟수 가져오기 -->
     <select id="getLogReportCount" parameterType="ReportVO" resultType="ReportVO">
@@ -200,8 +200,8 @@
 
     <!-- 댓글 신고 등록 -->
     <insert id="getCommentReport" parameterType="ReportVO">
-        insert into pjreport (userIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate)
-        values (#{userIdx}, #{reportCategory}, 4, #{reportTableIdx}, #{reportContent}, NOW());
+        insert into pjreport (userIdx, reportedUserIdx, reportCategory, reportTableType, reportTableIdx, reportContent, reportRegDate) 
+        values (#{userIdx}, #{reportedUserIdx}, #{reportCategory}, 4, #{reportTableIdx}, #{reportContent}, NOW())
     </insert>
 
     <!-- 댓글에 저장된 userIdx로 유저 닉네임 가져오기 -->
