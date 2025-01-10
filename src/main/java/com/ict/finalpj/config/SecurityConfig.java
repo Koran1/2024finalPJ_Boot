@@ -53,7 +53,13 @@ public class SecurityConfig {
                 // 특정 URL 에 인증없이 허용
                 .requestMatchers("/upload/**").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
-                .requestMatchers("/api/**").permitAll()
+                // .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/camp/**").permitAll()
+                .requestMatchers("/api/camplog/list", "/api/camplog/detail", "/api/camplog/commentList" ).permitAll()
+                .requestMatchers("/api/deal/dealMain", "/api/deal/detail/**", "/api/deal//seller-other-deals/**", 
+                "/api/deal/active/**","/api/deal/seller-camplogs/**"  ).permitAll()
+                .requestMatchers("/api/user/login/**", "/api/user/join/**", "/api/user/getSocials" ).permitAll()
+                .requestMatchers("/api/weather/**", "/api/user/join/**", "/api/user/getSocials" ).permitAll()
 
                 // 나머지는 인증 필요-
                 .anyRequest().authenticated())
