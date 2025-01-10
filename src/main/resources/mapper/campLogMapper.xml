@@ -83,7 +83,7 @@
         select facltNm from pjcamp where campIdx = #{campIdx}
     </select>
     <update id="updateToPjcamplog" parameterType="CampLogVO">
-        update pjlog set campIdx = #{campIdx},  logTitle = #{logTitle}  where logIdx = #{logIdx}
+        update pjlog set  logTitle = #{logTitle}  where logIdx = #{logIdx}
     </update>
     <delete id="deleteLogContentByLogIdx" parameterType="String">
         delete from pjlogcontent where logIdx = #{logIdx}
@@ -225,4 +225,7 @@
     <select id="getMyComments" parameterType="String" resultType="CampLogCommentVO">
         select lc.*, l.logTitle as logTitle from pjlogcomment lc left join pjlog l on l.logIdx = lc.logIdx where lc.userIdx = #{userIdx}
     </select>
+    <update id="updateLinkeCamp" parameterType="map">
+        update pjlog set campIdx = #{campIdx} where logIdx = #{logIdx} 
+    </update>
 </mapper>

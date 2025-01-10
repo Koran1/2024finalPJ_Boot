@@ -209,6 +209,10 @@ public class CampLogServiceImpl implements CampLogService{
     }
 
     @Override
+    public int updateLinkeCamp (Map<String, String> map) {
+        return campLogMapper.updateLinkeCamp(map);
+    }
+    @Override
     public List<CampLogCommentVO> getMyComments(String userIdx) {
         return campLogMapper.getMyComments(userIdx);
     }

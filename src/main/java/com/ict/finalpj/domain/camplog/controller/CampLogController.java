@@ -68,13 +68,11 @@ public class CampLogController {
         }
         tvo.setTagData(tagList);
         int resultTVO = campLogService.insertToPjtaginfo(tvo);
-        if (resultTVO > 0) {
-            dataVO.setSuccess(true);
-            dataVO.setMessage("성공적으로 완료되었습니다");
+        if (resultTVO == 0) {
+            dataVO.setSuccess(false);
             return dataVO;
         } else {
             dataVO.setSuccess(true);
-            dataVO.setMessage("성공적으로 완료되었습니다");
             return dataVO;
         }
     }
@@ -181,46 +179,63 @@ public class CampLogController {
             @RequestPart(value = "mpFiles", required = false) MultipartFile[] mpFiles) {
         DataVO dataVO = new DataVO();
         try {
-            // // pjlog update 하기
-            CampLogVO logVO = new CampLogVO();
-            logVO.setLogIdx(dto.getLvo().getLogIdx());
-            logVO.setCampIdx(dto.getCvo().getCampIdx());
-            logVO.setLogTitle(dto.getLvo().getLogTitle());
-            int resultCVO = campLogService.updateToPjcamplog(logVO);
-            if (resultCVO == 0) {
-                dataVO.setSuccess(false);
-                dataVO.setMessage("수정 중 오류발생");
-                return dataVO;
-            }
-            // pjlogcontent delete 후 insert 하기
-            CampLogContentVO contentVO = new CampLogContentVO();
-            contentVO.setLogIdx(dto.getLvo().getLogIdx());
-            List<ContentData> contentList = new ArrayList<>();
-            for (ContentData k : dto.getLcvo().getContentData()) {
-                ContentData content = new ContentData();
-                content.setLogContent(k.getLogContent());
-                content.setLogContentOrder(k.getLogContentOrder());
-                contentList.add(content);
-                contentVO.setContentData(contentList);
-            }
-
-            int deleteOldContent = campLogService.deleteLogContentByLogIdx(dto.getLvo().getLogIdx());
-            if (deleteOldContent == 0) {
-                dataVO.setSuccess(false);
-                dataVO.setMessage("수정 중 오류발생");
-            } else {
-                int resultCTVO = campLogService.insertToPjlogcontent(contentVO);
-                if (resultCTVO == 0) {
+            // 연동된 캠핑장
+            if (dto.getCvo() != null) {
+                Map<String, String> map = new HashMap<>();
+                map.put("logIdx", dto.getLvo().getLogIdx());
+                map.put("campIdx", dto.getCvo().getCampIdx());
+                int result = campLogService.updateLinkeCamp(map);
+                if (result == 0) {
                     dataVO.setSuccess(false);
-                    dataVO.setMessage("수정 중 오류발생");
+                    dataVO.setMessage("연동캠핑장 변경중 오류발생");
                     return dataVO;
                 }
             }
+
+            // pjlog update 하기
+            if (dto.getLvo() != null) {
+                CampLogVO logVO = new CampLogVO();
+                logVO.setLogIdx(dto.getLvo().getLogIdx());
+                logVO.setLogTitle(dto.getLvo().getLogTitle());
+                int resultCVO = campLogService.updateToPjcamplog(logVO);
+                if (resultCVO == 0) {
+                    dataVO.setSuccess(false);
+                    dataVO.setMessage("제목 수정중 오류발생");
+                    return dataVO;
+                }
+            }
+            if (dto.getLcvo() != null) {
+                int deleteOldContent = campLogService.deleteLogContentByLogIdx(dto.getLvo().getLogIdx());
+                if (deleteOldContent == 0) {
+                    dataVO.setSuccess(false);
+                    dataVO.setMessage("기존 컨텐츠 삭제중 오류발생");
+                    return dataVO;
+                }
+                CampLogContentVO contentVO = new CampLogContentVO();
+                contentVO.setLogIdx(dto.getLvo().getLogIdx());
+                List<ContentData> contentList = new ArrayList<>();
+                for (ContentData k : dto.getLcvo().getContentData()) {
+                    ContentData content = new ContentData();
+                    content.setLogContent(k.getLogContent());
+                    content.setLogContentOrder(k.getLogContentOrder());
+                    contentList.add(content);
+                    contentVO.setContentData(contentList);
+                }
+                int resultCTVO = campLogService.insertToPjlogcontent(contentVO);
+                if (resultCTVO == 0) {
+                    dataVO.setSuccess(false);
+                    dataVO.setMessage("로그 컨텐츠 수정중 오류발생");
+                    return dataVO;
+                }
+            }
+
             if (dto.getFvo() != null) {
                 FileVo fvo = new FileVo();
                 fvo.setFileTableIdx(dto.getLvo().getLogIdx());
                 fvo.setDeleteOrders(dto.getFvo().getDeleteOrders());
-                int result = campLogService.deleteOldFile(fvo); // 지난파일 삭제
+                if (fvo.getDeleteOrders().length > 0) {
+                    campLogService.deleteOldFile(fvo); // 지난파일 삭제
+                }
 
                 // pjfile테이블 update하기
                 MultipartFile[] files = mpFiles;
@@ -250,9 +265,10 @@ public class CampLogController {
                 }
                 fvo2.setFileData(dataList);
                 int resultFVO = campLogService.insertToPjfile(fvo2);
+                log.info("resultFVO: " + resultFVO);
                 if (resultFVO == 0) {
                     dataVO.setSuccess(false);
-                    dataVO.setMessage("서버 오류 발생");
+                    dataVO.setMessage("파일 수정 중 오류발생");
                     return dataVO;
                 }
             }
@@ -260,13 +276,16 @@ public class CampLogController {
                 campLogService.deleteTagByLogIdx(dto.getLvo().getLogIdx());
                 TagInfoVO tvo = new TagInfoVO();
                 DataVO dataVO2 = tagMethod(tvo, dto, dto.getLvo().getLogIdx());
-                return dataVO2;
+                if (!dataVO2.isSuccess()) {
+                    dataVO.setSuccess(false);
+                    dataVO.setMessage("태그 수정 중 오류발생생");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        dataVO.setSuccess(false);
-        dataVO.setMessage("수정 중 오류 발생");
+        dataVO.setSuccess(true);
+        dataVO.setMessage("수정 완료");
         return dataVO;
     }
 
