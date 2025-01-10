@@ -32,6 +32,7 @@ import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -663,6 +664,22 @@ public class AdminController {
             log.info("신고 처리 오류", e);
         }
 
+        return dataVO;
+    }
+    
+    @GetMapping("/dealList/dealDetail/seller-camplogs/{sellerIdx}")
+    public DataVO getSellerCampLogs(@PathVariable String sellerIdx) {
+        DataVO dataVO = new DataVO();
+        try {
+            List<CampLogListVO> campLogs = adminService.getSellerCampLogs(sellerIdx);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("판매자의 캠핑장 후기 조회 성공");
+            dataVO.setData(campLogs);
+        } catch (Exception e) {
+            log.error("판매자의 캠핑장 후기 조회 실패", e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage("판매자의 캠핑장 후기 조회 실패");
+        }
         return dataVO;
     }
 }

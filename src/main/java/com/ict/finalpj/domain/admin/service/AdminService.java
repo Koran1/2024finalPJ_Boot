@@ -3,12 +3,8 @@ package com.ict.finalpj.domain.admin.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
-import com.ict.finalpj.domain.deal.vo.DealVO;
-import com.ict.finalpj.domain.user.vo.UserVO;
 import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 import com.ict.finalpj.domain.add.vo.QNAVO;
@@ -17,6 +13,9 @@ import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
+import com.ict.finalpj.domain.deal.vo.DealVO;
+import com.ict.finalpj.domain.user.vo.UserVO;
 
 public interface AdminService {
   List<DealVO> getDealManagement();
@@ -101,4 +100,7 @@ public interface AdminService {
 
   // 신고 관리 : 신고 처리(승인, 반려)
   int getReportProcess(ReportVO rvo);
+
+    // 판매자의 캠핑장 후기 조회
+  List<CampLogListVO> getSellerCampLogs(String sellerIdx);
 }

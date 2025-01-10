@@ -9,17 +9,18 @@ import org.springframework.stereotype.Service;
 
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
+import com.ict.finalpj.domain.add.vo.FAQVO;
+import com.ict.finalpj.domain.add.vo.NoticeVO;
+import com.ict.finalpj.domain.add.vo.QNAVO;
 import com.ict.finalpj.domain.admin.mapper.AdminMapper;
 import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
-import com.ict.finalpj.domain.deal.vo.DealVO;
-import com.ict.finalpj.domain.user.vo.UserVO;
-import com.ict.finalpj.domain.add.vo.FAQVO;
-import com.ict.finalpj.domain.add.vo.NoticeVO;
-import com.ict.finalpj.domain.add.vo.QNAVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
+import com.ict.finalpj.domain.deal.vo.DealVO;
+import com.ict.finalpj.domain.user.vo.UserVO;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -268,6 +269,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public int updateQna(QNAVO formData) {
         return adminMapper.updateQna(formData);
+    }
+
+    @Override
+    public List<CampLogListVO> getSellerCampLogs(String sellerIdx) {
+        return adminMapper.getSellerCampLogs(sellerIdx);
     }
 
     

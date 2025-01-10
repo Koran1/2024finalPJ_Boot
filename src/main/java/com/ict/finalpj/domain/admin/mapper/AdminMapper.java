@@ -6,8 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
-import com.ict.finalpj.domain.deal.vo.DealVO;
-import com.ict.finalpj.domain.user.vo.UserVO;
 import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 import com.ict.finalpj.domain.add.vo.QNAVO;
@@ -16,7 +14,9 @@ import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
-
+import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
+import com.ict.finalpj.domain.deal.vo.DealVO;
+import com.ict.finalpj.domain.user.vo.UserVO;
 @Mapper
 public interface AdminMapper {
   List<DealVO> getDealManagement();
@@ -124,4 +124,7 @@ public interface AdminMapper {
   int getReportProcessLog(ReportVO rvo);
   // 신고 테이블 종류가 4(후기 댓/답글 신고)인 경우
   int getReportProcessLogComm(ReportVO rvo);
+
+  // 판매자의 캠핑장 후기 조회
+  List<CampLogListVO> getSellerCampLogs(String sellerIdx);
 }

@@ -290,20 +290,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </select>
 
   <!-- 판매자의 캠핑장 후기 조회 -->
-  <select id="getSellerCampLogs" resultType="CampLogListVO">
-    SELECT 
-        l.logIdx, l.logTitle, l.logRegDate,
-        c.facltNm,
-        f.fileName
+  <select id="getSellerCampLogs" parameterType="String" resultType="com.ict.finalpj.domain.camplog.vo.CampLogListVO">
+    SELECT l.logIdx, l.logTitle, f.fileName
     FROM pjlog l
-    LEFT JOIN pjcamp c ON l.campIdx = c.campIdx
-    LEFT JOIN pjfile f ON f.fileTableType = 1 
-        AND l.logIdx = f.fileTableIdx 
-        AND f.isThumbnail = 1
+    LEFT JOIN pjfile f ON l.logIdx = f.fileTableIdx AND f.fileTableType = '1' AND f.fileOrder = 1
     WHERE l.userIdx = #{sellerIdx}
-        AND l.logIsActive = 1
-    ORDER BY l.logRegDate DESC
-    LIMIT 6
+    AND l.logview = 0
+    ORDER BY l.logRegdate DESC
   </select>
 
 </mapper>
