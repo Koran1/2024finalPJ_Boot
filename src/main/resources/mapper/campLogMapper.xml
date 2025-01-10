@@ -34,7 +34,7 @@
             (#{logIdx}, #{content.logContent}, #{content.logContentOrder})
         </foreach>
     </insert>
-    <insert id="insertToPjfile" parameterType="FileVO">
+    <insert id="insertToPjfile" parameterType="FileVo">
         insert into pjfile (fileTableType, fileTableIdx, fileName, fileCreated, fileOrder, isThumbnail) values
         <foreach  collection="fileData" item="data" separator=",">
             (1,  #{fileTableIdx}, #{data.fileName}, now(), #{data.fileOrder}, #{data.isThumbnail})
@@ -55,7 +55,7 @@
     <select id="isUserRemommend"  resultType="int" parameterType="map">
         select count(*) from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
     </select>
-    <select id="getLogFileByLogIdx"  resultType="FileVO" parameterType="String">
+    <select id="getLogFileByLogIdx"  resultType="FileVo" parameterType="String">
         select * from pjfile where fileTableType = 1 and fileTableIdx = #{logIdx}
     </select>
     <select id="getLogTagByLogIdx"  resultType="TaginfoVO" parameterType="String">
@@ -91,8 +91,8 @@
     <delete id="deleteTagByLogIdx" parameterType="String">
         delete from pjtaginfo where logIdx = #{logIdx}
     </delete>
-    <delete id="deleteOrders" parameterType="FileVO">
-        delete from pjfile where fileTableType = 1 and fileTableType = #{fileTableIdx} and fileOrder In 
+    <delete id="deleteOrders" parameterType="FileVo">
+        delete from pjfile where fileTableType = 1 and fileTableIdx = #{fileTableIdx} and fileOrder In 
         <foreach collection="deleteOrders" item="deleteOrder"  open="(" close=")" separator=",">
             #{deleteOrder}
         </foreach>

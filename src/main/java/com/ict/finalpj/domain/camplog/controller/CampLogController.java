@@ -221,7 +221,7 @@ public class CampLogController {
                 FileVo fvo = new FileVo();
                 fvo.setFileTableIdx(dto.getLvo().getLogIdx());
                 fvo.setDeleteOrders(dto.getFvo().getDeleteOrders());
-                campLogService.deleteOldFile(fvo); // 지난파일 삭제
+                int result = campLogService.deleteOldFile(fvo); // 지난파일 삭제
 
                 // pjfile테이블 update하기
                 MultipartFile[] files = mpFiles;
@@ -267,7 +267,7 @@ public class CampLogController {
             e.printStackTrace();
         }
         dataVO.setSuccess(false);
-        dataVO.setMessage("수정ㄴㄴ 중 오류 발생");
+        dataVO.setMessage("수정 중 오류 발생");
         return dataVO;
     }
 
@@ -280,7 +280,7 @@ public class CampLogController {
                 dataVO.setSuccess(false);
                 dataVO.setMessage("거래 중인 상품이 없습니다.");
                 return dataVO;
-                
+
             }
             List<String> dealIdxes = new ArrayList<>();
             Map<String, String> map = new HashMap<>();
@@ -288,9 +288,9 @@ public class CampLogController {
                 dealIdxes.add(k.getDealIdx());
                 map.put(k.getDealIdx(), null);
             }
-            
+
             String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
-            if (fileNames == null || fileNames.length == 0 ) {
+            if (fileNames == null || fileNames.length == 0) {
                 dataVO.setSuccess(false);
                 dataVO.setMessage("데이터를 불러오는 중에 문제가 발생했습니다.");
                 return dataVO;
@@ -420,9 +420,6 @@ public class CampLogController {
                     }
                     map.put("fNameByDealIdx", fNameBydealIdx);
                 }
-
-              
-                
 
             }
 
@@ -561,7 +558,7 @@ public class CampLogController {
                 }
                 Set<String> tempt2 = new HashSet<>(tempt1);
                 List<String> dealIdxes = new ArrayList<>(tempt2);
-                if (dealIdxes.size() > 0 ) {
+                if (dealIdxes.size() > 0) {
                     String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
                     List<Map<String, String>> fNameBydealIdx = new ArrayList<>();
                     for (int i = 0; i < fileNames.length; i++) {
@@ -571,57 +568,48 @@ public class CampLogController {
                         fNameBydealIdx.add(fileMap);
                     }
                     map.put("fNameByDealIdx", fNameBydealIdx);
-                    
+
                 }
 
             }
-            log.info("contentVO: " + contentVO);
-            log.info("fileVO: " + fileVO);
             List<DetailDTO> totalData = new ArrayList<>(); // 상세페이지에 뿌리기 위한 가공된 데이터
-            if (contentVO != null && fileVO != null) {
-
-
-                int maxSize = Math.max(contentVO.size(), fileVO.size());
-
-                for (int i = -1; i < maxSize; i++) {
-                    DetailDTO data = new DetailDTO();
-                    data.setOrder(i + 1);
-
-                    if (i + 1 < contentVO.size()) {
-                        data.setLogContent(contentVO.get(i + 1).getLogContent());
-                    }
-
-                    if (i != -1) {
-                        if (i < fileVO.size()) {
-                            data.setFileName(fileVO.get(i).getFileName());
-                            data.setIsTumbnail(fileVO.get(i).getIsThumbnail());
-                        }
-
-                        if (tagVO != null) {
-                            List<DetailTagData> fieldTagData = new ArrayList<>();
-                            for (int j = 0; j < tagVO.size(); j++) {
-                                if (tagVO.get(j).getFieldIdx().equals(String.valueOf(data.getOrder()))) {
-                                    DetailTagData tagData = new DetailTagData();
-                                    tagData.setDealIdx(tagVO.get(j).getDealIdx());
-                                    tagData.setTagX(tagVO.get(j).getTagX());
-                                    tagData.setTagY(tagVO.get(j).getTagY());
-                                    tagData.setTagContent(tagVO.get(j).getTagContent());
-                                    tagData.setTagId(tagVO.get(j).getTagId());
-                                    tagData.setFieldIdx(tagVO.get(j).getFieldIdx());
-
-                                    fieldTagData.add(tagData);
-                                }
-                            }
-                            data.setTagData(fieldTagData);
-                        }
-                    }
-                    totalData.add(data);
-                }
-            } else if (contentVO != null && fileVO == null) { // 로그에 파일이 없는 경우
+            if (contentVO != null && !contentVO.isEmpty()) {
                 for (int i = 0; i < contentVO.size(); i++) {
                     DetailDTO data = new DetailDTO();
                     data.setOrder(i);
                     data.setLogContent(contentVO.get(i).getLogContent());
+                    totalData.add(data);
+                }
+            }
+
+            if (fileVO != null && !fileVO.isEmpty()) {
+                while (fileVO.size() + 1 > totalData.size()) {
+                    DetailDTO data = new DetailDTO();
+                    data.setOrder(totalData.size());
+                    totalData.add(data);
+                }
+                for (int i = 0; i < fileVO.size(); i++) {
+                    DetailDTO data = totalData.get(i + 1);
+                    data.setFileName(fileVO.get(i).getFileName());
+                    data.setIsTumbnail(fileVO.get(i).getIsThumbnail());
+                }
+            }
+
+            if (tagVO != null && !tagVO.isEmpty()) {
+                for (DetailDTO data : totalData) {
+                    List<DetailTagData> fieldTagData = new ArrayList<>();
+                    for (TagInfoVO tag : tagVO) {
+                        if (tag.getFieldIdx().equals(String.valueOf(data.getOrder()))) {
+                            DetailTagData tagData = new DetailTagData();
+                            tagData.setDealIdx(tag.getDealIdx());
+                            tagData.setTagX(tag.getTagX());
+                            tagData.setTagY(tag.getTagY());
+                            tagData.setTagContent(tag.getTagContent());
+                            tagData.setTagId(tag.getTagId());
+                            tagData.setFieldIdx(tag.getFieldIdx());
+                            fieldTagData.add(tagData);
+                        }
+                    }
                     totalData.add(data);
                 }
             }
@@ -671,7 +659,7 @@ public class CampLogController {
 
                 // userIdx와 userEtc01을 매핑
                 Map<String, String> userImgMap = uvo.stream()
-                .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserEtc01));
+                        .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserEtc01));
 
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("lcvo", lcvo);
