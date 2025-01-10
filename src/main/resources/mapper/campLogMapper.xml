@@ -26,7 +26,7 @@
         select * from pjcamp order by campIdx
     </select>
     <insert id="insertToPjcamplog" parameterType="CampLogVO" useGeneratedKeys="true" keyProperty="logIdx">
-        insert into pjlog(userIdx, campIdx, logTitle, logRegDate) values(#{userIdx}, #{campIdx}, #{logTitle}, now())
+        insert into pjlog(userIdx, campIdx, logTitle, logRegDate, logUpdateDate) values(#{userIdx}, #{campIdx}, #{logTitle}, now(), now())
     </insert>
     <insert id="insertToPjlogcontent" parameterType="CampLogContentVO">
         insert into pjlogcontent (logIdx, logContent, logContentOrder) values
@@ -56,7 +56,7 @@
         select count(*) from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
     </select>
     <select id="getLogFileByLogIdx"  resultType="FileVo" parameterType="String">
-        select * from pjfile where fileTableType = 1 and fileTableIdx = #{logIdx}
+        select * from pjfile where fileTableType = 1 and fileTableIdx = #{logIdx} order by fileOrder
     </select>
     <select id="getLogTagByLogIdx"  resultType="TaginfoVO" parameterType="String">
         select * from pjtaginfo where logIdx = #{logIdx}
