@@ -262,7 +262,7 @@ public class CampLogController {
                     FileData data = new FileData();
                     data.setFileOrder(k.getFileOrder());
                     data.setIsThumbnail(k.getIsThumbnail());
-                    log.info("isTumbnail: " + k.getIsThumbnail() );
+                    log.info("isTumbnail: " + k.getIsThumbnail());
                     data.setFileName(fileNames[count]);
                     count++;
                     dataList.add(data);
@@ -619,22 +619,39 @@ public class CampLogController {
                 }
             }
 
+            // if (tagVO != null && !tagVO.isEmpty()) {
+            // for (DetailDTO data : totalData) {
+            // List<DetailTagData> fieldTagData = new ArrayList<>();
+            // for (TagInfoVO tag : tagVO) {
+            // if (tag.getFieldIdx().equals(String.valueOf(data.getOrder()))) {
+            // DetailTagData tagData = new DetailTagData();
+            // tagData.setDealIdx(tag.getDealIdx());
+            // tagData.setTagX(tag.getTagX());
+            // tagData.setTagY(tag.getTagY());
+            // tagData.setTagContent(tag.getTagContent());
+            // tagData.setTagId(tag.getTagId());
+            // tagData.setFieldIdx(tag.getFieldIdx());
+            // fieldTagData.add(tagData);
+            // }
+            // }
+            // totalData.add(data);
+            // }
+            // }
             if (tagVO != null && !tagVO.isEmpty()) {
-                for (DetailDTO data : totalData) {
-                    List<DetailTagData> fieldTagData = new ArrayList<>();
-                    for (TagInfoVO tag : tagVO) {
-                        if (tag.getFieldIdx().equals(String.valueOf(data.getOrder()))) {
-                            DetailTagData tagData = new DetailTagData();
-                            tagData.setDealIdx(tag.getDealIdx());
-                            tagData.setTagX(tag.getTagX());
-                            tagData.setTagY(tag.getTagY());
-                            tagData.setTagContent(tag.getTagContent());
-                            tagData.setTagId(tag.getTagId());
-                            tagData.setFieldIdx(tag.getFieldIdx());
-                            fieldTagData.add(tagData);
-                        }
+                List<DetailTagData> fieldTagData = new ArrayList<>();
+                for (int j = 0; j < tagVO.size(); j++) {
+                    DetailDTO data = totalData.get(j + 1);
+                    if (tagVO.get(j).getFieldIdx().equals(String.valueOf(data))) {
+                        DetailTagData tagData = new DetailTagData();
+                        tagData.setDealIdx(tagVO.get(j).getDealIdx());
+                        tagData.setTagX(tagVO.get(j).getTagX());
+                        tagData.setTagY(tagVO.get(j).getTagY());
+                        tagData.setTagContent(tagVO.get(j).getTagContent());
+                        tagData.setTagId(tagVO.get(j).getTagId());
+                        tagData.setFieldIdx(tagVO.get(j).getFieldIdx());
+                        fieldTagData.add(tagData);
                     }
-                    totalData.add(data);
+                    data.setTagData(fieldTagData);
                 }
             }
             map.put("pData", totalData);
@@ -668,6 +685,7 @@ public class CampLogController {
         }
         return dataVO;
     }
+
     // *댓글*
     // 댓글 리스트 불러오기
     @GetMapping("commentList")
@@ -791,14 +809,14 @@ public class CampLogController {
     // 내가 쓴 댓글 리스트
     @GetMapping("/getMyComments")
     public DataVO getMyComments(@RequestParam("userIdx") String userIdx) {
-         DataVO dataVO = new DataVO();
+        DataVO dataVO = new DataVO();
         try {
-                log.info("내가 쓴 댓글 : " + userIdx);
-                List<CampLogCommentVO> clvo = campLogService.getMyComments(userIdx);
-            
-                dataVO.setData(clvo);
-                dataVO.setSuccess(true);
-                dataVO.setMessage("내가 쓴 댓글 조회 완료");
+            log.info("내가 쓴 댓글 : " + userIdx);
+            List<CampLogCommentVO> clvo = campLogService.getMyComments(userIdx);
+
+            dataVO.setData(clvo);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("내가 쓴 댓글 조회 완료");
         } catch (Exception e) {
             dataVO.setSuccess(false);
             dataVO.setMessage("내가 쓴 댓글 조회 오류");
@@ -806,5 +824,5 @@ public class CampLogController {
         }
         return dataVO;
     }
-    
+
 }
