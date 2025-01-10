@@ -141,12 +141,11 @@
                     	cl.logIdx desc
                 	</when>
                 	<when test="sortOption == 'likes'">
-                    	totalLikes desc, cl.logIdx desc
+                    	totalLikes desc
                 	</when>
             	</choose>
     	) ranked
     		where ranked.rn = 1 
-    		order by ranked.logIdx desc 
     		limit #{size} offset #{offset}
 	</select>
 
