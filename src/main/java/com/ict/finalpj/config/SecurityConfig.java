@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers("/oauth2/**").permitAll()
                 // .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/api/admin/**").permitAll()
+                .requestMatchers("/api/add/notice/**", "/api/add/faq/**").permitAll()
                 .requestMatchers("/api/camp/**").permitAll()
                 .requestMatchers("/api/camplog/list", "/api/camplog/detail", "/api/camplog/commentList" ).permitAll()
                 .requestMatchers("/api/deal/dealMain", "api/deal/dealMainSearch/**", "/api/deal/detail/**", 
