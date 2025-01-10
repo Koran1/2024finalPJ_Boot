@@ -228,4 +228,7 @@
     <update id="updateLinkeCamp" parameterType="map">
         update pjlog set campIdx = #{campIdx} where logIdx = #{logIdx} 
     </update>
+    <update id="logUpdateDatetoNow" parameterType="String">
+        update pjlog set logUpdateDate = now() where logIdx = #{logIdx}
+    </update>
 </mapper>

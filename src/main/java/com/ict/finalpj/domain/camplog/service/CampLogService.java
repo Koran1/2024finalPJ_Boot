@@ -43,6 +43,7 @@ public interface CampLogService {
     public int getLogReport(ReportVO logIdx); // 로그 글 신고
     public List<ReportVO> getLogReportCount(String logIdx); // 로그 글 신고 횟수
     int updateLinkeCamp( Map<String, String> map);
+    int logUpdateDatetoNow(String logIdx);
 
     // 캠프로그 리스트 
     Map<String, Object> getCamplogList(CampLogListVO campLogListVO);

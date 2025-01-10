@@ -216,5 +216,10 @@ public class CampLogServiceImpl implements CampLogService{
     public List<CampLogCommentVO> getMyComments(String userIdx) {
         return campLogMapper.getMyComments(userIdx);
     }
+
+    @Override
+    public int logUpdateDatetoNow(String logIdx) {
+        return campLogMapper.logUpdateDatetoNow(logIdx);
+    }
     
 }

@@ -190,6 +190,7 @@ public class CampLogController {
                     dataVO.setMessage("연동캠핑장 변경중 오류발생");
                     return dataVO;
                 }
+                campLogService.logUpdateDatetoNow(dto.getLvo().getLogIdx());
             }
 
             // pjlog update 하기
@@ -203,6 +204,7 @@ public class CampLogController {
                     dataVO.setMessage("제목 수정중 오류발생");
                     return dataVO;
                 }
+                campLogService.logUpdateDatetoNow(dto.getLvo().getLogIdx());
             }
             if (dto.getLcvo() != null) {
                 int deleteOldContent = campLogService.deleteLogContentByLogIdx(dto.getLvo().getLogIdx());
@@ -227,6 +229,7 @@ public class CampLogController {
                     dataVO.setMessage("로그 컨텐츠 수정중 오류발생");
                     return dataVO;
                 }
+                campLogService.logUpdateDatetoNow(dto.getLvo().getLogIdx());
             }
 
             if (dto.getFvo() != null) {
@@ -259,6 +262,7 @@ public class CampLogController {
                     FileData data = new FileData();
                     data.setFileOrder(k.getFileOrder());
                     data.setIsThumbnail(k.getIsThumbnail());
+                    log.info("isTumbnail: " + k.getIsThumbnail() );
                     data.setFileName(fileNames[count]);
                     count++;
                     dataList.add(data);
@@ -271,6 +275,7 @@ public class CampLogController {
                     dataVO.setMessage("파일 수정 중 오류발생");
                     return dataVO;
                 }
+                campLogService.logUpdateDatetoNow(dto.getLvo().getLogIdx());
             }
             if (dto.getTvo() != null) {
                 campLogService.deleteTagByLogIdx(dto.getLvo().getLogIdx());
@@ -280,6 +285,7 @@ public class CampLogController {
                     dataVO.setSuccess(false);
                     dataVO.setMessage("태그 수정 중 오류발생생");
                 }
+                campLogService.logUpdateDatetoNow(dto.getLvo().getLogIdx());
             }
         } catch (Exception e) {
             e.printStackTrace();
