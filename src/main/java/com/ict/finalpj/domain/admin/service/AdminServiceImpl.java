@@ -18,7 +18,9 @@ import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogCommentVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -276,5 +278,49 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.getSellerCampLogs(sellerIdx);
     }
 
+
+    // 캠핑로그 관리 : 로그 글 리스트 불러오기 필터, 페이징
+    @Override
+    public Map<String, Object> getLogList(CampLogVO clvo) {
+        int offset = (clvo.getPage() - 1) * clvo.getSize();
+        clvo.setOffset(offset);
+
+        List<CampLogVO> logList = adminMapper.getLogList(clvo);
+        int totalCount = adminMapper.getLogCount(clvo);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", logList);
+        result.put("totalCount", totalCount);
+        result.put("totalPages", (int) Math.ceil((double) totalCount / clvo.getSize()));
+        return result;
+    }
+
+    // 캠핑로그 관리 : 로그 댓/답글 리스트 불러오기 필터, 페이징
+    @Override
+    public Map<String, Object> getLogCommentList(CampLogCommentVO lcvo) {
+        int offset = (lcvo.getPage() - 1) * lcvo.getSize();
+        lcvo.setOffset(offset);
+
+        List<CampLogCommentVO> logCommentList = adminMapper.getLogCommentList(lcvo);
+        int totalCount = adminMapper.getLogCommentCount(lcvo);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", logCommentList);
+        result.put("totalCount", totalCount);
+        result.put("totalPages", (int) Math.ceil((double) totalCount / lcvo.getSize()));
+        return result;
+    }
+
+    // 캠핑로그 관리 : 로그 글 가리기 업데이트
+    @Override
+    public int getInActiveLog(String logIdx) {
+        return adminMapper.getInActiveLog(logIdx);
+    }
+
+    // 캠핑로그 관리 : 로그 댓/답글 가리기 업데이트
+    @Override
+    public int getInActiveLogComment(String logCommentIdx) {
+        return adminMapper.getInActiveLogComment(logCommentIdx);
+    }
     
 }

@@ -603,4 +603,50 @@
         WHERE logCommentIdx = #{reportTableIdx}
     </update>
 
+	<!-- 캠핑로그 글 목록 가져오기 -->
+    <select id="getLogList" parameterType="CampLogVO" resultType="CampLogVO">
+        select * from pjlog 
+		where 1=1
+		<if test="keyword != null">
+			and (logTitle like concat('%', #{keyword}, '%'))
+		</if>
+        order by logIdx asc
+        limit #{size} offset #{offset}
+    </select>
+
+    <!-- 캠핑로그 글 페이징 개수 -->
+    <select id="getLogCount" parameterType="CampLogVO" resultType="int">
+        select count(*) from pjlog
+    </select>
+
+	<!-- 캠핑로그 댓/답글 목록 가져오기 -->
+    <select id="getLogCommentList" parameterType="CampLogCommentVO" resultType="CampLogCommentVO">
+        select * from pjlogcomment 
+		where 1=1
+		<if test="keyword != null">
+			and (logCommentContent like concat('%', #{keyword}, '%'))
+		</if>
+        order by logCommentIdx asc
+        limit #{size} offset #{offset}
+    </select>
+
+    <!-- 캠핑로그 댓/답글 페이징 개수 -->
+    <select id="getLogCommentCount" parameterType="CampLogCommentVO" resultType="int">
+        select count(*) from pjlogcomment
+    </select>
+
+	<!-- 캠핑로그 글 가리기 업데이트  -->
+	<update id="getInActiveLog" parameterType="String">
+		UPDATE pjlog 
+		SET logIsActive = 0
+		WHERE logIdx = #{logIdx}
+	</update>
+
+	<!-- 캠핑로그 댓/답글 가리기 업데이트  -->
+	<update id="getInActiveLogComment" parameterType="String">
+		UPDATE pjlogcomment 
+		SET logCommentIsActive = 0
+		WHERE logCommentIdx = #{logCommentIdx}
+	</update>
+
 </mapper>

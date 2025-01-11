@@ -13,7 +13,9 @@ import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogCommentVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -103,4 +105,16 @@ public interface AdminService {
 
     // 판매자의 캠핑장 후기 조회
   List<CampLogListVO> getSellerCampLogs(String sellerIdx);
+
+  // 캠핑로그 관리 : 로그 글 리스트 불러오기 필터, 페이징
+  Map<String, Object> getLogList(CampLogVO clvo);
+
+  // 캠핑로그 관리 : 로그 댓/답글 리스트 불러오기 필터, 페이징
+  Map<String, Object> getLogCommentList(CampLogCommentVO lcvo);
+
+  // 캠핑로그 관리 : 로그 글 가리기 업데이트
+  int getInActiveLog(String logIdx);
+
+  // 캠핑로그 관리 : 로그 댓/답글 가리기 업데이트
+  int getInActiveLogComment(String logCommentIdx);
 }

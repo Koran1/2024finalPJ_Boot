@@ -1,9 +1,12 @@
 package com.ict.finalpj.domain.admin.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,7 +35,14 @@ import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
 import com.ict.finalpj.domain.camp.vo.CampSearchVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
+import com.ict.finalpj.domain.camplog.service.CampLogService;
+import com.ict.finalpj.domain.camplog.vo.CampLogCommentVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogContentVO;
 import com.ict.finalpj.domain.camplog.vo.CampLogListVO;
+import com.ict.finalpj.domain.camplog.vo.CampLogVO;
+import com.ict.finalpj.domain.camplog.vo.DetailDTO;
+import com.ict.finalpj.domain.camplog.vo.DetailDTO.DetailTagData;
+import com.ict.finalpj.domain.camplog.vo.TagInfoVO;
 import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
@@ -46,6 +56,9 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private CampLogService campLogService;
 
     @GetMapping("/dealList")
     public DataVO getDealManagement() {
@@ -638,6 +651,7 @@ public class AdminController {
         return dataVO;
     }
 
+    // 신고 관리 : 신고 처리
     @PostMapping("/reportProcess")
     public DataVO getReportProcess(@RequestBody ReportVO rvo) {
         DataVO dataVO = new DataVO();
@@ -680,6 +694,205 @@ public class AdminController {
             dataVO.setSuccess(false);
             dataVO.setMessage("판매자의 캠핑장 후기 조회 실패");
         }
+        return dataVO;
+    }
+
+
+    // 캠핑로그 관리 : 로그 글 정보 불러오기
+    @PostMapping("/getLogList")
+    public DataVO getLogList(@RequestBody CampLogVO clvo) {
+        log.info("Sort Option: {}", clvo);
+        DataVO dataVO = new DataVO();
+        try {
+            Map<String, Object> logList = adminService.getLogList(clvo);
+            
+            log.info("logList : " + logList);
+
+            List<UserVO> uvo = adminService.getUserInfo();
+            log.info("uvo : " + uvo);
+            // userIdx와 userNickname을 매핑
+            Map<String, String> userNicknameMap = uvo.stream()
+                .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserNickname));
+            // log.info("userNicknameMap : " + userNicknameMap);
+            // // userIdx와 userEtc01을 매핑
+            // Map<String, String> userImgMap = uvo.stream()
+            //     .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserEtc01));
+            // log.info("userImgMap : " + userImgMap);
+
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("logList", logList);
+            resultMap.put("userNicknameMap", userNicknameMap);
+            // resultMap.put("userImgMap", userImgMap);
+            dataVO.setData(resultMap);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("캠핑로그 리스트 조회 성공");
+            log.info("캠핑로그 리스트 조회 성공");
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("캠핑로그 리스트 조회 오류");
+            log.info("캠핑로그 리스트 조회 오류", e);
+        }
+        return dataVO;
+    }
+
+    // 캠핑로그 관리 : 로그 댓/답글 정보 불러오기
+    @PostMapping("/getLogCommentList")
+    public DataVO getLogCommentList(@RequestBody CampLogCommentVO lcvo) {
+        log.info("Sort Option: {}", lcvo);
+        DataVO dataVO = new DataVO();
+        try {
+            Map<String, Object> logCommentList = adminService.getLogCommentList(lcvo);
+            
+            log.info("lcvo : " + lcvo);
+
+            List<UserVO> uvo = adminService.getUserInfo();
+            // userIdx와 userNickname을 매핑
+            Map<String, String> userNicknameMap = uvo.stream()
+                .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserNickname));
+
+            // userIdx와 userEtc01을 매핑
+            // Map<String, String> userImgMap = uvo.stream()
+            //     .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserEtc01));
+
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("logCommentList", logCommentList);
+            resultMap.put("userNicknameMap", userNicknameMap);
+            // resultMap.put("userImgMap", userImgMap);
+            dataVO.setData(resultMap);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("캠핑로그 댓/답글 리스트 조회 성공");
+            log.info("캠핑로그 댓/답글 리스트 조회 성공");
+
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("캠핑로그 댓/답글 리스트 조회 오류");
+            log.info("캠핑로그 댓/답글 리스트 조회 오류", e);
+        }
+        return dataVO;
+    }
+
+    // 캠핑로그 관리 : 글, 댓/답글 가리기
+    @PutMapping("/inActiveLog")
+    public DataVO getInActiveLog(
+    @RequestParam(value = "logIdx", required = false) String[] logIdx, 
+    @RequestParam(value = "logCommentIdx", required = false) String[] logCommentIdx) 
+    {
+        DataVO dataVO = new DataVO();
+        try {
+            if(logIdx != null){
+                for (String k : logIdx) {
+                    adminService.getInActiveLog(k);
+                }
+            }
+            if(logCommentIdx != null){
+                for (String k : logCommentIdx) {
+                    adminService.getInActiveLogComment(k);
+                }
+            }
+            dataVO.setSuccess(true);
+            dataVO.setMessage(logIdx != null ? "로그 글 가리기 성공" : "로그 댓/답글 가리기 성공");
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage(logIdx != null ? "로그 글 가리기 실패" : "로그 댓/답글 가리기 실패");
+            e.printStackTrace();
+        }
+        return dataVO;
+    }
+
+    // 캠핑로그 관리 : 모달창에 보여줄 로그 글 정보들(내용, 사진, 태그정보, 거래연동, 추천수)
+    @GetMapping("/logModalData")
+    public DataVO getLogModalData(@RequestParam("logIdx") String logIdx) {
+        DataVO dataVO = new DataVO();
+        try {
+            Map<String, Object> map = new HashMap<>();
+            List<CampLogContentVO> contentVO = campLogService.getLogContentByLogIdx(logIdx);
+            List<FileVo> fileVO = campLogService.getLogFileByLogIdx(logIdx);
+            List<TagInfoVO> tagVO = campLogService.getLogTagByLogIdx(logIdx);
+            List<DealVO> dealVO = campLogService.getDealList();
+            int RecommendCount = campLogService.countLogRecommend(logIdx);
+            map.put("RecommendCount", RecommendCount);
+
+            if (dealVO != null) {
+                map.put("dealVO", dealVO);
+            }
+            if (tagVO != null && tagVO.size() != 0) {
+                List<String> tempt1 = new ArrayList<>();
+                for (TagInfoVO k : tagVO) {
+                    if (k.getDealIdx() != null) {
+                        tempt1.add(k.getDealIdx());
+                    }
+                }
+                Set<String> tempt2 = new HashSet<>(tempt1);
+                List<String> dealIdxes = new ArrayList<>(tempt2);
+                
+                if (dealIdxes.size() > 0) {
+                    String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
+                    Map<String, String> fNameBydealIdx = new HashMap<>();
+    
+                    for (int i = 0; i < fileNames.length; i++) {
+                        fNameBydealIdx.put(dealIdxes.get(i), fileNames[i]);
+                    }
+                    map.put("fNameByDealIdx", fNameBydealIdx);
+                }
+
+            }
+
+            List<DetailDTO> totalData = new ArrayList<>(); // 상세페이지에 뿌리기 위한 가공된 데이터
+            if (contentVO != null && fileVO != null) {
+
+                int maxSize = Math.max(contentVO.size(), fileVO.size());
+
+                for (int i = -1; i < maxSize; i++) {
+                    DetailDTO data = new DetailDTO();
+                    data.setOrder(i + 1);
+
+                    if (i + 1 < contentVO.size()) {
+                        data.setLogContent(contentVO.get(i + 1).getLogContent());
+                    }
+                    if (i != -1) {
+                        if (i < fileVO.size()) {
+                            data.setFileName(fileVO.get(i).getFileName());
+                        }
+
+                        if (tagVO != null) {
+                            List<DetailTagData> fieldTagData = new ArrayList<>();
+                            for (int j = 0; j < tagVO.size(); j++) {
+                                if (tagVO.get(j).getFieldIdx().equals(String.valueOf(data.getOrder()))) {
+                                    DetailTagData tagData = new DetailTagData();
+                                    tagData.setDealIdx(tagVO.get(j).getDealIdx());
+                                    tagData.setTagX(tagVO.get(j).getTagX());
+                                    tagData.setTagY(tagVO.get(j).getTagY());
+                                    tagData.setTagContent(tagVO.get(j).getTagContent());
+                                    tagData.setTagId(tagVO.get(j).getTagId());
+                                    tagData.setFieldIdx(tagVO.get(j).getFieldIdx());
+                                    fieldTagData.add(tagData);
+                                }
+                            }
+                            data.setTagData(fieldTagData);
+                        }
+                    }
+                    totalData.add(data);
+                }
+            } else if (contentVO != null && fileVO == null) { // 로그에 파일이 없는 경우
+                for (int i = 0; i < contentVO.size(); i++) {
+                    DetailDTO data = new DetailDTO();
+                    data.setOrder(i);
+                    data.setLogContent(contentVO.get(i).getLogContent());
+                    totalData.add(data);
+                }
+            }
+            map.put("pData", totalData);
+            if (map.size() > 0) {
+                dataVO.setSuccess(true);
+                dataVO.setData(map);
+                return dataVO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        dataVO.setSuccess(false);
+        dataVO.setMessage("서버 오류 발생");
         return dataVO;
     }
 }
