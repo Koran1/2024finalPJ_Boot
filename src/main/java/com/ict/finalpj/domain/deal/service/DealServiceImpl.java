@@ -267,4 +267,9 @@ public class DealServiceImpl implements DealService {
         return dealMapper.getSellerCampLogs(sellerIdx);
     }
 
+    @Override
+    public int updateDealStatus(String dealIdx, String status) {
+        return dealMapper.updateDealStatus(dealIdx, status);
+    }
+
 }

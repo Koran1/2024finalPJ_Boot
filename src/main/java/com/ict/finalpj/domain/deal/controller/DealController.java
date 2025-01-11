@@ -419,41 +419,38 @@ public class DealController {
     }
 
     // 판매 상태 변경 API
-    @PutMapping("/status")
+    @PutMapping("/status/{dealIdx}")
     public DataVO updateDealStatus(
-        @RequestParam("dealIdx") String dealIdx,
-        @RequestParam("senderIdx") String senderIdx,
-        @RequestParam("senderNick") String senderNick
-        ) {
-        DataVO dvo = new DataVO();
-            try {
-                log.info("dealIdx : " + dealIdx);
-                log.info("senderIdx : " + senderIdx);
-                log.info("senderNick : " + senderNick);
-
-                DealVO dealvo = new DealVO();
-                dealvo.setDealIdx(dealIdx);
-                dealvo.setDealBuyerNick(senderNick);
-                dealvo.setDealBuyerUserIdx(senderIdx);
-
-                int result = dealService.getDealStatusUpdate(dealvo);
-                if(result > 0){
-                    dvo.setSuccess(true);
-                    dvo.setMessage("판매 완료 상태 변경");
-                }else{
-                    dvo.setSuccess(false);
-                    dvo.setMessage("판매 완료 상태 변경 실패");
-
-                }
-
-
-
-            } catch (Exception e) {
-                dvo.setSuccess(false);
-                dvo.setMessage("판매 상태 변경 오류");
-                e.printStackTrace();
+        @PathVariable("dealIdx") String dealIdx, 
+        @RequestBody Map<String, String> requestBody
+    ) {
+        DataVO dataVO = new DataVO();
+        try {
+            String status = requestBody.get("status");
+            if (status == null) {
+                dataVO.setSuccess(false);
+                dataVO.setMessage("상태값이 전달되지 않았습니다.");
+                return dataVO;
             }
-        return dvo;
+
+            log.info("거래 상태 업데이트 시도 - dealIdx: {}, status: {}", dealIdx, status);
+            int result = dealService.updateDealStatus(dealIdx, status);
+            
+            if (result > 0) {
+                log.info("거래 상태 업데이트 성공 - dealIdx: {}, status: {}", dealIdx, status);
+                dataVO.setSuccess(true);
+                dataVO.setMessage("거래 상태가 업데이트되었습니다.");
+            } else {
+                log.warn("거래 상태 업데이트 실패 - dealIdx: {}, status: {}", dealIdx, status);
+                dataVO.setSuccess(false);
+                dataVO.setMessage("거래 상태 업데이트에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            log.error("거래 상태 업데이트 중 오류 발생 - dealIdx: {}", dealIdx, e);
+            dataVO.setSuccess(false);
+            dataVO.setMessage("거래 상태 업데이트 중 오류가 발생했습니다.");
+        }
+        return dataVO;
     }
 
     // 판매자의 다른 상품 조회

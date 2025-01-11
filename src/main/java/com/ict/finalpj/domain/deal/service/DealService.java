@@ -87,4 +87,7 @@ public interface DealService {
 
   // 판매자의 캠핑장 후기 조회
   List<CampLogListVO> getSellerCampLogs(String sellerIdx);
+
+  // 거래 상태 업데이트
+  int updateDealStatus(String dealIdx, String status);
 }

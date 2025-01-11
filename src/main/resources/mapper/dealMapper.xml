@@ -299,4 +299,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     ORDER BY l.logRegdate DESC
   </select>
 
+  <update id="updateDealStatus" parameterType="map">
+    UPDATE pjdeal 
+    SET deal02 = #{status}
+    WHERE dealIdx = #{dealIdx}
+  </update>
+
 </mapper>
