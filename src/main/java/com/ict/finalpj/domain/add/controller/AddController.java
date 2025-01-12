@@ -32,8 +32,8 @@ public class AddController {
     private AddService addService;
 
     @GetMapping("/notice/getNotice")
-    public DataVO getNoticeList(@RequestParam String currentPage,
-    @RequestParam String searchKeyword ) {
+    public DataVO getNoticeList(@RequestParam("currentPage") String currentPage,
+    @RequestParam("searchKeyword") String searchKeyword ) {
         DataVO dvo = new DataVO();
         try {
             log.info("cPage : " + currentPage);

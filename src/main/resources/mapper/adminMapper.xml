@@ -526,7 +526,7 @@
         <if test="sortOption == 'logComment'">
             and reportTableType = 4
         </if>
-        order by reportIdx asc
+        order by reportIdx desc
         limit #{size} offset #{offset}
     </select>
 
@@ -610,7 +610,7 @@
 		<if test="keyword != null">
 			and (logTitle like concat('%', #{keyword}, '%'))
 		</if>
-        order by logIdx asc
+        order by logIdx desc
         limit #{size} offset #{offset}
     </select>
 
@@ -626,7 +626,7 @@
 		<if test="keyword != null">
 			and (logCommentContent like concat('%', #{keyword}, '%'))
 		</if>
-        order by logCommentIdx asc
+        order by logCommentIdx desc
         limit #{size} offset #{offset}
     </select>
 

@@ -105,12 +105,13 @@ public interface AdminMapper {
 
   
   // 신고 관리
+  // 신고 관리 : 신고 리스트 불러오기
   List<ReportVO> getReportList(ReportVO rvo);
 
   // 신고 관리 페이징
   int getReportCount(ReportVO rvo);
 
-  // 신고 관리 : 유저 Idx 닉네임 가져오기
+  // 신고 관리 : 유저 Idx 닉네임 가져오기 (공용)
   List<UserVO> getUserInfo();
 
   // 신고 관리 : 신고 처리(승인, 반려)

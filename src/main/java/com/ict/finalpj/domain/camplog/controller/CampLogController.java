@@ -394,7 +394,11 @@ public class CampLogController {
             map.put("RecommendCount", RecommendCount);
             // 신고 추가
             List<ReportVO> rvo = campLogService.getLogReportCount(logIdx);
-            map.put("rvo", rvo);
+            if(rvo != null && !rvo.isEmpty()){
+                map.put("rvo", rvo);
+            }else{
+                map.put("rvo", null);
+            }
             if (userIdx != null) {
                 int isUserRemommend = campLogService.isUserRemommend(logIdx, userIdx);
                 if (isUserRemommend > 0) {
@@ -700,7 +704,7 @@ public class CampLogController {
 
                 // userIdx와 userEtc01을 매핑
                 Map<String, String> userImgMap = uvo.stream()
-                        .collect(Collectors.toMap(UserVO::getUserIdx, UserVO::getUserEtc01));
+                        .collect(Collectors.toMap(UserVO::getUserIdx, user -> user.getUserEtc01() != null ? user.getUserEtc01() : "default_value"));
 
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("lcvo", lcvo);
