@@ -488,7 +488,7 @@
 	<!-- 관리자 FAQ 쓰기 -->
 	<insert id="getAdminFAQListWrite" parameterType="FAQVO">
 		insert into pjfaq (faqQuestion, faqAnswer, faqReg, faqStatus) 
-		values(#{faqQuestion}, #{faqAnswer}, #{faqReg}, #{faqStatus})
+		values(#{faqQuestion}, #{faqAnswer}, NOW(), #{faqStatus})
 	</insert>
 
 	<!-- 관리자 FAQ 상세 -->
