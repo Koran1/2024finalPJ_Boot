@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-
 import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 import com.ict.finalpj.domain.add.vo.QNAVO;
@@ -18,6 +17,16 @@ public interface AddMapper {
 
     List<NoticeVO> getNoticeDetails(String noticeIdx);
     List<NoticeVO> getNoticeLv1Details(String noticeIdx);
+
+    NoticeVO getNoticePrev(String noticeIdx);
+    NoticeVO getNoticeDetail(String noticeIdx);
+    NoticeVO getNoticeAfter(String noticeIdx);
+
+    NoticeVO getNoticePrevLv1(String noticeIdx);
+    NoticeVO getNoticeDetailLv1(String noticeIdx);
+    NoticeVO getNoticeAfterLv1(String noticeIdx);
+
+
 
     List<FAQVO> getFaqs();
 

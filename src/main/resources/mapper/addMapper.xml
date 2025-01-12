@@ -35,6 +35,18 @@
         order by noticeIdx asc limit 1)
     </select>
 
+    <select id="getNoticePrev" parameterType="String" resultType="NoticeVO" >
+        select * from pjnotice where noticeIdx <![CDATA[<]]> #{noticeIdx} and noticeStatus = 'on' 
+        ORDER by noticeIdx DESC limit 1
+    </select>
+    <select id="getNoticeDetail" parameterType="String" resultType="NoticeVO" >
+        select * from pjnotice where noticeIdx = #{noticeIdx} and noticeStatus = 'on'
+    </select>
+    <select id="getNoticeAfter" parameterType="String" resultType="NoticeVO" >
+        select * from pjnotice where noticeIdx <![CDATA[>]]> #{noticeIdx} and noticeStatus = 'on' 
+        order by noticeIdx asc limit 1
+    </select>
+
     <select id="getNoticeLv1Details" parameterType="String" resultType="NoticeVO" >
         ( select * from pjnotice where noticeIdx <![CDATA[<]]> #{noticeIdx} and noticeStatus = 'on' 
          and noticeLevel = '1' ORDER by noticeIdx DESC limit 1 ) 
@@ -46,6 +58,18 @@
          and noticeLevel = '1' order by noticeIdx asc limit 1)
     </select>
 
+    <select id="getNoticePrevLv1" parameterType="String" resultType="NoticeVO" >
+        select * from pjnotice where noticeIdx <![CDATA[<]]> #{noticeIdx} and noticeStatus = 'on' 
+         and noticeLevel = '1' ORDER by noticeIdx DESC limit 1
+    </select>
+    <select id="getNoticeDetailLv1" parameterType="String" resultType="NoticeVO" >
+        select * from pjnotice where noticeIdx = #{noticeIdx} 
+        and noticeStatus = 'on' and noticeLevel = '1'
+    </select>
+    <select id="getNoticeAfterLv1" parameterType="String" resultType="NoticeVO" >
+        select * from pjnotice where noticeIdx <![CDATA[>]]> #{noticeIdx} and noticeStatus = 'on' 
+         and noticeLevel = '1' order by noticeIdx asc limit 1)
+    </select>
 
     <select id="getFaqs" resultType="FAQVO" >
         select * from pjfaq where faqStatus = 'on'
