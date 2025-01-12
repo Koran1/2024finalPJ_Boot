@@ -40,10 +40,17 @@
             (1,  #{fileTableIdx}, #{data.fileName}, now(), #{data.fileOrder}, #{data.isThumbnail})
         </foreach>
     </insert>
-    <insert id="insertToPjtaginfo" parameterType="TaginfoVO">
+  <insert id="insertToPjtaginfo" parameterType="TaginfoVO">
         insert into pjtaginfo (logIdx, fieldIdx, tagContent, tagX, tagY, dealIdx, tagId, userIdx) values
         <foreach  collection="tagData" item="data" separator=",">
-            (#{logIdx}, #{data.fieldIdx}, #{data.tagContent}, #{data.tagX}, #{data.tagY}, #{data.dealIdx}, #{data.tagId}, #{userIdx})
+            (#{logIdx}, #{data.fieldIdx}, #{data.tagContent}, #{data.tagX}, #{data.tagY},
+        <if test="data.dealIdx == null">
+            NULL
+        </if>
+        <if test="data.dealIdx != null">
+            #{data.dealIdx}
+        </if>, 
+         #{data.tagId}, #{userIdx})
         </foreach>
     </insert>
     <select id="getLogDetailByLogIdx"  resultType="CampLogVO" parameterType="String">
