@@ -179,6 +179,7 @@ public class CampLogController {
             @RequestPart(value = "mpFiles", required = false) MultipartFile[] mpFiles) {
         DataVO dataVO = new DataVO();
         try {
+           
             // 연동된 캠핑장
             if (dto.getCvo() != null) {
                 Map<String, String> map = new HashMap<>();
@@ -262,14 +263,12 @@ public class CampLogController {
                     FileData data = new FileData();
                     data.setFileOrder(k.getFileOrder());
                     data.setIsThumbnail(k.getIsThumbnail());
-                    log.info("isTumbnail: " + k.getIsThumbnail());
                     data.setFileName(fileNames[count]);
                     count++;
                     dataList.add(data);
                 }
                 fvo2.setFileData(dataList);
                 int resultFVO = campLogService.insertToPjfile(fvo2);
-                log.info("resultFVO: " + resultFVO);
                 if (resultFVO == 0) {
                     dataVO.setSuccess(false);
                     dataVO.setMessage("파일 수정 중 오류발생");
@@ -396,7 +395,6 @@ public class CampLogController {
             // 신고 추가
             List<ReportVO> rvo = campLogService.getLogReportCount(logIdx);
             map.put("rvo", rvo);
-            log.info("rvo : " + rvo);
             if (userIdx != null) {
                 int isUserRemommend = campLogService.isUserRemommend(logIdx, userIdx);
                 if (isUserRemommend > 0) {
@@ -619,39 +617,23 @@ public class CampLogController {
                 }
             }
 
-            // if (tagVO != null && !tagVO.isEmpty()) {
-            // for (DetailDTO data : totalData) {
-            // List<DetailTagData> fieldTagData = new ArrayList<>();
-            // for (TagInfoVO tag : tagVO) {
-            // if (tag.getFieldIdx().equals(String.valueOf(data.getOrder()))) {
-            // DetailTagData tagData = new DetailTagData();
-            // tagData.setDealIdx(tag.getDealIdx());
-            // tagData.setTagX(tag.getTagX());
-            // tagData.setTagY(tag.getTagY());
-            // tagData.setTagContent(tag.getTagContent());
-            // tagData.setTagId(tag.getTagId());
-            // tagData.setFieldIdx(tag.getFieldIdx());
-            // fieldTagData.add(tagData);
-            // }
-            // }
-            // totalData.add(data);
-            // }
-            // }
             if (tagVO != null && !tagVO.isEmpty()) {
-                List<DetailTagData> fieldTagData = new ArrayList<>();
-                for (int j = 0; j < tagVO.size(); j++) {
-                    DetailDTO data = totalData.get(j + 1);
-                    if (tagVO.get(j).getFieldIdx().equals(String.valueOf(data))) {
-                        DetailTagData tagData = new DetailTagData();
-                        tagData.setDealIdx(tagVO.get(j).getDealIdx());
-                        tagData.setTagX(tagVO.get(j).getTagX());
-                        tagData.setTagY(tagVO.get(j).getTagY());
-                        tagData.setTagContent(tagVO.get(j).getTagContent());
-                        tagData.setTagId(tagVO.get(j).getTagId());
-                        tagData.setFieldIdx(tagVO.get(j).getFieldIdx());
-                        fieldTagData.add(tagData);
+                for (int i = 1; i < totalData.size(); i++) {
+                    List<DetailTagData> fieldTagData = new ArrayList<>();
+                        DetailDTO data = totalData.get(i);
+                    for (int j = 0; j < tagVO.size(); j++) {
+                        if (tagVO.get(j).getFieldIdx().equals(String.valueOf(data.getOrder()))) {
+                            DetailTagData tagData = new DetailTagData();
+                            tagData.setDealIdx(tagVO.get(j).getDealIdx());
+                            tagData.setTagX(tagVO.get(j).getTagX());
+                            tagData.setTagY(tagVO.get(j).getTagY());
+                            tagData.setTagContent(tagVO.get(j).getTagContent());
+                            tagData.setTagId(tagVO.get(j).getTagId());
+                            tagData.setFieldIdx(tagVO.get(j).getFieldIdx());
+                            fieldTagData.add(tagData);
+                        }
+                        data.setTagData(fieldTagData);
                     }
-                    data.setTagData(fieldTagData);
                 }
             }
             map.put("pData", totalData);
@@ -791,7 +773,6 @@ public class CampLogController {
     public DataVO getCommentReport(@ModelAttribute ReportVO rvo) {
         DataVO dataVO = new DataVO();
         try {
-            log.info("rvo : " + rvo);
             int result = campLogService.getCommentReport(rvo);
 
             if (result > 0) {
@@ -811,7 +792,6 @@ public class CampLogController {
     public DataVO getMyComments(@RequestParam("userIdx") String userIdx) {
         DataVO dataVO = new DataVO();
         try {
-            log.info("내가 쓴 댓글 : " + userIdx);
             List<CampLogCommentVO> clvo = campLogService.getMyComments(userIdx);
 
             dataVO.setData(clvo);
