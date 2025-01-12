@@ -405,7 +405,7 @@
 	<!-- 관리자 공지사항 쓰기 -->
 	<insert id="getAdminNoticeListWrite" parameterType="NoticeVO">
 		insert into pjnotice (noticeSubject, noticeFile, noticeContent, noticeReg, noticeLevel, noticeStatus) 
-		values(#{noticeSubject}, #{noticeFile}, #{noticeContent}, #{noticeReg}, #{noticeLevel}, #{noticeStatus})
+		values(#{noticeSubject}, #{noticeFile}, #{noticeContent}, NOW(), #{noticeLevel}, #{noticeStatus})
 	</insert>
 
 	<!-- 관리자 공지사항 상세 -->

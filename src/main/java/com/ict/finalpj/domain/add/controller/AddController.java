@@ -40,12 +40,12 @@ public class AddController {
             log.info("searchKeyword : " + searchKeyword);
 
             int itemPerPage = 10;
-
+            int cPage = Integer.parseInt(currentPage);
             Map<String, Object> noticeMap = new HashMap<>();
-            noticeMap.put("offset", (Integer.parseInt(currentPage)-1)*itemPerPage+1);
+            noticeMap.put("offset", (cPage == 1 ? 0 : ((Integer.parseInt(currentPage)-1)*itemPerPage+1)));
             noticeMap.put("limit", itemPerPage);
             noticeMap.put("searchKeyword", searchKeyword);
-            
+            log.info("noticeMap : " + noticeMap);
             int totalNoticeCount = addService.getTotalNoticeCount(noticeMap);
 
             List<NoticeVO> noticeList = addService.getNoticeList(noticeMap);

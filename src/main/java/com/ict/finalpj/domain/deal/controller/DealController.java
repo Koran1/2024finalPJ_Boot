@@ -453,6 +453,40 @@ public class DealController {
         return dataVO;
     }
 
+    @PutMapping("/status2")
+    public DataVO updateDealStatus2(
+            @RequestParam("dealIdx") String dealIdx,
+            @RequestParam("senderIdx") String senderIdx,
+            @RequestParam("senderNick") String senderNick
+        ) {
+        DataVO dvo = new DataVO();
+        try {
+            log.info("dealIdx : " + dealIdx);
+            log.info("senderIdx : " + senderIdx);
+            log.info("senderNick : " + senderNick);
+
+            DealVO dealvo = new DealVO();
+            dealvo.setDealIdx(dealIdx);
+            dealvo.setDealBuyerNick(senderNick);
+            dealvo.setDealBuyerUserIdx(senderIdx);
+
+            int result = dealService.getDealStatusUpdate(dealvo);
+            if(result > 0){
+                dvo.setSuccess(true);
+                dvo.setMessage("판매 완료 상태 변경");
+            }else{
+                dvo.setSuccess(false);
+                dvo.setMessage("판매 완료 상태 변경 실패");
+
+            }
+        } catch (Exception e) {
+                        dvo.setSuccess(false);
+                        dvo.setMessage("판매 상태 변경 오류");
+                        e.printStackTrace();
+        }
+        return dvo;
+    }
+    
     // 판매자의 다른 상품 조회
     @GetMapping("/seller-other-deals/{dealIdx}")
     public DataVO getSellerOtherDeals(@PathVariable("dealIdx") String dealIdx) {
