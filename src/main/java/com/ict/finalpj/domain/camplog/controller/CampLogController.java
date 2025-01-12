@@ -390,6 +390,7 @@ public class CampLogController {
             List<FileVo> fileVO = campLogService.getLogFileByLogIdx(logIdx);
             List<TagInfoVO> tagVO = campLogService.getLogTagByLogIdx(logIdx);
             List<DealVO> dealVO = campLogService.getDealList();
+            log.info("tagVO: " + tagVO);
             int RecommendCount = campLogService.countLogRecommend(logIdx);
             map.put("RecommendCount", RecommendCount);
             // 신고 추가
@@ -429,7 +430,7 @@ public class CampLogController {
             if (tagVO != null && tagVO.size() != 0) {
                 List<String> tempt1 = new ArrayList<>();
                 for (TagInfoVO k : tagVO) {
-                    if (k.getDealIdx() != null && k.getDealIdx().equals("0")) {
+                    if (k.getDealIdx() != null && !k.getDealIdx().equals("0")) {
                         tempt1.add(k.getDealIdx());
                     }
                 }
@@ -437,6 +438,7 @@ public class CampLogController {
                 List<String> dealIdxes = new ArrayList<>(tempt2);
                 if (dealIdxes.size() > 0) {
                     String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
+                    log.info("fileName: " + Arrays.toString(fileNames));
                     List<Map<String, String>> fNameBydealIdx = new ArrayList<>();
                     for (int i = 0; i < fileNames.length; i++) {
                         Map<String, String> fileMap = new HashMap<>();
