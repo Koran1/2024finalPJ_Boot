@@ -54,7 +54,6 @@ public class CampLogController {
         DataVO dataVO = new DataVO();
         tvo.setLogIdx(logIdx);
         tvo.setUserIdx(dto.getUvo().getUserIdx());
-
         List<TagData> tagList = new ArrayList<>();
         for (TagData k : dto.getTvo().getTagData()) {
             TagData tag = new TagData();
@@ -303,7 +302,7 @@ public class CampLogController {
                 dataVO.setSuccess(false);
                 dataVO.setMessage("거래 중인 상품이 없습니다.");
                 return dataVO;
-
+                
             }
             List<String> dealIdxes = new ArrayList<>();
             Map<String, String> map = new HashMap<>();
@@ -311,7 +310,7 @@ public class CampLogController {
                 dealIdxes.add(k.getDealIdx());
                 map.put(k.getDealIdx(), null);
             }
-
+            
             String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
             if (fileNames == null || fileNames.length == 0) {
                 dataVO.setSuccess(false);
@@ -336,6 +335,7 @@ public class CampLogController {
             dataVO.setData(linkModalResult);
             return dataVO;
         } catch (Exception e) {
+            e.printStackTrace();
             dataVO.setSuccess(false);
             dataVO.setMessage("서버 오류 발생");
             return dataVO;
@@ -429,7 +429,7 @@ public class CampLogController {
             if (tagVO != null && tagVO.size() != 0) {
                 List<String> tempt1 = new ArrayList<>();
                 for (TagInfoVO k : tagVO) {
-                    if (k.getDealIdx() != null) {
+                    if (k.getDealIdx() != null && k.getDealIdx().equals("0")) {
                         tempt1.add(k.getDealIdx());
                     }
                 }

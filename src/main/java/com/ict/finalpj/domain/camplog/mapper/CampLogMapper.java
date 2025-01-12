@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ict.finalpj.common.vo.FileVo;
 import com.ict.finalpj.common.vo.ReportVO;
@@ -20,7 +21,7 @@ import com.ict.finalpj.domain.user.vo.UserVO;
 public interface CampLogMapper {
     // *로그(후기) 내용*
     List<DealVO> getDealListByuserIdx(String userIdx);
-    String[] getFileNamesByDealIdxes(List<String> dealIdxes);
+    String[] getFileNamesByDealIdxes(@Param("dealIdxes") List<String> dealIdxes);
     String getFileNamesByDealIdx(String dealIdx);
     List<CampVO> getCampListAll();
     int insertToPjcamplog(CampLogVO cvo);

@@ -8,7 +8,7 @@
     <select id="getDealListByuserIdx" resultType="DealVO" parameterType="String">
         select * from pjdeal where dealSellerUserIdx = #{userIdx}
     </select>
-    <select id="getFileNamesByDealIdxes"  resultType="String" parameterType="List">
+    <select id="getFileNamesByDealIdxes"  resultType="String" parameterType="list">
         select fileName from pjfile where  fileTableType = 2 and fileOrder = 0 and fileTableIdx In        
             <foreach collection="dealIdxes" item="dealIdx" open="(" close=")" separator=",">
                 #{dealIdx}
