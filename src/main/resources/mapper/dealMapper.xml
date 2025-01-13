@@ -31,9 +31,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   </select>
 
   <select id="getDealDetail" parameterType="String" resultType="DealVO">
-    SELECT *
-    FROM pjdeal 
-    WHERE dealIdx = #{dealIdx}
+    SELECT d.*,
+           (SELECT COUNT(*) FROM pjdealfavorite WHERE dealIdx = d.dealIdx) as dealUserFavorCount
+    FROM pjdeal d
+    WHERE d.dealIdx = #{dealIdx}
   </select>
 
 <!-- 파일 여러개 가져오기 --> 
