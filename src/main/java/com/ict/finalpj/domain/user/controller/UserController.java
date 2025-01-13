@@ -101,7 +101,7 @@ public class UserController {
                 String userId = uvo_true.getUserId();
                 
                 dvo.setSuccess(true);
-                dvo.setMessage("귀하의 Id는 " + userId+"입니다");
+                dvo.setMessage("고객님의 아이디는 " + userId + " 입니다.");
             }
             
         } catch (Exception e) {
