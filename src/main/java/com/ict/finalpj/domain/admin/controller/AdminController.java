@@ -2,6 +2,7 @@ package com.ict.finalpj.domain.admin.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -819,19 +820,21 @@ public class AdminController {
             if (tagVO != null && tagVO.size() != 0) {
                 List<String> tempt1 = new ArrayList<>();
                 for (TagInfoVO k : tagVO) {
-                    if (k.getDealIdx() != null) {
+                    if (k.getDealIdx() != null && !k.getDealIdx().equals("0")) {
                         tempt1.add(k.getDealIdx());
                     }
                 }
                 Set<String> tempt2 = new HashSet<>(tempt1);
                 List<String> dealIdxes = new ArrayList<>(tempt2);
-                
                 if (dealIdxes.size() > 0) {
                     String[] fileNames = campLogService.getFileNamesByDealIdxes(dealIdxes);
-                    Map<String, String> fNameBydealIdx = new HashMap<>();
-    
+                    log.info("fileName: " + Arrays.toString(fileNames));
+                    List<Map<String, String>> fNameBydealIdx = new ArrayList<>();
                     for (int i = 0; i < fileNames.length; i++) {
-                        fNameBydealIdx.put(dealIdxes.get(i), fileNames[i]);
+                        Map<String, String> fileMap = new HashMap<>();
+                        fileMap.put("dealIdx", dealIdxes.get(i));
+                        fileMap.put("fileName", fileNames[i]);
+                        fNameBydealIdx.add(fileMap);
                     }
                     map.put("fNameByDealIdx", fNameBydealIdx);
                 }
