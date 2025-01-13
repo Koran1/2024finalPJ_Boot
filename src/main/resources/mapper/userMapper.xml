@@ -33,7 +33,7 @@
     </select>
 
     <select id="findUserId" parameterType="UserVO" resultType="UserVO" >
-        select * from pjuser where userId = #{userId} and userMail = #{userMail}
+        select * from pjuser where userName = #{userName} and userMail = #{userMail}
     </select>
 
     <select id="findUserPw" parameterType="UserVO" resultType="UserVO" >

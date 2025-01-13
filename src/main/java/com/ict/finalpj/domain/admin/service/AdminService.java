@@ -8,6 +8,7 @@ import com.ict.finalpj.common.vo.ReportVO;
 import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 import com.ict.finalpj.domain.add.vo.QNAVO;
+import com.ict.finalpj.domain.admin.vo.AdminVO;
 import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
@@ -20,6 +21,8 @@ import com.ict.finalpj.domain.deal.vo.DealVO;
 import com.ict.finalpj.domain.user.vo.UserVO;
 
 public interface AdminService {
+  AdminVO getAdminLogin(AdminVO avo);
+  
   List<DealVO> getDealManagement();
 
   DealVO getDealDetail(String dealIdx);

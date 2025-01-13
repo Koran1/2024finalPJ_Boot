@@ -118,8 +118,6 @@ public class UserController {
         DataVO dvo = new DataVO();
         try {  
             UserVO uvo_true = userService.findUserPw(uvo);
-            log.info("uvo " + uvo);
-            log.info("uvo_pw " + uvo_true);
             if(uvo_true == null){
                 dvo.setSuccess(false);
                 dvo.setMessage("일치하는 정보가 존재하지 않습니다");

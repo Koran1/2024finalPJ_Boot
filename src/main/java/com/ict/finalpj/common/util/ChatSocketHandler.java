@@ -49,23 +49,17 @@ public class ChatSocketHandler {
 
     private DataListener<ChatVO> onFirstChat() {
         return (senderClient, data, ackSender) -> {
-            log.info("data" + data);
-            log.info("Chat Received : " + data.getChatMessage());
 
-            // Get the current date and time
             LocalDateTime now = LocalDateTime.now();
 
-            // Define the format for the timestamp
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-            // Format the current date and time
             String formattedTimestamp = now.format(formatter);
 
             data.setChatTime(formattedTimestamp);
             
             // DB에 채팅 내용 저장
             socketService.saveChatMessage(data);
-
 
             // 메세지 알림
             server.getRoomOperations(data.getChatRoom()).sendEvent("receive_message", data);
@@ -74,23 +68,17 @@ public class ChatSocketHandler {
 
     private DataListener<ChatVO> onChatReceived() {
         return (senderClient, data, ackSender) -> {
-            log.info("data" + data);
-            log.info("Chat Received : " + data.getChatMessage());
 
-            // Get the current date and time
             LocalDateTime now = LocalDateTime.now();
 
-            // Define the format for the timestamp
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-            // Format the current date and time
             String formattedTimestamp = now.format(formatter);
 
             data.setChatTime(formattedTimestamp);
             
             // DB에 채팅 내용 저장
             socketService.saveChatMessage(data);
-
 
             // 메세지 알림
             server.getRoomOperations(data.getChatRoom()).sendEvent("receive_message", data);
@@ -102,19 +90,13 @@ public class ChatSocketHandler {
             try {
                 HandshakeData handshakeData = client.getHandshakeData();
                 String room = handshakeData.getSingleUrlParam("room");
-                log.info("room num : " +room); 
-                
                 String userIdx = handshakeData.getSingleUrlParam("userIdx");
-                log.info("user : " + userIdx);
                 UserDetails userDetails = myUserDetailService.loadUserByUsername(userIdx);
                 
                 String jwtToken = handshakeData.getSingleUrlParam("token");
                 if(jwtUtil.validateToken(jwtToken, userDetails)) {
-                    log.info("jwt token is valid");
-                    log.info("client jwt token : " + jwtToken); 
                     
                     client.joinRoom(room);
-                    log.info("Socket ID[{}]  Connected to socket", client.getSessionId().toString());
 
                     // chatList 정보 가져오기
                     List<ChatVO> chatList = socketService.getChatList(room);
@@ -127,9 +109,7 @@ public class ChatSocketHandler {
                     
                     chatService.updateLastRead(map);
 
-                    
                 }else {
-                    log.info("jwt token is invalid");
                     client.disconnect();
                 }
             } catch (Exception e) {
@@ -144,16 +124,13 @@ public class ChatSocketHandler {
         return client -> {
             HandshakeData handshakeData = client.getHandshakeData();
             String room = handshakeData.getSingleUrlParam("room");
-            log.info("user leaves room num : " +room);
             String userIdx = handshakeData.getSingleUrlParam("userIdx");
-            log.info("user : " + userIdx);
 
             client.leaveRoom(room);
             Map<String, String> map = new HashMap<>();
             map.put("chatRoom", room);
             map.put("userIdx", userIdx);
             chatService.updateLastRead(map);
-            log.info("Client[{}] - Disconnected from socket", client.getSessionId().toString());
         };
     }
 

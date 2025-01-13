@@ -13,6 +13,7 @@ import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 import com.ict.finalpj.domain.add.vo.QNAVO;
 import com.ict.finalpj.domain.admin.mapper.AdminMapper;
+import com.ict.finalpj.domain.admin.vo.AdminVO;
 import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
@@ -321,6 +322,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public int getInActiveLogComment(String logCommentIdx) {
         return adminMapper.getInActiveLogComment(logCommentIdx);
+    }
+
+    @Override
+    public AdminVO getAdminLogin(AdminVO avo) {
+        return adminMapper.getAdminLogin(avo);
     }
     
 }

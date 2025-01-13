@@ -6,6 +6,10 @@
 <!-- namespace는 반드시 mapper 위치로 설정해야 된다. -->
 <mapper namespace="com.ict.finalpj.domain.admin.mapper.AdminMapper">
 
+<select id="getAdminLogin" resultType="AdminVO">
+    SELECT * from pjadmin where adminID = #{adminID}
+</select>
+
 <select id="getDealManagement" resultType="DealVO">
     SELECT coalesce(pjfile.fileName, 'noimg') as deal01, pjdeal.* 
     FROM pjdeal 

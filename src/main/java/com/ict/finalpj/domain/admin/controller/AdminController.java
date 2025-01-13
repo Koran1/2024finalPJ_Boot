@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,6 +32,7 @@ import com.ict.finalpj.domain.add.vo.FAQVO;
 import com.ict.finalpj.domain.add.vo.NoticeVO;
 import com.ict.finalpj.domain.add.vo.QNAVO;
 import com.ict.finalpj.domain.admin.service.AdminService;
+import com.ict.finalpj.domain.admin.vo.AdminVO;
 import com.ict.finalpj.domain.admin.vo.FAQListVO;
 import com.ict.finalpj.domain.admin.vo.NoticeListVO;
 import com.ict.finalpj.domain.admin.vo.UserListVO;
@@ -61,6 +63,35 @@ public class AdminController {
     @Autowired
     private CampLogService campLogService;
 
+    private final PasswordEncoder passwordEncoder;
+
+    public AdminController(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @PostMapping("/login")
+    public DataVO getAdminLogin(@RequestBody AdminVO avo) {
+        DataVO dvo = new DataVO();
+        try {
+            log.info("avo" +avo);
+            AdminVO avo_true = adminService.getAdminLogin(avo);
+            log.info("avo_true" +avo_true);
+            if(passwordEncoder.matches(avo.getAdminPW(), avo_true.getAdminPW())){
+                dvo.setSuccess(true);
+                dvo.setMessage("어드민 로그인 성공");
+            }else{
+                dvo.setSuccess(false);
+                dvo.setMessage("어드민 로그인 실패");
+            }
+
+        } catch (Exception e) {
+            dvo.setSuccess(false);
+            dvo.setMessage("어드민 로그인 오류");
+            e.printStackTrace();
+        } 
+        return dvo;
+    }
+    
     @GetMapping("/dealList")
     public DataVO getDealManagement() {
         DataVO dataVO = new DataVO();

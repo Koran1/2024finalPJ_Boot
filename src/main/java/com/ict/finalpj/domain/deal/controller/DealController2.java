@@ -122,7 +122,6 @@ public class DealController2 {
     ) {
       DataVO dvo = new DataVO();
       try {
-        log.info("userIdx(찜 목록 가져오기) : " + userIdx);
         List<DealVO> favList = dealService.getFavoriteList(userIdx);
         dvo.setData(favList);
         dvo.setSuccess(true);
